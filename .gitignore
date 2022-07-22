@@ -4,3 +4,19 @@
 
 /.vs
 /scr/SEG.Api/.vs
+/scr/SAF/GES.Api/bin/Debug/net6.0
+/scr/SAF/GES.Api/obj
+/scr/SAF/.vs
+/scr/SAF/CoreGES/bin/Debug/net6.0
+/scr/SAF/CoreGES/obj
+/scr/SAF/CoreSAF/bin/Debug/net6.0
+/scr/SAF/CoreSAF/obj/Debug/net6.0
+/scr/SAF/CoreSAF/obj
+/scr/SAF/CoreSEG/bin/Debug/net6.0
+/scr/SAF/CoreSEG/obj
+/scr/SAF/SAF/bin/Debug/net6.0
+/scr/SAF/SAF/obj
+/scr/SAF/SAF.Api/bin/Debug/net6.0
+/scr/SAF/SAF.Api/obj
+/scr/SAF/SEG.Api/bin/Debug/net6.0
+/scr/SAF/SEG.Api/obj
