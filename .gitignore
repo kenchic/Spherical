@@ -41,3 +41,5 @@
 /scr/SAF.Api/obj
 /scr/SEG.Api/bin/Debug/net6.0
 /scr/SEG.Api/obj
+/scr/CoreGeneral/bin/Debug
+/scr/CoreGeneral/obj

@@ -1,0 +1,740 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="EtiquetaActivo" xml:space="preserve">
+    <value>Activo</value>
+    <comment>Label del campo Activo</comment>
+  </data>
+  <data name="EtiquetaId" xml:space="preserve">
+    <value>Id</value>
+    <comment>Label del campo Id</comment>
+  </data>
+  <data name="EtiquetaConsecutivo" xml:space="preserve">
+    <value>Consecutivo</value>
+    <comment>Label del campo Consecutivo</comment>
+  </data>
+  <data name="EtiquetaEsSistema" xml:space="preserve">
+    <value>Es Sistema</value>
+    <comment>Label del campo EsSistema</comment>
+  </data>
+  <data name="EtiquetaNombre" xml:space="preserve">
+    <value>Nombre</value>
+    <comment>Label del campo Nombre</comment>
+  </data>
+  <data name="MensajeRequerido" xml:space="preserve">
+    <value>Campo Requerido</value>
+    <comment>Label del mensaje de campo requerido</comment>
+  </data>
+  <data name="MensajeTamanoMaximo" xml:space="preserve">
+    <value>Campo no puede tener más de {0} caracteres.</value>
+    <comment>Label del mensaje de superó el tamaño del campo</comment>
+  </data>
+  <data name="TituloAgenteListar" xml:space="preserve">
+    <value>Agentes</value>
+    <comment>Titulo de la vista Listar de la entidad Agente</comment>
+  </data>
+  <data name="EtiquetaAdmin" xml:space="preserve">
+    <value>Administrador</value>
+    <comment>Label del Administrador</comment>
+  </data>
+  <data name="EtiquetaApellido" xml:space="preserve">
+    <value>Apellido</value>
+    <comment>Label del Apellido</comment>
+  </data>
+  <data name="EtiquetaClave" xml:space="preserve">
+    <value>Clave</value>
+    <comment>Label de la Clave del usuario</comment>
+  </data>
+  <data name="EtiquetaCorreo" xml:space="preserve">
+    <value>Correo</value>
+    <comment>Label del Correo</comment>
+  </data>
+  <data name="EtiquetaIdentificacion" xml:space="preserve">
+    <value>Identificación</value>
+    <comment>Label de la identificación</comment>
+  </data>
+  <data name="EtiquetaProyectoNombre" xml:space="preserve">
+    <value>Proyecto</value>
+    <comment>Label del campo Proyecto en ForenKey</comment>
+  </data>
+  <data name="EtiquetaListaPrecioNombre" xml:space="preserve">
+    <value>Lista Precio</value>
+    <comment>Label del campo Lista Precio en ForenKey</comment>
+  </data>
+  <data name="EtiquetaAgenteNombre" xml:space="preserve">
+    <value>Agente</value>
+    <comment>Label del campo Agente en ForenKey</comment>
+  </data>
+  <data name="EtiquetaUsuario" xml:space="preserve">
+    <value>Usuario</value>
+    <comment>Label del Usuario</comment>
+  </data>
+  <data name="EtiquetaContratoAlquiler" xml:space="preserve">
+    <value>Contrato Alquiler</value>
+    <comment>Label del ContratoAlquiler</comment>
+  </data>
+  <data name="EtiquetaInformacionBD" xml:space="preserve">
+    <value>Información BD</value>
+    <comment>Label del InformacionBD</comment>
+  </data>
+  <data name="EtiquetaCartaPagare" xml:space="preserve">
+    <value>Carta Pagare</value>
+    <comment>Label de Carta Pagare</comment>
+  </data>
+  <data name="EtiquetaPagare" xml:space="preserve">
+    <value>Pagare</value>
+    <comment>Label de Carta Pagare</comment>
+  </data>
+  <data name="EtiquetaLetraCambio" xml:space="preserve">
+    <value>Letra Cambio</value>
+    <comment>Label de Letra Cambio</comment>
+  </data>
+  <data name="EtiquetaGarantiasCondiciones" xml:space="preserve">
+    <value>Garantías Condiciones</value>
+    <comment>Label de Garantias Condiciones</comment>
+  </data>
+  <data name="EtiquetaDeposito" xml:space="preserve">
+    <value>Depósito</value>
+    <comment>Label de Deposito</comment>
+  </data>
+  <data name="EtiquetaAnticipo" xml:space="preserve">
+    <value>Anticipo</value>
+    <comment>Label de Anticipo</comment>
+  </data>
+  <data name="EtiquetaPersonaNatural" xml:space="preserve">
+    <value>Persona Natural</value>
+    <comment>Label de Persona Natural</comment>
+  </data>
+  <data name="EtiquetaPersonaJuridica" xml:space="preserve">
+    <value>Persona Juridica</value>
+    <comment>Label de Persona Juridica</comment>
+  </data>
+  <data name="EtiquetaFotoCopiaCedula" xml:space="preserve">
+    <value>Foto Copia Cédula</value>
+    <comment>Label de Persona Juridica</comment>
+  </data>
+  <data name="EtiquetaFotoCopiaNit" xml:space="preserve">
+    <value>Foto Copia Nit</value>
+    <comment>Label de Foto Copia Nit</comment>
+  </data>
+  <data name="EtiquetaCamaraComercio" xml:space="preserve">
+    <value>Cámara Comercio</value>
+    <comment>Label de Camara Comercio</comment>
+  </data>
+  <data name="EtiquetaDescuentoAlquiler" xml:space="preserve">
+    <value>Dto Alquiler</value>
+    <comment>Label de Descuento Alquiler</comment>
+  </data>
+  <data name="EtiquetaDescuentoVenta" xml:space="preserve">
+    <value>Dto Venta</value>
+    <comment>Label de Descuento Alquiler</comment>
+  </data>
+  <data name="EtiquetaDescuentoReposicion" xml:space="preserve">
+    <value>Dto Reposicion</value>
+    <comment>Label de Descuento Reposicion</comment>
+  </data>
+  <data name="EtiquetaDescuentoMantenimiento" xml:space="preserve">
+    <value>Dto Mantenimiento</value>
+    <comment>Label de Descuento Mantenimiento</comment>
+  </data>
+  <data name="EtiquetaPorcentajeAgente" xml:space="preserve">
+    <value>% Agente</value>
+    <comment>Label de Porcentaje Agente</comment>
+  </data>
+  <data name="TituloUsuarioLogin" xml:space="preserve">
+    <value>Usuario Login</value>
+    <comment>Titulo de la vista Usuario Login</comment>
+  </data>
+  <data name="TituloBloqueAgenteInsertar" xml:space="preserve">
+    <value>Insertar Agente</value>
+    <comment>Titulo del bloque de la vista AgenteInsertar</comment>
+  </data>
+  <data name="TituloBloqueAgenteConsultar" xml:space="preserve">
+    <value>Consultar Agente</value>
+    <comment>Titulo de la vista Consultar de la entidad Agente</comment>
+  </data>
+  <data name="TituloBloqueAgenteModificar" xml:space="preserve">
+    <value>Modificar Agente</value>
+    <comment>Titulo de la vista Modifcar de la entidad Agente</comment>
+  </data>
+  <data name="TituloBloqueCiudadConsultar" xml:space="preserve">
+    <value>Detalle Ciudad</value>
+    <comment>Titulo de la vista Consultar de la Ciudad</comment>
+  </data>
+  <data name="TituloBloqueCiudadInsertar" xml:space="preserve">
+    <value>Insertar Ciudad</value>
+    <comment>Titulo de la vista  Insertar de la Ciudad</comment>
+  </data>
+  <data name="TituloBloqueCiudadModificar" xml:space="preserve">
+    <value>Modificar Ciudad</value>
+    <comment>Titulo de la vista Mofiicar de la entidad Ciudad</comment>
+  </data>
+  <data name="TituloCiudadListar" xml:space="preserve">
+    <value>Ciudades</value>
+    <comment>Titulo de las Ciudades </comment>
+  </data>
+  <data name="TituloBloqueConductorConsultar" xml:space="preserve">
+    <value>Consultar Conductor</value>
+    <comment>Titulo de la vista Consultar de la entidad Conductor</comment>
+  </data>
+  <data name="TituloBloqueConductorInsertar" xml:space="preserve">
+    <value>Insertar Conductor</value>
+    <comment>Titulo de la vista Insertar de la entidad Conductor</comment>
+  </data>
+  <data name="TituloBloqueConductorModificar" xml:space="preserve">
+    <value>Modificar Conductor </value>
+    <comment>Titulo de la vista Modificar de la entidad Conductor</comment>
+  </data>
+  <data name="TituloConductorListar" xml:space="preserve">
+    <value>Conductores</value>
+    <comment>Titulo de Conductores</comment>
+  </data>
+  <data name="EtiquetaPlaca" xml:space="preserve">
+    <value>Placa</value>
+    <comment>Label de la Placa</comment>
+  </data>
+  <data name="TituloBloqueGrupoElementoConsultar" xml:space="preserve">
+    <value>Consultar Grupo de Elementos</value>
+    <comment>Titulo de la vista Consultar de la entidad Grupo de Elementos</comment>
+  </data>
+  <data name="TituloBloqueGrupoElementoInsertar" xml:space="preserve">
+    <value>Insertar Grupo de Elementos</value>
+    <comment>Titulo de la vista Insertar de la entidad Grupo de Elementos</comment>
+  </data>
+  <data name="TituloBloqueGrupoElementoModificar" xml:space="preserve">
+    <value>Modificar Grupo de Elementos</value>
+    <comment>Titulo de la vista Modificar de la entidad Grupo de Elementos</comment>
+  </data>
+  <data name="TituloGrupoElementoListar" xml:space="preserve">
+    <value>Grupos de Elementos</value>
+    <comment>Titulo de Grupo de Elementos</comment>
+  </data>
+  <data name="TituloBloqueListaPrecioConsultar" xml:space="preserve">
+    <value>Consultar Lista Precios</value>
+    <comment>Titulo de la vista Consultar de la entidad Lista Precios</comment>
+  </data>
+  <data name="TituloBloqueListaPrecioInsertar" xml:space="preserve">
+    <value>Insetar Lista Precios</value>
+    <comment>Titulo de la vista Insertar de la entidad Lista Precios</comment>
+  </data>
+  <data name="TituloBloqueListaPrecioModificar" xml:space="preserve">
+    <value>Modificar Lista Precios</value>
+    <comment>Titulo de la vista Modificar de la entidad Lista Precios</comment>
+  </data>
+  <data name="TituloListaPrecioListar" xml:space="preserve">
+    <value>Listas de Precios</value>
+    <comment>Titulo de la Lista de Precios</comment>
+  </data>
+  <data name="EtiquetaCodigo" xml:space="preserve">
+    <value>Código</value>
+    <comment>Label del campo Código</comment>
+  </data>
+  <data name="EtiquetaDescripcion" xml:space="preserve">
+    <value>Descripción</value>
+    <comment>Label del campo Descripción</comment>
+  </data>
+  <data name="EtiquetaValor" xml:space="preserve">
+    <value>Valor</value>
+    <comment>Label del campo Valor</comment>
+  </data>
+  <data name="TituloBloqueParametroConsultar" xml:space="preserve">
+    <value>Consultar Parametro</value>
+    <comment>Titulo de la vista Consultar de la entidad Parametro</comment>
+  </data>
+  <data name="TituloBloqueParametroInsertar" xml:space="preserve">
+    <value>Insetar Parrametro</value>
+    <comment>Titulo de la vista Insertar de la entidad Parametro</comment>
+  </data>
+  <data name="TituloBloqueParametroModificar" xml:space="preserve">
+    <value>Modificar Parametro</value>
+    <comment>Titulo de la vista Modificar de la entidad Parametro</comment>
+  </data>
+  <data name="TituloParametroListar" xml:space="preserve">
+    <value>Parametros</value>
+    <comment>Titulo de los Parametros</comment>
+  </data>
+  <data name="EtiquetaDireccion" xml:space="preserve">
+    <value>Dirección</value>
+    <comment>Label del campo Direccion</comment>
+  </data>
+  <data name="EtiquetaIniciales" xml:space="preserve">
+    <value>Iniciales</value>
+    <comment>Label del campo Iniciales</comment>
+  </data>
+  <data name="EtiquetaTelefono" xml:space="preserve">
+    <value>Teléfono</value>
+    <comment>Label del campo Telefono</comment>
+  </data>
+  <data name="TituloBloqueProveedorConsultar" xml:space="preserve">
+    <value>Consultar Proveedor</value>
+    <comment>Titulo de la vista Consultar de la Proveedor</comment>
+  </data>
+  <data name="TituloBloqueProveedorInsertar" xml:space="preserve">
+    <value>Insertar Proveedor</value>
+    <comment>Titulo de la vista Insertar de la Proveedor</comment>
+  </data>
+  <data name="TituloBloqueProveedorModificar" xml:space="preserve">
+    <value>Modificar Proveedor</value>
+    <comment>Titulo de la vista Modificar de la Proveedor</comment>
+  </data>
+  <data name="TituloProveedorListar" xml:space="preserve">
+    <value>Proveedores</value>
+    <comment>Titulo de la Lista de Proveedores</comment>
+  </data>
+  <data name="TituloBloqueDocumentoTipoConsultar" xml:space="preserve">
+    <value>Consultar Tipo Documento</value>
+    <comment>Titulo de la vista Consultar de la entidad Tipo Documento</comment>
+  </data>
+  <data name="TituloBloqueDocumentoTipoInsertar" xml:space="preserve">
+    <value>Insertar Tipo Documento</value>
+    <comment>Titulo de la vista Insertar de la entidad Tipo Documento</comment>
+  </data>
+  <data name="TituloBloqueDocumentoTipoModificar" xml:space="preserve">
+    <value>Modificar Tipo Documento</value>
+    <comment>Titulo de la vista Modificar de la entidad Tipo Documento</comment>
+  </data>
+  <data name="TituloDocumentoTipoListar" xml:space="preserve">
+    <value>Tipos Documentos</value>
+    <comment>Titulo de la vista Listar de Tipo Documento</comment>
+  </data>
+  <data name="EtiquetaOperacion" xml:space="preserve">
+    <value>Operación</value>
+    <comment>Label campo operación</comment>
+  </data>
+  <data name="TituloBloqueTipoMantenimientoConsultar" xml:space="preserve">
+    <value>Consultar Tipo Mantenimiento</value>
+    <comment>Titulo de la vista Consultar de la entidad Tipo Mantenimiento</comment>
+  </data>
+  <data name="TituloBloqueTipoMantenimientoInsertar" xml:space="preserve">
+    <value>Insertar Tipo Mantenimiento</value>
+    <comment>Titulo de la vista Insertar de la entidad Tipo Mantenimiento</comment>
+  </data>
+  <data name="TituloBloqueTipoMantenimientoModificar" xml:space="preserve">
+    <value>Modificar Tipo Mantenimiento</value>
+    <comment>Titulo de la vista Modificar de la entidad Tipo Mantenimiento</comment>
+  </data>
+  <data name="TituloTipoMantenimientoListar" xml:space="preserve">
+    <value>Tipos Mantenimientos</value>
+    <comment>Titulo de la vista Listar de Tipo Documento</comment>
+  </data>
+  <data name="TituloBloqueUnidadMedidaConsultar" xml:space="preserve">
+    <value>Consultar Unidad Medida</value>
+    <comment>Titulo de la vista Consultar de la entidad Unidad Medida</comment>
+  </data>
+  <data name="TituloBloqueUnidadMedidaInsertar" xml:space="preserve">
+    <value>Insertar Unidad Medida</value>
+    <comment>Titulo de la vista Insertar de la entidad Unidad Medida</comment>
+  </data>
+  <data name="TituloBloqueUnidadMedidaModificar" xml:space="preserve">
+    <value>Modificar Unidad Medida</value>
+    <comment>Titulo de la vista Modificar de la entidad Unidad Medida</comment>
+  </data>
+  <data name="TituloUnidadMedidaListar" xml:space="preserve">
+    <value>Unidades de Medida</value>
+    <comment>Titulo de la vista Listar de la entidad Unidad Medida</comment>
+  </data>
+  <data name="TituloClienteListar" xml:space="preserve">
+    <value>Clientes</value>
+    <comment>Titulo de la vista Listar de la entidad Cliente</comment>
+  </data>
+  <data name="TituloBloqueClienteConsultar" xml:space="preserve">
+    <value>Consultar Cliente</value>
+    <comment>Titulo de la vista Consultar de la entidad Cliente</comment>
+  </data>
+  <data name="TituloBloqueClienteInsertar" xml:space="preserve">
+    <value>Insertar Cliente</value>
+    <comment>Titulo de la vista Insertar de la entidad Cliente</comment>
+  </data>
+  <data name="TituloBloqueClienteModificar" xml:space="preserve">
+    <value>Modificar Cliente</value>
+    <comment>Titulo de la vista Modificar de la entidad Cliente</comment>
+  </data>
+  <data name="EtiquetaCiudadNombre" xml:space="preserve">
+    <value>Ciudad</value>
+    <comment>Label del campo Nombre de la ciudad</comment>
+  </data>
+  <data name="EtiquetaClienteNombre" xml:space="preserve">
+    <value>Cliente</value>
+    <comment>Label del campo Nombre del Cliente</comment>
+  </data>
+  <data name="EtiquetaNombre1" xml:space="preserve">
+    <value>Nombre 1</value>
+    <comment>Label del campo Nombre1 </comment>
+  </data>
+  <data name="EtiquetaNombre2" xml:space="preserve">
+    <value>Nombre 2</value>
+    <comment>Label del campo Nombre 2 </comment>
+  </data>
+  <data name="EtiquetaApellido1" xml:space="preserve">
+    <value>Apellido 1</value>
+    <comment>Label del campo Apellido 1</comment>
+  </data>
+  <data name="EtiquetaApellido2" xml:space="preserve">
+    <value>Apellido 2</value>
+    <comment>Label del campo Apellido 2</comment>
+  </data>
+  <data name="EtiquetaCelular" xml:space="preserve">
+    <value>Celular</value>
+    <comment>Label del campo Celular</comment>
+  </data>
+  <data name="EtiquetaObservacion" xml:space="preserve">
+    <value>Observación</value>
+    <comment>Label del campo Observación</comment>
+  </data>
+  <data name="EtiquetaTipo" xml:space="preserve">
+    <value>Tipo</value>
+    <comment>Label del campo Tipo</comment>
+  </data>
+  <data name="EtiquetaFormaContacto" xml:space="preserve">
+    <value>Forma Contacto</value>
+    <comment>Label del campo Forma Contacto Cliente</comment>
+  </data>
+  <data name="EtiquetaEstado" xml:space="preserve">
+    <value>Estado</value>
+    <comment>Label del campo Forma Contacto Cliente</comment>
+  </data>
+  <data name="EtiquetaFecha" xml:space="preserve">
+    <value>Fecha</value>
+    <comment>Label del campo Fecha</comment>
+  </data>
+  <data name="EtiquetaTelResponsable" xml:space="preserve">
+    <value>Tel. Responsable</value>
+    <comment>Label del campo Teléfono Responsable</comment>
+  </data>
+  <data name="EtiquetaNombreResponsable" xml:space="preserve">
+    <value>Nombre Responsable</value>
+    <comment>Label del campo Nombre Responsable</comment>
+  </data>
+  <data name="EtiquetaIdentificacionResponsable" xml:space="preserve">
+    <value>Identificación Responsable</value>
+    <comment>Label del campo Identificacion Responsable</comment>
+  </data>
+  <data name="EtiquetaSistemaMedida" xml:space="preserve">
+    <value>Sistema Medida</value>
+    <comment>Label del campo Sistema Medida</comment>
+  </data>
+  <data name="EtiquetaGrupoElementoNombre" xml:space="preserve">
+    <value>Grupo Elemento</value>
+    <comment>Label del campo Grupo Elemento</comment>
+  </data>
+  <data name="EtiquetaUnidadMedidaNombre" xml:space="preserve">
+    <value>Unidad Medida</value>
+    <comment>Label del campo Unidad Medida</comment>
+  </data>
+  <data name="EtiquetaReferencia" xml:space="preserve">
+    <value>Referencia</value>
+    <comment>Label del campo Referencia</comment>
+  </data>
+  <data name="EtiquetaMt2" xml:space="preserve">
+    <value>Mt2</value>
+    <comment>Label del campo Mt2</comment>
+  </data>
+  <data name="EtiquetaPeso" xml:space="preserve">
+    <value>Peso</value>
+    <comment>Label del campo Peso</comment>
+  </data>
+  <data name="EtiquetaRotacion" xml:space="preserve">
+    <value>Rotacion</value>
+    <comment>Label del campo Rotacion</comment>
+  </data>
+  <data name="TituloBloqueProyectoConsultar" xml:space="preserve">
+    <value>Consultar Proyecto</value>
+    <comment>Titulo de la vista Consultar de la entidad Proyecto</comment>
+  </data>
+  <data name="TituloBloqueProyectoInsertar" xml:space="preserve">
+    <value>Insertar Proyecto</value>
+    <comment>Titulo de la vista Insertar de la entidad Proyecto</comment>
+  </data>
+  <data name="TituloBloqueProyectoModificar" xml:space="preserve">
+    <value>Modificar Proyecto</value>
+    <comment>Titulo de la vista Modificar de la entidad Proyecto</comment>
+  </data>
+  <data name="TituloProyectoListar" xml:space="preserve">
+    <value>Proyectos</value>
+    <comment>Titulo de la vista Listar de la entidad Proyectos</comment>
+  </data>
+  <data name="TituloBloqueBodegaConsultar" xml:space="preserve">
+    <value>Consultar Bodega</value>
+    <comment>Titulo de la vista Consultar de la entidad Bodega</comment>
+  </data>
+  <data name="TituloBloqueBodegaInsertar" xml:space="preserve">
+    <value>Insertar Bodega</value>
+    <comment>Titulo de la vista Insertar de la entidad Bodega</comment>
+  </data>
+  <data name="TituloBloqueBodegaModificar" xml:space="preserve">
+    <value>Modificar Bodega</value>
+    <comment>Titulo de la vista Modificar de la entidad Bodega</comment>
+  </data>
+  <data name="TituloBodegaListar" xml:space="preserve">
+    <value>Bodegas </value>
+    <comment>Titulo de la vista Listar de la entidad Bodegas</comment>
+  </data>
+  <data name="EtiquetaProveedorNombre" xml:space="preserve">
+    <value>Proveedor</value>
+    <comment>Label del campo Proveedor</comment>
+  </data>
+  <data name="TituloBloqueContratoModificar" xml:space="preserve">
+    <value>Modificar Contrato</value>
+    <comment>Titulo de la vista Modificar de la entidad Contrato</comment>
+  </data>
+  <data name="EtiquetaDescuentoTransporte" xml:space="preserve">
+    <value>Dto Transporte</value>
+    <comment>Label de Descuento de Transporte</comment>
+  </data>
+  <data name="EtiquetaRolNombre" xml:space="preserve">
+    <value>Rol</value>
+    <comment>Label campo Rol</comment>
+  </data>
+  <data name="TituloBloqueElementoConsultar" xml:space="preserve">
+    <value>Consultar Elemento</value>
+    <comment>Titulo de la vista Consultar de la entidad Proyecto</comment>
+  </data>
+  <data name="TituloBloqueElementoInsertar" xml:space="preserve">
+    <value>Insertar Elemento</value>
+    <comment>Titulo de la vista Insertar de la entidad Proyecto</comment>
+  </data>
+  <data name="TituloBloqueElementoModificar" xml:space="preserve">
+    <value>Modificar Elemento</value>
+    <comment>Titulo de la vista Modificar de la entidad Proyecto</comment>
+  </data>
+  <data name="TituloElementoListar" xml:space="preserve">
+    <value>Elementos</value>
+    <comment>Titulo de la vista Listar de la entidad Elementos</comment>
+  </data>
+  <data name="EtiquetaElementoNombre" xml:space="preserve">
+    <value>Elemento</value>
+    <comment>Label del campo elemento</comment>
+  </data>
+  <data name="EtiquetaPrecioAlquiler" xml:space="preserve">
+    <value>Precio Alquiler</value>
+    <comment>Label del campo Precio Alquiler</comment>
+  </data>
+  <data name="EtiquetaPrecioPerdida" xml:space="preserve">
+    <value>Precio Perdida</value>
+    <comment>Label del campo PrecioPerdida</comment>
+  </data>
+  <data name="EtiquetaPrecioVenta" xml:space="preserve">
+    <value>Precio Venta</value>
+    <comment>Label del campo PrecioVenta</comment>
+  </data>
+  <data name="TituloBloqueDocumentoConsultar" xml:space="preserve">
+    <value>Consultar Documento</value>
+    <comment>Titulo de la vista Consultar de la entidad Documento y DocumentoDetalle</comment>
+  </data>
+  <data name="TituloBloqueDocumentoInsertar" xml:space="preserve">
+    <value>Insetar Documento</value>
+    <comment>Titulo de la vista Insertar de la entidad Documento y DocumentoDetalle</comment>
+  </data>
+  <data name="TituloBloqueDocumentoModificar" xml:space="preserve">
+    <value>Modificar Documento</value>
+    <comment>Titulo de la vista Modificar de la entidad Documento y DocumentoDetalle</comment>
+  </data>
+  <data name="TituloDocumentoListar" xml:space="preserve">
+    <value>Listas de Documentos</value>
+    <comment>Titulo de Documentos</comment>
+  </data>
+  <data name="EtiquetaAnulado" xml:space="preserve">
+    <value>Anulado</value>
+    <comment>Label del campo Anulado</comment>
+  </data>
+  <data name="EtiquetaBodegaDestinoNombre" xml:space="preserve">
+    <value>Bodega Destino</value>
+    <comment>Label del campo BodegaDestino</comment>
+  </data>
+  <data name="EtiquetaBodegaOrigenNombre" xml:space="preserve">
+    <value>Bodega Origen</value>
+    <comment>Label del campo BodegaOrigen</comment>
+  </data>
+  <data name="EtiquetaCantidad" xml:space="preserve">
+    <value>Cantidad</value>
+    <comment>Label del campo Cantidad</comment>
+  </data>
+  <data name="EtiquetaNumero" xml:space="preserve">
+    <value>Número</value>
+    <comment>Label del campo Número</comment>
+  </data>
+  <data name="EtiquetaDocumentoTipoNombre" xml:space="preserve">
+    <value>Tipo Documento</value>
+    <comment>Label del campo Tipo Documento</comment>
+  </data>
+  <data name="TituloBloqueDocumentoDetalleConsultar" xml:space="preserve">
+    <value>Consultar Documento </value>
+    <comment>Titulo de la vista Consultar de los Documento y sus Detalles</comment>
+  </data>
+  <data name="TituloBloqueDocumentoDetalleModificar" xml:space="preserve">
+    <value>Modificar Documento</value>
+    <comment>Titulo de la vista Editar de los Documento y sus Detalles</comment>
+  </data>
+  <data name="TituloProyectoPlanillaListar" xml:space="preserve">
+    <value>Movimientos</value>
+    <comment>Titulo del bloque para la plantilla de movimientos de un proyecto</comment>
+  </data>
+  <data name="EtiquetaConductor" xml:space="preserve">
+    <value>Conductor</value>
+    <comment>Label del campo Conductor</comment>
+  </data>
+  <data name="EtiquetaDespacho" xml:space="preserve">
+    <value>Despachado Parcial</value>
+    <comment>Label del campo Despachado Parcial / Completo</comment>
+  </data>
+  <data name="EtiquetaEquipoAdecuado" xml:space="preserve">
+    <value>Equipo Adecuado</value>
+    <comment>Label del campo Equipo Adecuado</comment>
+  </data>
+  <data name="EtiquetaFechaSistema" xml:space="preserve">
+    <value>Fecha Sistema</value>
+    <comment>Label del campo Fecha Sistema</comment>
+  </data>
+  <data name="EtiquetaPesoEquipo" xml:space="preserve">
+    <value>Peso Equipo</value>
+    <comment>Label del campo Peso Equipo</comment>
+  </data>
+  <data name="EtiquetaTransporte" xml:space="preserve">
+    <value>Transporte</value>
+    <comment>Label del campo Transporte</comment>
+  </data>
+  <data name="EtiquetaValorTransporte" xml:space="preserve">
+    <value>Valor Transporte</value>
+    <comment>Label del campo Valor Transporte</comment>
+  </data>
+  <data name="TituloBloqueRemisionInsertar" xml:space="preserve">
+    <value>Insetar Remisión</value>
+    <comment>Titulo de la vista Insertar de la entidad Remision y RemisionDetalle</comment>
+  </data>
+  <data name="EtiquetaCantidadFilas" xml:space="preserve">
+    <value>Cantidad Filas</value>
+    <comment>Cantidad de filas para un documento</comment>
+  </data>
+  <data name="EtiquetaValorEquipo" xml:space="preserve">
+    <value>Valor Equipo</value>
+    <comment>Label del campo Valor Equipo</comment>
+  </data>
+  <data name="EtiquetaFechaEntrega" xml:space="preserve">
+    <value>Fecha Entrega</value>
+    <comment>Label del campo Fecha Entraga</comment>
+  </data>
+  <data name="EtiquetaFechaPedido" xml:space="preserve">
+    <value>Fecha Pedido</value>
+    <comment>Label del campo Fecha Pedido</comment>
+  </data>
+  <data name="EtiquetaVersion" xml:space="preserve">
+    <value>Versión</value>
+    <comment>Etiqueta del campo Versión</comment>
+  </data>
+</root>
