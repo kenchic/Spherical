@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CoreGES.Models
+namespace GES.Api.Models
 {
     public partial class Sistema
     {
