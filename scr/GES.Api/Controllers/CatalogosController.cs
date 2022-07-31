@@ -20,18 +20,26 @@ namespace GES.Api.Controllers
 
         // GET: api/Catalogos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Catalogo>>> GetCatalogos()
+        public async Task<ActionResult<IEnumerable<CatalogoDTO>>> GetCatalogos()
         {
             if (_context.Catalogos == null)
             {
                 return NotFound();
             }
-            return await _context.Catalogos.ToListAsync();
+
+            var listCatalogos = await _context.Catalogos.Select(x => EntityToDTO(x)).ToListAsync();
+
+            if (listCatalogos.Count < 0)
+            {
+                return NotFound();
+            }
+
+            return listCatalogos;
         }
 
         // GET: api/Catalogos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Catalogo>> GetCatalogo(string id)
+        public async Task<ActionResult<CatalogoDTO>> GetCatalogo(string id)
         {
             if (_context.Catalogos == null)
             {
@@ -44,18 +52,27 @@ namespace GES.Api.Controllers
                 return NotFound();
             }
 
-            return catalogo;
+            return EntityToDTO(catalogo);
         }
 
         // PUT: api/Catalogos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCatalogo(string id, Catalogo catalogo)
+        public async Task<IActionResult> PutCatalogo(string id, CatalogoDTO dto)
         {
-            if (id != catalogo.Id)
+            if (id != dto.Id)
             {
                 return BadRequest();
             }
+
+            var catalogo = await _context.Catalogos.FirstOrDefaultAsync(model => model.Id == id);
+            if (catalogo == null)
+            {
+                return NotFound();
+            }
+
+            catalogo.Id = dto.Id;
+            catalogo.Descripcion = dto.Descripcion;
 
             _context.Entry(catalogo).State = EntityState.Modified;
 
@@ -81,13 +98,13 @@ namespace GES.Api.Controllers
         // POST: api/Catalogos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Catalogo>> PostCatalogo(CatalogoDTO catalogoM)
+        public async Task<ActionResult<CatalogoDTO>> PostCatalogo(CatalogoDTO dto)
         {
             Catalogo catalogo = new Catalogo
             {
-                Id = catalogoM.Id,
-                IdSistema = catalogoM.IdSistema,
-                Descripcion = catalogoM.Descripcion
+                Id = dto.Id,
+                IdSistema = dto.Sistema,
+                Descripcion = dto.Descripcion
             };
 
             if (_context.Catalogos == null)
@@ -140,5 +157,13 @@ namespace GES.Api.Controllers
         {
             return (_context.Catalogos?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        private static CatalogoDTO EntityToDTO(Catalogo catalogo) =>
+        new CatalogoDTO
+        {
+            Id = catalogo.Id,
+            Descripcion = catalogo.Descripcion,
+            Sistema = catalogo.IdSistema
+        };
     }
 }

@@ -16,8 +16,8 @@ namespace GES.Api.Controllers
             _context = context;
         }
 
-        // GET: api/Sistemas
-        [HttpGet]
+       //GET: api/Sistemas
+       [HttpGet]
         public async Task<ActionResult<IEnumerable<SistemaDTO>>> GetSistemas()
         {
             if (_context.Sistemas == null)
@@ -25,11 +25,7 @@ namespace GES.Api.Controllers
                 return NotFound();
             }
 
-            var listSistema = await _context.Sistemas.Select(model => new SistemaDTO
-            {
-                Id = model.Id,
-                Version = model.Version
-            }).ToListAsync();
+            var listSistema = await _context.Sistemas.Select(x => EntityToDTO(x)).ToListAsync();
 
             if (listSistema.Count < 0)
             {
@@ -39,7 +35,7 @@ namespace GES.Api.Controllers
             return listSistema;
         }
 
-        // GET: api/Sistemas/5
+        //GET: api/Sistemas/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SistemaDTO>> GetSistema(string id)
         {
@@ -47,40 +43,34 @@ namespace GES.Api.Controllers
             {
                 return NotFound();
             }
-            //var sistema = await _context.Sistemas.FindAsync(id);
-
-            var sistema = await _context.Sistemas.Select(model => new SistemaDTO
-            {
-                Id = model.Id,
-                Version = model.Version
-            }).FirstOrDefaultAsync(s => s.Id == id);
+            var sistema = await _context.Sistemas.FindAsync(id);
 
             if (sistema == null)
             {
                 return NotFound();
             }
 
-            return sistema;
+            return EntityToDTO(sistema);
         }
 
         // PUT: api/Sistemas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSistema(string id, SistemaDTO dto)
-        {            
+        {
             if (id != dto.Id)
             {
                 return BadRequest();
             }
 
             var sistema = await _context.Sistemas.FirstOrDefaultAsync(model => model.Id == id);
-            if(sistema == null)
-            { 
-                return NotFound(); 
+            if (sistema == null)
+            {
+                return NotFound();
             }
 
             sistema.Id = dto.Id;
-            sistema.Version = dto.Version;  
+            sistema.Version = dto.Version;
 
             _context.Entry(sistema).State = EntityState.Modified;
 
@@ -136,7 +126,7 @@ namespace GES.Api.Controllers
                 }
             }
 
-            return CreatedAtAction("GetSistema", new { id = sistema.Id }, sistema);
+            return CreatedAtAction("GetSistema", new { Id = sistema.Id }, EntityToDTO(sistema));
         }
 
         // DELETE: api/Sistemas/5
@@ -163,5 +153,12 @@ namespace GES.Api.Controllers
         {
             return (_context.Sistemas?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        private static SistemaDTO EntityToDTO(Sistema sistema) =>
+        new SistemaDTO
+        {
+            Id = sistema.Id,
+            Version = sistema.Version
+        };
     }
 }

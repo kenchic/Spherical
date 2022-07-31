@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GES.Api.Models;
+using CoreGeneral.DTO.GES;
 
 namespace GES.Api.Controllers
 {
@@ -22,42 +18,56 @@ namespace GES.Api.Controllers
 
         // GET: api/Tickets
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets()
+        public async Task<ActionResult<IEnumerable<TicketDTO>>> GetTickets()
         {
-          if (_context.Tickets == null)
-          {
-              return NotFound();
-          }
-            return await _context.Tickets.ToListAsync();
+            if (_context.Tickets == null)
+            {
+                return NotFound();
+            }
+
+            var listTikets = await _context.Tickets.Select(x => EntityToDTO(x)).ToListAsync();
+            return listTikets;
         }
 
         // GET: api/Tickets/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Ticket>> GetTicket(int id)
+        public async Task<ActionResult<TicketDTO>> GetTicket(int id)
         {
-          if (_context.Tickets == null)
-          {
-              return NotFound();
-          }
-            var ticket = await _context.Tickets.FindAsync(id);
+            if (_context.Tickets == null)
+            {
+                return NotFound();
+            }
 
+            var ticket = await _context.Tickets.FindAsync(id);
             if (ticket == null)
             {
                 return NotFound();
             }
 
-            return ticket;
+            return EntityToDTO(ticket);
         }
 
         // PUT: api/Tickets/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTicket(int id, Ticket ticket)
+        public async Task<IActionResult> PutTicket(int id, TicketDTO dto)
         {
-            if (id != ticket.Id)
+            if (id != dto.Id)
             {
                 return BadRequest();
             }
+
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(model => model.Id == id);
+            if (ticket == null)
+            {
+                return NotFound();
+            }
+
+            ticket.Titulo = dto.Titulo;
+            ticket.Descripcion = dto.Descripcion;
+            ticket.Tipo = dto.Tipo;
+            ticket.Prioridad = dto.Prioridad;
+            ticket.Estado = dto.Estado;
 
             _context.Entry(ticket).State = EntityState.Modified;
 
@@ -83,12 +93,23 @@ namespace GES.Api.Controllers
         // POST: api/Tickets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
+        public async Task<ActionResult<TicketDTO>> PostTicket(TicketDTO dto)
         {
-          if (_context.Tickets == null)
-          {
-              return Problem("Entity set 'SAFContext.Tickets'  is null.");
-          }
+            if (_context.Tickets == null)
+            {
+                return Problem("Entity set 'SAFContext.Tickets'  is null.");
+            }
+
+            var ticket = new Ticket()
+            {
+                Titulo = dto.Titulo,
+                Descripcion = dto.Descripcion,
+                Tipo = dto.Tipo,
+                Prioridad = dto.Prioridad,
+                Estado = dto.Estado,
+                FechaCreacion = DateTime.Now
+            };
+
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
 
@@ -119,5 +140,17 @@ namespace GES.Api.Controllers
         {
             return (_context.Tickets?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        private static TicketDTO EntityToDTO(Ticket ticket) =>
+        new TicketDTO
+        {
+            Id = ticket.Id,    
+            Titulo = ticket.Titulo,
+            Descripcion = ticket.Descripcion,
+            Tipo = ticket.Tipo,
+            Prioridad = ticket.Prioridad,            
+            Estado = ticket.Estado,
+            FechaCreacion = ticket.FechaCreacion
+        };
     }
 }
