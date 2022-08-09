@@ -27,7 +27,9 @@ namespace GES.Api.Controllers
                 return NotFound();
             }
 
-            var listCatalogos = await _context.Catalogos.Select(x => EntityToDTO(x)).ToListAsync();
+            var listCatalogos = await _context.Catalogos
+            .Include(cd => cd.CatalogoDetalles)
+            .Select(c => EntityToDTO(c)).ToListAsync();
 
             if (listCatalogos.Count < 0)
             {
@@ -45,7 +47,7 @@ namespace GES.Api.Controllers
             {
                 return NotFound();
             }
-            var catalogo = await _context.Catalogos.FindAsync(id);
+            var catalogo = await _context.Catalogos.Include(d => d.CatalogoDetalles).FirstOrDefaultAsync(c => c.Id == id);
 
             if (catalogo == null)
             {
@@ -60,38 +62,84 @@ namespace GES.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCatalogo(string id, CatalogoDTO dto)
         {
-            if (id != dto.Id)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                return BadRequest();
-            }
+                if (id != dto.Id)
+                {
+                    return BadRequest();
+                }
 
-            var catalogo = await _context.Catalogos.FirstOrDefaultAsync(model => model.Id == id);
-            if (catalogo == null)
-            {
-                return NotFound();
-            }
-
-            catalogo.Id = dto.Id;
-            catalogo.Descripcion = dto.Descripcion;
-
-            _context.Entry(catalogo).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CatalogoExists(id))
+                var catalogo = await _context.Catalogos.FirstOrDefaultAsync(model => model.Id == id);
+                if (catalogo == null)
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
+                catalogo.Id = dto.Id;
+                catalogo.Descripcion = dto.Descripcion;
+
+                _context.Entry(catalogo).State = EntityState.Modified;
+
+                try
+                {                    
+                    foreach (var detalle in dto.Detalle)
+                    {
+                        CatalogoDetalle catalogoDetalle;
+
+                        if (detalle.Action.Equals("Insertar"))
+                        {
+                            catalogoDetalle = new CatalogoDetalle
+                            {
+                                IdCatalogo = catalogo.Id,
+                                Id = detalle.Codigo,
+                                ValorDecimal = detalle.ValorDecimal,
+                                ValorCadena = detalle.ValorCadena,
+                                ValorNumero = detalle.ValorNumero,
+                                Nombre = detalle.Nombre,
+                                Activo = detalle.Activo,
+                            };
+
+                            _context.CatalogoDetalles.Add(catalogoDetalle);
+                        }
+                        else
+                        {
+                            catalogoDetalle = await _context.CatalogoDetalles.FirstOrDefaultAsync(model => model.Id == detalle.Codigo && model.IdCatalogo == id);
+
+                            if (catalogoDetalle != null)
+                            {
+                                if (detalle.Action.Equals("Borrar"))
+                                {
+                                    _context.Entry(catalogoDetalle).State = EntityState.Deleted;
+                                }
+                                else if (detalle.Action.Equals("Editar"))
+                                {
+                                    catalogoDetalle.ValorDecimal = detalle.ValorDecimal;
+                                    catalogoDetalle.ValorCadena = detalle.ValorCadena;
+                                    catalogoDetalle.ValorNumero = detalle.ValorNumero;
+                                    catalogoDetalle.Nombre = detalle.Nombre;
+                                    catalogoDetalle.Activo = detalle.Activo;
+                                    _context.Entry(catalogoDetalle).State = EntityState.Modified;
+                                }
+                            }
+                        }                        
+                    }
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    await transaction.RollbackAsync();
+                    if (!CatalogoExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+            }
             return NoContent();
         }
 
@@ -100,55 +148,94 @@ namespace GES.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<CatalogoDTO>> PostCatalogo(CatalogoDTO dto)
         {
-            Catalogo catalogo = new Catalogo
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                Id = dto.Id,
-                IdSistema = dto.Sistema,
-                Descripcion = dto.Descripcion
-            };
-
-            if (_context.Catalogos == null)
-            {
-                return Problem("Entity set 'SAFContext.Catalogos'  is null.");
-            }
-
-            _context.Catalogos.Add(catalogo);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {
-                if (CatalogoExists(catalogo.Id))
+                Catalogo catalogo = new Catalogo
                 {
-                    return Conflict();
-                }
-                else
-                {
-                    MensajeNegocio.EscribirLog(Constantes.MensajeError, ex.Message, "CatalogosController - PostCatalogo");
-                    throw;
-                }
-            }
+                    Id = dto.Id,
+                    IdSistema = dto.Sistema,
+                    Descripcion = dto.Descripcion
+                };
 
-            return CreatedAtAction("GetCatalogo", new { id = catalogo.Id }, catalogo);
+                if (_context.Catalogos == null)
+                {
+                    return Problem("Entity set 'SAFContext.Catalogos' is null.");
+                }
+
+                _context.Catalogos.Add(catalogo);
+                try
+                {                    
+                    foreach (var detalle in dto.Detalle)
+                    {
+                        CatalogoDetalle catalogoDetalle = new CatalogoDetalle
+                        {
+                            IdCatalogo = catalogo.Id,
+                            Id = detalle.Codigo,
+                            ValorDecimal = detalle.ValorDecimal,
+                            ValorCadena = detalle.ValorCadena,
+                            ValorNumero = detalle.ValorNumero,
+                            Nombre = detalle.Nombre,
+                            Activo = detalle.Activo,
+                        };
+
+                        _context.CatalogoDetalles.Add(catalogoDetalle);                        
+                    }
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    await transaction.RollbackAsync();
+                    if (CatalogoExists(catalogo.Id))
+                    {
+                        return Conflict();
+                    }
+                    else
+                    {
+                        MensajeNegocio.EscribirLog(Constantes.MensajeError, ex.Message, "CatalogosController - PostCatalogo");
+                        throw;
+                    }
+                }
+
+                return EntityToDTO(catalogo);
+            }
         }
 
         // DELETE: api/Catalogos/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCatalogo(string id)
         {
-            if (_context.Catalogos == null)
+            using (var transaction = _context.Database.BeginTransaction())
             {
-                return NotFound();
-            }
-            var catalogo = await _context.Catalogos.FindAsync(id);
-            if (catalogo == null)
-            {
-                return NotFound();
-            }
+                try
+                {
+                    if (_context.Catalogos == null)
+                    {
+                        return NotFound();
+                    }
 
-            _context.Catalogos.Remove(catalogo);
-            await _context.SaveChangesAsync();
+                    var catalogo = await _context.Catalogos.Include(d => d.CatalogoDetalles).FirstOrDefaultAsync(c => c.Id == id);
+                    if (catalogo == null)
+                    {
+                        return NotFound();
+                    }
+
+                    foreach(var detalle in catalogo.CatalogoDetalles)
+                    {
+                        _context.CatalogoDetalles.Remove(detalle);
+                    }
+
+                    _context.Catalogos.Remove(catalogo);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    MensajeNegocio.EscribirLog(Constantes.MensajeError, ex.Message, "CatalogosController - DeleteCatalogo");
+                    throw;
+                }
+            }
 
             return NoContent();
         }
@@ -158,12 +245,32 @@ namespace GES.Api.Controllers
             return (_context.Catalogos?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        private static CatalogoDTO EntityToDTO(Catalogo catalogo) =>
-        new CatalogoDTO
+        private static CatalogoDTO EntityToDTO(Catalogo catalogo)
         {
-            Id = catalogo.Id,
-            Descripcion = catalogo.Descripcion,
-            Sistema = catalogo.IdSistema
-        };
+            var dto = new CatalogoDTO
+            {
+                Id = catalogo.Id,
+                Descripcion = catalogo.Descripcion,
+                Sistema = catalogo.IdSistema
+            };
+
+            dto.Detalle = new List<CatalogoDetalleDTO>();
+
+            foreach (var detalle in catalogo.CatalogoDetalles)
+            {
+                var item = new CatalogoDetalleDTO
+                {
+                    Codigo = detalle.Id,
+                    Nombre = detalle.Nombre,
+                    ValorCadena = detalle.ValorCadena,
+                    ValorDecimal = detalle.ValorDecimal,
+                    ValorNumero = detalle.ValorNumero
+                };
+
+                dto.Detalle.Add(item);
+            }
+
+            return dto;
+        }
     }
 }
