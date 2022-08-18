@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fordward", "Fordward\Fordwa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Control", "Control\Control.csproj", "{A0328F5A-6FA4-4735-A862-C986E32325C2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Defender", "Defender\Defender.csproj", "{8A06CA92-D2BA-471D-BB8B-481B10821580}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{A0328F5A-6FA4-4735-A862-C986E32325C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0328F5A-6FA4-4735-A862-C986E32325C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0328F5A-6FA4-4735-A862-C986E32325C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A06CA92-D2BA-471D-BB8B-481B10821580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A06CA92-D2BA-471D-BB8B-481B10821580}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A06CA92-D2BA-471D-BB8B-481B10821580}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A06CA92-D2BA-471D-BB8B-481B10821580}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

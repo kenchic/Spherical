@@ -65,3 +65,5 @@
 /scr/Tactic/obj
 /scr/Tactic.Api/bin/Debug/net6.0
 /scr/Tactic.Api/obj
+/scr/Defender/bin/Debug/net6.0
+/scr/Defender/obj
