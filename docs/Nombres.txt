@@ -1,0 +1,53 @@
+jugadores
+tecnico
+posiciones
+balon
+cancha
+estrategia
+centros
+defensas
+portero
+delantero
+penal
+roja 
+amarilla
+capitan
+utilero
+club
+estadio
+espectadores
+titular
+banca
+entrenamiento
+armador
+creador
+blazalete 
+Alineación
+Tiki Taka
+Contra ataque
+Abrir bandas
+Al toque
+Atacante
+
+GES.API = Administracion
+SEG.API = Seguridad
+SAF.API = Inventario, Facturacion, Alquier
+SAF  = Fordward, ScorerNine, Creat
+
+Aplicacion:  TODO, SPHERICAL
+
+Funciones General	(funciones, modelos, negocios) --- TACTIC, CLUB, CREATIVE *
+Seguridad			(Usuarios, token)  --- DEFENSE, MIXDEFENSE, DEFENDER *
+Administracion		(Clientes, Tablas Basicas, parametros, catalogos , aplicaciones) --- DIRECTOR, CAPTAIN, LINEUP, TACTIC *
+Inventario			(Prodcutos, Entrada, Salida) --- TEMPLATE, TEAM, LINEUP *
+Facturacion			(Facturas, Liquidacion) --- FORDWARD *, ATTACK, SCORE
+Alquier				(Clientes, proyectos, remisiones, entradas, proveedores, plantilla) --- CREATIVE CONTROL *
+
+Funciones General	CREATIVE *
+Seguridad			DEFENDER *
+Administracion		TACTIC *
+Inventario			LINEUP *
+Facturacion			FORDWARD *
+Alquier				CONTROL *
+
+
