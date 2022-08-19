@@ -38,10 +38,10 @@ Aplicacion:  TODO, SPHERICAL
 
 Funciones General	(funciones, modelos, negocios) --- TACTIC, CLUB, CREATIVE *
 Seguridad			(Usuarios, token)  --- DEFENSE, MIXDEFENSE, DEFENDER *
-Administracion		(Clientes, Tablas Basicas, parametros, catalogos , aplicaciones) --- DIRECTOR, CAPTAIN, LINEUP, TACTIC *
-Inventario			(Prodcutos, Entrada, Salida) --- TEMPLATE, TEAM, LINEUP *
-Facturacion			(Facturas, Liquidacion) --- FORDWARD *, ATTACK, SCORE
-Alquier				(Clientes, proyectos, remisiones, entradas, proveedores, plantilla) --- CREATIVE CONTROL *
+Administracion		(Bodega, Agente, Clientes, Tablas Basicas, parametros, catalogos , aplicaciones) --- DIRECTOR, CAPTAIN, LINEUP, TACTIC *
+Inventario			(Bodega, Prodcutos, Entrada, Salida) --- TEMPLATE, TEAM, LINEUP *
+Facturacion			(Clientes, Facturas, Liquidacion) --- FORDWARD *, ATTACK, SCORE
+Alquier				(Bodega, Clientes, proyectos, remisiones, entradas, proveedores, plantilla, Agente) --- CREATIVE CONTROL *
 
 Funciones General	CREATIVE *
 Seguridad			DEFENDER *
