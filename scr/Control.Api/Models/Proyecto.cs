@@ -21,5 +21,7 @@ namespace Control.Api.Models
         public string? TelResponsable { get; set; }
         public bool Activo { get; set; }
         public byte Estado { get; set; }
+
+        public virtual Cliente IdClienteNavigation { get; set; } = null!;
     }
 }

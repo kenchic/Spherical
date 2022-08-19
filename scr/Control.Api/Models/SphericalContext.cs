@@ -16,6 +16,7 @@ namespace Control.Api.Models
         {
         }
 
+        public virtual DbSet<Cliente> Clientes { get; set; } = null!;
         public virtual DbSet<Proyecto> Proyectos { get; set; } = null!;
         public virtual DbSet<VProyecto> VProyectos { get; set; } = null!;
 
@@ -31,6 +32,52 @@ namespace Control.Api.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("Control");
+
+            modelBuilder.Entity<Cliente>(entity =>
+            {
+                entity.ToTable("Cliente", "Tactic");
+
+                entity.Property(e => e.Apellido1)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Apellido2)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Celular)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Correo)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Direccion)
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.IdCiudad)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("idCiudad");
+
+                entity.Property(e => e.Identificacion)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Nombre1)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Nombre2)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Telefono)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
 
             modelBuilder.Entity<Proyecto>(entity =>
             {
@@ -84,6 +131,12 @@ namespace Control.Api.Models
                 entity.Property(e => e.Tipo)
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.IdClienteNavigation)
+                    .WithMany(p => p.Proyectos)
+                    .HasForeignKey(d => d.IdCliente)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Proyecto_Cliente");
             });
 
             modelBuilder.Entity<VProyecto>(entity =>
