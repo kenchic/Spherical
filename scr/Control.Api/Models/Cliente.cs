@@ -12,6 +12,10 @@ namespace Control.Api.Models
 
         public int Id { get; set; }
         public string IdCiudad { get; set; } = null!;
+        /// <summary>
+        /// CATALOGO=&gt;EMPRESA
+        /// </summary>
+        public string Empresa { get; set; } = null!;
         public string Identificacion { get; set; } = null!;
         public string Nombre1 { get; set; } = null!;
         public string? Nombre2 { get; set; }
