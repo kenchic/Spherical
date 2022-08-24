@@ -51,6 +51,11 @@ namespace Defender.Api.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Empresa)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComment("CATALOGO=>EMPRESA");
+
                 entity.Property(e => e.Identificacion)
                     .HasMaxLength(50)
                     .IsUnicode(false);
