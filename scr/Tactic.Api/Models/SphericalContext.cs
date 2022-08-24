@@ -18,6 +18,8 @@ namespace Tactic.Api.Models
 
         public virtual DbSet<Catalogo> Catalogos { get; set; } = null!;
         public virtual DbSet<CatalogoDetalle> CatalogoDetalles { get; set; } = null!;
+        public virtual DbSet<Cliente> Clientes { get; set; } = null!;
+        public virtual DbSet<ListaPrecio> ListaPrecios { get; set; } = null!;
         public virtual DbSet<Parametro> Parametros { get; set; } = null!;
         public virtual DbSet<Sistema> Sistemas { get; set; } = null!;
         public virtual DbSet<Ticket> Tickets { get; set; } = null!;
@@ -46,6 +48,11 @@ namespace Tactic.Api.Models
                 entity.Property(e => e.Descripcion)
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Empresa)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComment("CATALOGO=>EMPRESA");
 
                 entity.Property(e => e.IdSistema)
                     .HasMaxLength(10)
@@ -93,6 +100,73 @@ namespace Tactic.Api.Models
                     .HasConstraintName("FK_CatalogoDetalle_Catalogo");
             });
 
+            modelBuilder.Entity<Cliente>(entity =>
+            {
+                entity.ToTable("Cliente");
+
+                entity.Property(e => e.Apellido1)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Apellido2)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Celular)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Correo)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Direccion)
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Empresa)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComment("CATALOGO=>EMPRESA");
+
+                entity.Property(e => e.IdCiudad)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("idCiudad");
+
+                entity.Property(e => e.Identificacion)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Nombre1)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Nombre2)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Telefono)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ListaPrecio>(entity =>
+            {
+                entity.ToTable("ListaPrecio");
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Empresa)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComment("CATALOGO=>EMPRESA");
+
+                entity.Property(e => e.Nombre)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Parametro>(entity =>
             {
                 entity.HasKey(e => e.Codigo)
@@ -107,6 +181,11 @@ namespace Tactic.Api.Models
                 entity.Property(e => e.Descripcion)
                     .HasMaxLength(500)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Empresa)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComment("CATALOGO=>EMPRESA");
 
                 entity.Property(e => e.IdSistema)
                     .HasMaxLength(10)
@@ -147,10 +226,16 @@ namespace Tactic.Api.Models
 
                 entity.Property(e => e.Descripcion).IsUnicode(false);
 
-                entity.Property(e => e.Estado)
-                    .HasMaxLength(5)
+                entity.Property(e => e.Empresa)
+                    .HasMaxLength(20)
                     .IsUnicode(false)
-                    .HasDefaultValueSql("('P')");
+                    .HasComment("CATALOGO=>EMPRESA");
+
+                entity.Property(e => e.Estado)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasDefaultValueSql("('P')")
+                    .HasComment("CATALOGO=>ESTADOS_TICKET");
 
                 entity.Property(e => e.FechaCreacion).HasColumnType("datetime");
 

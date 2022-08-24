@@ -57,6 +57,11 @@ namespace Control.Api.Models
                     .HasMaxLength(200)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Empresa)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComment("CATALOGO=>EMPRESA");
+
                 entity.Property(e => e.IdCiudad)
                     .HasMaxLength(20)
                     .IsUnicode(false)
@@ -83,20 +88,30 @@ namespace Control.Api.Models
             {
                 entity.ToTable("Proyecto");
 
+                entity.Property(e => e.Ciudad)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComment("CATALOGO=>CIUDAD");
+
                 entity.Property(e => e.Direccion)
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Empresa)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComment("CATALOGO=>EMPRESA");
+
+                entity.Property(e => e.Estado)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComment("CATALOGO=>ESTADOS_PROYECTO");
 
                 entity.Property(e => e.Fecha).HasColumnType("date");
 
                 entity.Property(e => e.FormaContacto)
                     .HasMaxLength(50)
                     .IsUnicode(false);
-
-                entity.Property(e => e.IdCiudad)
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
-                    .HasColumnName("idCiudad");
 
                 entity.Property(e => e.IdCliente).HasColumnName("idCliente");
 

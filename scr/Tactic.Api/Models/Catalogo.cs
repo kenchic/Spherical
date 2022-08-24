@@ -12,6 +12,10 @@ namespace Tactic.Api.Models
 
         public string Id { get; set; } = null!;
         public string IdSistema { get; set; } = null!;
+        /// <summary>
+        /// CATALOGO=&gt;EMPRESA
+        /// </summary>
+        public string? Empresa { get; set; }
         public string Descripcion { get; set; } = null!;
 
         public virtual Sistema IdSistemaNavigation { get; set; } = null!;
