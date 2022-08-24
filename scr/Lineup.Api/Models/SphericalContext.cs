@@ -35,6 +35,11 @@ namespace Lineup.Api.Models
             {
                 entity.ToTable("Elemento");
 
+                entity.Property(e => e.Empresa)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasComment("CATALOGO=>EMPRESA");
+
                 entity.Property(e => e.IdGrupoElemento).HasColumnName("idGrupoElemento");
 
                 entity.Property(e => e.IdUnidadMedida).HasColumnName("idUnidadMedida");
