@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spherical", "Spherical\Sphe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tactic.Api", "Tactic.Api\Tactic.Api.csproj", "{915A6473-71E7-4730-B2A2-EEE04328FACF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Creative", "Creative\Creative.csproj", "{AA7444C3-745D-4956-92FA-91513E9751FA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Defender.Api", "Defender.Api\Defender.Api.csproj", "{49AA6134-51EC-40C6-8090-C6DE4FB8E38B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lineup", "Lineup\Lineup.csproj", "{C7E73E34-F96A-4F86-AD34-56445889831E}"
@@ -27,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Control", "Control\Control.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Defender", "Defender\Defender.csproj", "{8A06CA92-D2BA-471D-BB8B-481B10821580}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Creative", "Creative\Creative.csproj", "{032DB6D9-A611-4D3D-8056-2C9473BDBE42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +41,6 @@ Global
 		{915A6473-71E7-4730-B2A2-EEE04328FACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{915A6473-71E7-4730-B2A2-EEE04328FACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{915A6473-71E7-4730-B2A2-EEE04328FACF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AA7444C3-745D-4956-92FA-91513E9751FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA7444C3-745D-4956-92FA-91513E9751FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA7444C3-745D-4956-92FA-91513E9751FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA7444C3-745D-4956-92FA-91513E9751FA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{49AA6134-51EC-40C6-8090-C6DE4FB8E38B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{49AA6134-51EC-40C6-8090-C6DE4FB8E38B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49AA6134-51EC-40C6-8090-C6DE4FB8E38B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -81,6 +77,10 @@ Global
 		{8A06CA92-D2BA-471D-BB8B-481B10821580}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A06CA92-D2BA-471D-BB8B-481B10821580}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A06CA92-D2BA-471D-BB8B-481B10821580}.Release|Any CPU.Build.0 = Release|Any CPU
+		{032DB6D9-A611-4D3D-8056-2C9473BDBE42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{032DB6D9-A611-4D3D-8056-2C9473BDBE42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{032DB6D9-A611-4D3D-8056-2C9473BDBE42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{032DB6D9-A611-4D3D-8056-2C9473BDBE42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
