@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Control", "Control\Control.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Defender", "Defender\Defender.csproj", "{8A06CA92-D2BA-471D-BB8B-481B10821580}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Creative", "Creative\Creative.csproj", "{032DB6D9-A611-4D3D-8056-2C9473BDBE42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Creative", "Creative\Creative.csproj", "{032DB6D9-A611-4D3D-8056-2C9473BDBE42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -22,4 +22,23 @@
     <Folder Include="DTO\Fordward\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.min.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-reboot.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-reboot.min.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-reboot.rtl.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-reboot.rtl.min.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-utilities.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-utilities.min.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-utilities.rtl.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap-utilities.rtl.min.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap.min.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap.rtl.css.map" />
+    <None Include="wwwroot\lib\bootstrap\css\bootstrap.rtl.min.css.map" />
+  </ItemGroup>
+
 </Project>
