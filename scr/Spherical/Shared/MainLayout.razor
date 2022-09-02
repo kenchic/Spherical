@@ -1,33 +1,44 @@
 ﻿@using Creative.Components
 @inherits LayoutComponentBase
-
+@inject NavigationManager NavigationManager
 <PageTitle>Spherical</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
-        <AuthorizeView>
-            <Authorized>
+<AuthorizeView>
+    <Authorized>
+        <div class="page">
+            <div class="sidebar">
                 <Menu />
-            </Authorized>
-            <NotAuthorized>
-                <LoginControl />
-            </NotAuthorized>
-        </AuthorizeView>
-    </div>
+            </div>
 
-    <main>
-        <AuthorizeView>
-            <Authorized>
+            <main>
                 <div class="top-row px-4">
                     <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
                 </div>
                 <article class="content px-4">
                     @Body
                 </article>
-            </Authorized>
-            <NotAuthorized>
-                No autorizado
-            </NotAuthorized>
-        </AuthorizeView>
-    </main>
-</div>
+            </main>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="page">
+            <div class="sidebar">
+                <LoginControl ReturnUrl="@ReturnUrl" />
+            </div>
+            <main>
+                <div class="top-row px-4">
+                </div>
+                <article class="content px-4">
+                </article>
+            </main>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    string ReturnUrl = "";
+    protected override async void OnInitialized()
+    {
+        ReturnUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+    }
+}
