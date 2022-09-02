@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Spherical.Data;
+using Spherical.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(@"D:\Documentos\Proyectos\llaves"))
+    .PersistKeysToFileSystem(new DirectoryInfo(Configuracion.DirectorioLlave()))
     .SetApplicationName("SharedCookie.Spherical");
 
 builder.Services.Configure<CookiePolicyOptions>(options => {
