@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -13,10 +15,9 @@ namespace Spherical.Pages
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        public string ReturnUrl { get; set; }
-        public async Task<IActionResult> OnGetAsync(string paramUsername, string paramPassword)
+        public async Task<IActionResult> OnGetAsync(string paramUsername, string paramPassword, string returnUrl)
         {
-            string returnUrl = Url.Content("~/");
+            returnUrl = Url.Content($"~/{returnUrl}");
             try
             {
                 // Clear the existing external cookie
