@@ -1,3 +1,4 @@
+using Control.Api.Helper;
 using Control.Api.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
@@ -15,7 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<SphericalContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CadenaConexion")));
 
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(@"D:\Documentos\Proyectos\llaves"))
+    .PersistKeysToFileSystem(new DirectoryInfo(Configuracion.DirectorioLlave()))
     .SetApplicationName("SharedCookie.Spherical");
 
 builder.Services.Configure<CookiePolicyOptions>(options => {
