@@ -28,8 +28,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.ConfigureApplicationCookie(config => {
     config.Cookie.Name = ".AspNet.SharedCookie.Spherical";
-    config.LoginPath = "/Login";
-    config.Cookie.Domain = ".localhost";
+    config.LoginPath = new PathString("/Login");
+    //config.Cookie.Domain = ".localhost";
 });
 
 var app = builder.Build();
