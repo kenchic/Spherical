@@ -1,19 +1,52 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
 
 <PageTitle>Fordward</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<AuthorizeView>
+    <Authorized>
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu />
+            </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <main>
+                <div class="top-row px-4">
+                    <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                </div>
+
+                <article class="content px-4">
+                    @Body
+                </article>
+            </main>
         </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="page">
+            <div class="sidebar">
+                <ReturnLogin ReturnUrl="@ReturnUrl">
+                    <Imagen>
+                        <img src="_content/Creative/img/spherical.logo.logout.png" height="90" width="120" />
+                    </Imagen>
+                </ReturnLogin>
+            </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+            <main>
+                <div class="top-row px-4">
+                </div>
+                <article class="content px-4">
+                </article>
+            </main>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private string ReturnUrl { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        ReturnUrl = $"{Configuracion.GetUrlLogin()}/returnUrl=Fordward/{NavigationManager.ToBaseRelativePath(NavigationManager.Uri)}";
+    }
+}

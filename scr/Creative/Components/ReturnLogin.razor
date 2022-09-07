@@ -1,0 +1,27 @@
+﻿<div class="container">
+    <div class="d-flex justify-content-center h-100">
+        <div class="card">
+            <div class="card-header">
+                <div class="text-center my-3">
+                    @Imagen
+                    <h3>Ingrese al Sistema</h3>
+                </div>
+            </div>
+            <div class="card-body">                
+                <div class="input-group mb-3">
+                    <a href="@ReturnUrl">Iniciar Sesión</a>
+                </div>
+            </div>
+            <div class="card-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string ReturnUrl { get; set; } = string.Empty;
+
+    [Parameter]
+    public RenderFragment Imagen { get; set; }
+}

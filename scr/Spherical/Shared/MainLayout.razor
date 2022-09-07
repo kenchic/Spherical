@@ -1,5 +1,4 @@
-﻿@using Creative.Components
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 <PageTitle>Spherical</PageTitle>
 
@@ -26,7 +25,7 @@
                 <LoginControl ReturnUrl="@ReturnUrl" />
             </div>
             <main>
-                <div class="top-row px-4">
+                <div class="top-row px-4">                    
                 </div>
                 <article class="content px-4">
                 </article>
@@ -36,9 +35,18 @@
 </AuthorizeView>
 
 @code {
+
     string ReturnUrl = "";
     protected override async void OnInitialized()
     {
-        ReturnUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+
+        var url = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (url.Contains("returnUrl"))
+        {
+            var split = url.Split("returnUrl");
+            url = split[1].Substring(1);
+        }
+
+        ReturnUrl = url;
     }
 }

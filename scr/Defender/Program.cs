@@ -14,7 +14,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(Configuracion.DirectorioLlave()))
+    .PersistKeysToFileSystem(new DirectoryInfo(Configuracion.GetDirectorioLlave()))
     .SetApplicationName("SharedCookie.Spherical");
 
 builder.Services.Configure<CookiePolicyOptions>(options => {
