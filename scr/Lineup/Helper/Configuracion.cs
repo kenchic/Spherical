@@ -11,5 +11,11 @@
             var valor = configuracion["DirectorioLlave"];
             return string.IsNullOrEmpty(valor) ? string.Empty : valor;
         }
+
+        internal static string GetUrlLogin()
+        {
+            var valor = configuracion["UrlLogin"];
+            return string.IsNullOrEmpty(valor) ? string.Empty : valor;
+        }
     }
 }

@@ -6,9 +6,15 @@
             .AddJsonFile("appsettings.json", true, true)
             .Build();
 
-        internal static string DirectorioLlave()
+        internal static string GetDirectorioLlave()
         {
             var valor = configuracion["DirectorioLlave"];
+            return string.IsNullOrEmpty(valor) ? string.Empty : valor;
+        }
+
+        internal static string GetUrlLogin()
+        {
+            var valor = configuracion["UrlLogin"];
             return string.IsNullOrEmpty(valor) ? string.Empty : valor;
         }
     }
