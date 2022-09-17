@@ -1,0 +1,6 @@
+Spherical: Amarillo/Dorado
+Defender: Azul/Primary
+Tactic: Celeste/Info
+Control: Verde/Success
+Lineup: Naranja/Warning
+Fordward: Rojo/Danger
