@@ -1,4 +1,5 @@
 ﻿@page "/LoginControl"
+@inject NavigationManager NavigationManager
 @using System.Web;
 
 <div class="container">
@@ -14,15 +15,14 @@
                 <form>
                     <div class="input-group mb-3">
                         <span class="input-group-text bg-warning text-dark"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" placeholder="Usuario" aria-label="Username" aria-describedby="sUsername" @bind="@Username">
+                        <input @ref="TxtUserName" type="text" class="form-control" placeholder="Usuario" aria-label="Username" aria-describedby="sUsername" @bind="@Username">
                     </div>
                     <div class="input-group mb-3">
                         <span class="input-group-text bg-warning text-dark"><i class="fa fa-key"></i></span>
                         <input type="password" class="form-control" placeholder="Clave" @bind="@Password">
                     </div>
                     <div class="input-group mb-3">
-                        <a class="btn bg-warning text-dark form-control"
-                           href="/Login?paramUsername=@encode(@Username)&paramPassword=@encode(@Password)&returnUrl=@encode(@ReturnUrl)">Ingresar</a>
+                        <button type="submit" class="btn bg-warning text-dark form-control"  onclick="@Ingresar">Ingresar</button>
                     </div>
                 </form>
             </div>
@@ -41,8 +41,23 @@
     string Username = "";
     string Password = "";
 
+    private ElementReference TxtUserName;
+
     private string encode(string param)
     {
         return HttpUtility.UrlEncode(param);
+    }
+
+    private void Ingresar()
+    {
+        NavigationManager.NavigateTo($"/Login?paramUsername={encode(@Username)}&paramPassword={encode(@Password)}&returnUrl={encode(@ReturnUrl)}", forceLoad: true);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool first)
+    {
+        if (first)
+        {
+            await TxtUserName.FocusAsync();
+        }
     }
 }
