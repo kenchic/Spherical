@@ -1,2 +1,2 @@
-# SAF_Blazor
-Sistema Alquiler de Formaleta
+# Spherical
+Sistema Integrar de Soluciones.
