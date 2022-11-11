@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Defender.Api.Models;
 using Creative.DTO.Defender;
+using System.Text;
 
 namespace Defender.Api.Controllers
 {
@@ -67,7 +68,7 @@ namespace Defender.Api.Controllers
             {
                 return BadRequest();
             }
-
+           
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(model => model.Id == id);
             if (usuario == null)
             {

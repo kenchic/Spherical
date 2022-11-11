@@ -17,5 +17,23 @@
             var valor = configuracion["UrlLogin"];
             return string.IsNullOrEmpty(valor) ? string.Empty : valor;
         }
+
+        internal static string GetSistema()
+        {
+            var valor = configuracion["Sistema"];
+            return string.IsNullOrEmpty(valor) ? string.Empty : valor;
+        }
+
+        internal static string GetUrlApiDefender()
+        {
+            var valor = configuracion["UrlApiDefender"];
+            return string.IsNullOrEmpty(valor) ? string.Empty : valor;
+        }
+
+        internal static string GetEmpresaId()
+        {
+            var valor = configuracion["EmpresaId"];
+            return string.IsNullOrEmpty(valor) ? string.Empty : valor;
+        }
     }
 }

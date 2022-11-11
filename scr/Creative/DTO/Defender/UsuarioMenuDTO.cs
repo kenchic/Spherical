@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Creative.DTO.Defender
 {
-	public class UsuarioMenuDTO
+	public class UsuarioMenuDTO222
 	{
 		#region Propiedades
 
@@ -17,10 +17,10 @@ namespace Creative.DTO.Defender
 		public string Vista { get; set; }
 
 		[Display(Name = "Orden")]
-		public Int32 Orden { get; set; }
+		public int Orden { get; set; }
 
 		[Display(Name = "SubOrden")]
-		public Int32? SubOrden { get; set; }
+		public string Padre { get; set; }
 
 		[Display(Name = "Image")]
 		public string Imagen { get; set; }		

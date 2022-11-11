@@ -1,51 +1,63 @@
-﻿@inherits LayoutComponentBase
-@inject NavigationManager NavigationManager
+﻿@using System.Security.Claims
+@using Newtonsoft.Json
+@inherits LayoutComponentBase
+
 <PageTitle>Defender</PageTitle>
 
 <AuthorizeView>
     <Authorized>
-        <div class="page">
-            <div class="sidebar">
-                <NavMenu />
-            </div>
-
-            <main>
-                <div class="top-row px-4">
-                    <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-                </div>
-
-                <article class="content px-4">
-                    @Body
-                </article>
-            </main>
-        </div>
+        <Layout>
+            <SideBar>
+                <Menu DataSourceApp="@MenuApp"/>
+            </SideBar>
+            <TopBar>
+                <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            </TopBar>
+            <BodyContent>
+                @Body
+            </BodyContent>
+        </Layout>
     </Authorized>
     <NotAuthorized>
-        <div class="page">
-            <div class="sidebar">
+        <Layout>
+            <SideBar>
                 <ReturnLogin ReturnUrl="@ReturnUrl">
                     <Imagen>
                         <img src="_content/Creative/img/spherical.logo.logout.png" height="90" width="120" />
                     </Imagen>
                 </ReturnLogin>
-            </div>
-
-            <main>
-                <div class="top-row px-4">
-                </div>
-                <article class="content px-4">
-                </article>
-            </main>
-        </div>
+            </SideBar>
+        </Layout>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
 
+    [Inject]
+    private AuthenticationStateProvider Authentication { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
     private string ReturnUrl { get; set; }
+
+    public List<MenuUsuarioDTO>? MenuApp { get; set; }
 
     protected override async void OnInitialized()
     {
-        ReturnUrl = $"{Configuracion.GetUrlLogin()}/returnUrl=Defender/{NavigationManager.ToBaseRelativePath(NavigationManager.Uri)}";
+        ReturnUrl = $"{Configuracion.GetUrlLogin()}/returnUrl=Control/{NavigationManager.ToBaseRelativePath(NavigationManager.Uri)}";
+
+        var authstate = await Authentication.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var nombreUsuario = user.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+        if (nombreUsuario != null)
+        {
+            var resultado = ClienteApi.GetRecurso(Configuracion.GetUrlApiDefender(),
+                                                  $"api/Menu/{nombreUsuario.Value}/{Configuracion.GetEmpresaId()}/{Configuracion.GetSistema()}");
+            if (!string.IsNullOrEmpty(resultado))
+            {
+                MenuApp = JsonConvert.DeserializeObject<List<MenuUsuarioDTO>>(resultado);
+            }
+        }
     }
 }
