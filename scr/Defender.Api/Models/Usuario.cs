@@ -5,6 +5,12 @@ namespace Defender.Api.Models
 {
     public partial class Usuario
     {
+        public Usuario()
+        {
+            IdGrupos = new HashSet<Grupo>();
+            IdRols = new HashSet<Rol>();
+        }
+
         public string Id { get; set; } = null!;
         /// <summary>
         /// CATALOGO=&gt;EMPRESA
@@ -18,5 +24,8 @@ namespace Defender.Api.Models
         public string Correo { get; set; } = null!;
         public bool Admin { get; set; }
         public bool Activo { get; set; }
+
+        public virtual ICollection<Grupo> IdGrupos { get; set; }
+        public virtual ICollection<Rol> IdRols { get; set; }
     }
 }
