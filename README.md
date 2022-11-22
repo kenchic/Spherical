@@ -1,2 +1,2 @@
 # Spherical
-Sistema Integrar de Soluciones.
+Sistema Integral de Soluciones.
