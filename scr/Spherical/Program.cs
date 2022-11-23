@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using MudBlazor.Services;
-using Spherical.Data;
 using Spherical.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMudServices();
 
 builder.Services.AddDataProtection()
@@ -30,8 +28,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.ConfigureApplicationCookie(config => {
     config.Cookie.Name = ".AspNet.SharedCookie.Spherical";
-    config.LoginPath = new PathString("/Login");
-    //config.Cookie.Domain = ".localhost";
+    config.LoginPath = "/Login";
+    config.Cookie.Domain = ".localhost";
 });
 
 var app = builder.Build();

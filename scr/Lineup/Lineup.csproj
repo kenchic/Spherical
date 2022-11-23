@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Creative\Creative.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>
