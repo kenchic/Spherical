@@ -2,37 +2,65 @@
 @inject NavigationManager NavigationManager
 <PageTitle>Spherical</PageTitle>
 
-<AuthorizeView>
-    <Authorized>
-        <div class="page">
-            <div class="sidebar">
-                <Menu />
-            </div>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-            <main>
-                <div class="top-row px-4">
-                    <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-                </div>
-                <article class="content px-4">
-                    @Body
-                </article>
-            </main>
-        </div>
-    </Authorized>
-    <NotAuthorized>
-        <div class="page">
-            <div class="sidebar">
+<PageTitle>Spherical</PageTitle>
+
+<MudLayout>
+    <MudAppBar Elevation="1" Style="@($"background:{Colors.Yellow.Darken4};")">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" Color="Color.Inherit" OnClick="@ToggleDrawer" />
+        <AuthorizeView>
+            <Authorized>
+                <MudSpacer />
+                <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor" Target="_blank" />
+            </Authorized>
+        </AuthorizeView>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@open"
+               Elevation="1"
+               Style="@($"background-image: linear-gradient(to bottom, {Colors.Yellow.Darken4}, {Colors.Yellow.Darken3}, {Colors.Yellow.Darken2}, {Colors.Yellow.Darken1});")">
+        <MudDrawerHeader>
+            <MudMenu Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit">
+                <MudNavMenu>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Tactic/" Icon="@Icons.Filled.AssignmentTurnedIn">Administración</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Defender/" Icon="@Icons.Material.Filled.Shield">Seguridad</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Lineup/" Icon="@Icons.Filled.ListAlt">Inventario</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Control/" Icon="@Icons.Filled.AccountBalanceWallet">Alquiler</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Fordward/" Icon="@Icons.Filled.ReceiptLong">Facturación</MudNavLink>
+                </MudNavMenu>
+            </MudMenu>
+            <MudText Typo="Typo.h5"> Spherical</MudText>
+        </MudDrawerHeader>
+        <AuthorizeView>
+            <Authorized>
+                <MudNavMenu Class="">
+                    <MudNavLink Match="NavLinkMatch.All" Href="Tactic/" Icon="@Icons.Filled.AssignmentTurnedIn">Administración</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Defender/" Icon="@Icons.Material.Filled.Shield">Seguridad</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Lineup/" Icon="@Icons.Filled.ListAlt">Inventario</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Control/" Icon="@Icons.Filled.AccountBalanceWallet">Alquiler</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Fordward/" Icon="@Icons.Filled.ReceiptLong">Facturación</MudNavLink>
+                </MudNavMenu>
+            </Authorized>
+            <NotAuthorized>
                 <LoginControl ReturnUrl="@ReturnUrl" />
-            </div>
-            <main>
-                <div class="top-row px-4">                    
-                </div>
-                <article class="content px-4">
-                </article>
-            </main>
-        </div>
-    </NotAuthorized>
-</AuthorizeView>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer Class="mt-6">
+            <MudAlert Severity="Severity.Success" Class="mt-16">
+                <AuthorizeView>
+                    <Authorized>
+                        @Body
+                    </Authorized>
+                </AuthorizeView>
+            </MudAlert>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
 
 @code {
 
@@ -48,5 +76,11 @@
         }
 
         ReturnUrl = url;
+    }
+
+    bool open = true;
+    void ToggleDrawer()
+    {
+        open = !open;
     }
 }

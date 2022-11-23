@@ -2,34 +2,80 @@
 @using Newtonsoft.Json
 @inherits LayoutComponentBase
 
-<PageTitle>Defender</PageTitle>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-<AuthorizeView>
-    <Authorized>
-        <Layout>
-            <SideBar>
-                <Menu DataSourceApp="@MenuApp"/>
-            </SideBar>
-            <TopBar>
-                <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-            </TopBar>
-            <BodyContent>
-                @Body
-            </BodyContent>
-        </Layout>
-    </Authorized>
-    <NotAuthorized>
-        <Layout>
-            <SideBar>
-                <ReturnLogin ReturnUrl="@ReturnUrl">
-                    <Imagen>
-                        <img src="_content/Creative/img/spherical.logo.logout.png" height="90" width="120" />
-                    </Imagen>
-                </ReturnLogin>
-            </SideBar>
-        </Layout>
-    </NotAuthorized>
-</AuthorizeView>
+<PageTitle>Seguridad</PageTitle>
+
+<MudLayout>
+    <MudAppBar Elevation="1" Style="@($"background:{Colors.Blue.Darken4};")">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Info" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <AuthorizeView>
+            <Authorized>
+                <MudSpacer />
+                <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor" Target="_blank" />
+            </Authorized>
+        </AuthorizeView>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@open"
+               Elevation="1"
+               Style="@($"background-image: linear-gradient(to bottom, {Colors.Blue.Darken4}, {Colors.Blue.Darken3}, {Colors.Blue.Darken2}, {Colors.Blue.Darken1});")">
+        <MudDrawerHeader>
+            <MudMenu Icon="@Icons.Material.Filled.Apps" Color="Color.Info">
+                <MudNavMenu>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Tactic/" Icon="@Icons.Filled.AssignmentTurnedIn">Administración</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Defender/" Icon="@Icons.Material.Filled.Shield">Seguridad</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Lineup/" Icon="@Icons.Filled.ListAlt">Inventario</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Control/" Icon="@Icons.Filled.AccountBalanceWallet">Alquiler</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Fordward/" Icon="@Icons.Filled.ReceiptLong">Facturación</MudNavLink>
+                </MudNavMenu>
+            </MudMenu>
+            <MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};")">Seguridad</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu Class="">
+            <AuthorizeView>
+                <Authorized>
+                    @if (MenuApp != null && MenuApp.Any())
+                    {
+                        <MudPaper Style="@($"color:{Colors.Shades.White}; background:{Colors.Shades.Transparent};")" Elevation="0">
+                            <MudNavMenu Class="mud-width-full" Color="Color.Info" Bordered="true">
+                                @foreach (var item in MenuApp.Where(x => x.Padre == null))
+                                {
+                                    <MudNavGroup Title="@item.Nombre" Expanded="true">
+                                        @foreach (var itemHijo in MenuApp.Where(x => x.Padre == @item.Id))
+                                        {
+                                            <MudNavLink Href="@itemHijo.Url" Icon="@Icons.Filled.ChevronRight" IconColor="Color.Info">@itemHijo.Nombre</MudNavLink>
+                                        }
+                                    </MudNavGroup>
+                                }
+                            </MudNavMenu>
+                        </MudPaper>
+                    }
+                </Authorized>
+                <NotAuthorized>
+                    <MudPaper Style="@($"background:{Colors.Shades.Transparent};")">
+                        <MudImage ObjectFit="ObjectFit.Fill" ObjectPosition="ObjectPosition.Center" Src="_content/Creative/img/spherical.logo.logout.png" Height="90" Width="120"  Elevation="25" Class="rounded-lg" />
+                        <MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};")">Ingrese al Sistema</MudText>
+                        <MudLink Href="@ReturnUrl" Color="Color.Inherit">Iniciar Sesión</MudLink>
+                    </MudPaper>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudNavMenu>
+    </MudDrawer>
+    <AuthorizeView>
+        <Authorized>
+            <MudMainContent Class="pt-16 px-16">
+                <MudContainer Class="mt-6">
+                    <MudAlert Severity="Severity.Info" Class="mt-16">
+                        @Body
+                    </MudAlert>
+                </MudContainer>
+            </MudMainContent>
+        </Authorized>
+    </AuthorizeView>
+
+</MudLayout>
 
 @code {
 
@@ -59,5 +105,11 @@
                 MenuApp = JsonConvert.DeserializeObject<List<MenuUsuarioDTO>>(resultado);
             }
         }
+    }
+
+    bool open = true;
+    void ToggleDrawer()
+    {
+        open = !open;
     }
 }
