@@ -1,9 +1,9 @@
 ﻿using Creative.DTO.Defender;
+using Creative.DTO.Spherical;
 using Defender.Api.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace Defender.Api.Controllers
 {
@@ -19,19 +19,30 @@ namespace Defender.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UsuarioDTO>> Autenticar(AutenticacionDTO dto)
+        public async Task<ActionResult<ApiResponse<UsuarioDTO>>> Autenticar(AutenticacionDTO dto)
         {
             if (_context.Usuarios == null)
             {
-                return NotFound();
+                var res = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty);
+                return NotFound(res);
             }
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(model => model.Usuario1 == dto.Usuario && model.Clave == dto.Clave);
-            if (usuario == null)
+            else
             {
-                return NotFound();
+                var usuario = await _context.Usuarios.FirstOrDefaultAsync(model => model.Usuario1 == dto.Usuario && model.Clave == dto.Clave);
+                if (usuario == null)
+                {
+                    var res = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty, "Usuario o Clave incorrecto");
+                    return NotFound(res);
+                }
+                else
+                {
+                    var res = new ApiResponse<UsuarioDTO>()
+                    {
+                        Data = EntityToDTO(usuario)
+                    };
+                    return Ok(res);
+                }
             }
-
-            return EntityToDTO(usuario);
         }
 
         private static UsuarioDTO EntityToDTO(Usuario usuario) =>

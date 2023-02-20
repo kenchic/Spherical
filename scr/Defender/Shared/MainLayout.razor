@@ -55,7 +55,7 @@
                 </Authorized>
                 <NotAuthorized>
                     <MudPaper Style="@($"background:{Colors.Shades.Transparent};")">
-                        <MudImage ObjectFit="ObjectFit.Fill" ObjectPosition="ObjectPosition.Center" Src="_content/Creative/img/spherical.logo.logout.png" Height="90" Width="120"  Elevation="25" Class="rounded-lg" />
+                        <MudImage ObjectFit="ObjectFit.Fill" ObjectPosition="ObjectPosition.Center" Src="_content/Creative/img/spherical.logo.logout.png" Height="90" Width="120" Elevation="25" Class="rounded-lg" />
                         <MudText Typo="Typo.h6" Style="@($"color:{Colors.Shades.White};")">Ingrese al Sistema</MudText>
                         <MudLink Href="@ReturnUrl" Color="Color.Inherit">Iniciar Sesión</MudLink>
                     </MudPaper>
@@ -98,12 +98,9 @@
         var nombreUsuario = user.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
         if (nombreUsuario != null)
         {
-            var resultado = ClienteApi.GetRecurso(Configuracion.GetUrlApiDefender(),
+            var resultado = ClienteApi.GetRecurso<List<MenuUsuarioDTO>>(Configuracion.GetUrlApiDefender(),
                                                   $"api/Menu/{nombreUsuario.Value}/{Configuracion.GetEmpresaId()}/{Configuracion.GetSistema()}");
-            if (!string.IsNullOrEmpty(resultado))
-            {
-                MenuApp = JsonConvert.DeserializeObject<List<MenuUsuarioDTO>>(resultado);
-            }
+            MenuApp = resultado.Data;
         }
     }
 

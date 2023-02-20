@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Defender.Api.Models;
 using Creative.DTO.Defender;
-using System.Text;
+using Creative.DTO.Spherical;
+using System.Net;
 
 namespace Defender.Api.Controllers
 {
@@ -24,26 +20,41 @@ namespace Defender.Api.Controllers
 
         // GET: api/Usuarios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UsuarioDTO>>> GetUsuarios()
+        public async Task<ActionResult<ApiResponse<IEnumerable<UsuarioDTO>>>> GetUsuarios()
         {
+
             if (_context.Usuarios == null)
             {
-                return NotFound();
+                var res = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty);
+                return NotFound(res);
             }
 
             var listUsuarios = await _context.Usuarios.Select(x => EntityToDTO(x)).ToListAsync();
 
             if (listUsuarios.Count < 0)
             {
+                var res = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty);
                 return NotFound();
             }
 
-            return listUsuarios;
+            try
+            {
+                var res = new ApiResponse<IEnumerable<UsuarioDTO>>();
+                var listMenu = await _context.Usuarios.Select(x => EntityToDTO(x)).ToListAsync();
+                res.Data = listMenu;
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                var res = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
+                return BadRequest(res);
+            }
+
         }
 
         // GET: api/Usuarios/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UsuarioDTO>> GetUsuario(string id)
+        public async Task<ActionResult<ApiResponse<UsuarioDTO>>> GetUsuario(string id)
         {
             if (_context.Usuarios == null)
             {
@@ -56,7 +67,12 @@ namespace Defender.Api.Controllers
                 return NotFound();
             }
 
-            return EntityToDTO(usuario);
+            var res = new ApiResponse<UsuarioDTO>()
+            {
+                Data = EntityToDTO(usuario)
+            };
+
+            return Ok(res);
         }
 
         // PUT: api/Usuarios/5
@@ -68,7 +84,7 @@ namespace Defender.Api.Controllers
             {
                 return BadRequest();
             }
-           
+
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(model => model.Id == id);
             if (usuario == null)
             {
@@ -84,7 +100,7 @@ namespace Defender.Api.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!UsuarioExists(id))
                 {
@@ -92,7 +108,7 @@ namespace Defender.Api.Controllers
                 }
                 else
                 {
-                    throw;
+                    return BadRequest(ex.Message);
                 }
             }
 
@@ -102,7 +118,7 @@ namespace Defender.Api.Controllers
         // POST: api/Usuarios
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UsuarioDTO>> PostUsuario(UsuarioDTO dto)
+        public async Task<ActionResult<ApiResponse<UsuarioDTO>>> PostUsuario(UsuarioDTO dto)
         {
             if (_context.Usuarios == null)
             {
@@ -120,7 +136,7 @@ namespace Defender.Api.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
                 if (UsuarioExists(dto.Id))
                 {
@@ -128,7 +144,7 @@ namespace Defender.Api.Controllers
                 }
                 else
                 {
-                    throw;
+                    return BadRequest(ex.Message);
                 }
             }
 

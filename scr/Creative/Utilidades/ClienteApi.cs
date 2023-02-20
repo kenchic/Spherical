@@ -1,18 +1,14 @@
-﻿using Creative.Negocios;
+﻿using Creative.DTO.Spherical;
+using Creative.Negocios;
 using Creative.Recursos;
-using Newtonsoft.Json;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Creative.Utilidades
 {
     public static class ClienteApi
     {
-        private static string GetRecursoApi(string urlBase, string recurso, Dictionary<string, string> parametros, object cuerpo, string token)
+        private static ApiResponse<T> GetRecursoApi<T>(string urlBase, string recurso, Dictionary<string, string>? parametros, object? cuerpo, string? token) where T : class
         {
-            var valor = string.Empty;
             try
             {
                 RestClient cliente = new RestClient(urlBase);
@@ -35,52 +31,55 @@ namespace Creative.Utilidades
                     request.AddHeader("autorizacion", token);
                 }
 
-                var response = cliente.GetAsync(request).GetAwaiter().GetResult();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                var response = cliente.GetAsync<ApiResponse<T>>(request).GetAwaiter().GetResult();
+                if (response != null)
                 {
-                    valor = response.Content;
+                    return response;
+                }
+                else
+                {
+                    return new ApiResponse<T>();
                 }
             }
             catch (Exception ex)
             {
                 MensajeNegocio.EscribirLog(Constantes.MensajeError, ex.Message, "ClienteApi - GetRecursoApi");
-                return null;
+                return new ApiResponse<T>();
             }
-            return valor;
         }
 
-        public static string GetRecurso(string urlBase, string recurso)
+        public static ApiResponse<T> GetRecurso<T>(string urlBase, string recurso) where T : class
         {
-            return GetRecursoApi(urlBase, recurso, null, null, null);
+            return GetRecursoApi<T>(urlBase, recurso, null, null, null);
         }
-        public static string GetRecurso(string urlBase, string recurso, string token)
+        public static ApiResponse<T> GetRecurso<T>(string urlBase, string recurso, string token) where T : class
         {
-            return GetRecursoApi(urlBase, recurso, null, null, token);
-        }
-
-        public static string GetRecurso(string urlBase, string recurso, Dictionary<string, string> parametros)
-        {
-            return GetRecursoApi(urlBase, recurso, parametros, null, null);
+            return GetRecursoApi<T>(urlBase, recurso, null, null, token);
         }
 
-        public static string GetRecurso(string urlBase, string recurso, Dictionary<string, string> parametros, object cuerpo)
+        public static ApiResponse<T> GetRecurso<T>(string urlBase, string recurso, Dictionary<string, string> parametros) where T : class
         {
-            return GetRecursoApi(urlBase, recurso, parametros, cuerpo, null);
+            return GetRecursoApi<T>(urlBase, recurso, parametros, null, null);
         }
 
-        public static string GetRecurso(string urlBase, string recurso, Dictionary<string, string> parametros, string token)
+        public static ApiResponse<T> GetRecurso<T>(string urlBase, string recurso, Dictionary<string, string> parametros, object cuerpo) where T : class
         {
-            return GetRecursoApi(urlBase, recurso, parametros, null, token);
+            return GetRecursoApi<T>(urlBase, recurso, parametros, cuerpo, null);
         }
 
-        public static string GetRecurso(string urlBase, string recurso, object cuerpo, string token)
+        public static ApiResponse<T> GetRecurso<T>(string urlBase, string recurso, Dictionary<string, string> parametros, string token) where T : class
         {
-            return GetRecursoApi(urlBase, recurso, null, cuerpo, token);
+            return GetRecursoApi<T>(urlBase, recurso, parametros, null, token);
         }
 
-        public static string GetRecurso(string urlBase, string recurso, Dictionary<string, string> parametros, object cuerpo, string token)
+        public static ApiResponse<T> GetRecurso<T>(string urlBase, string recurso, object cuerpo, string token) where T : class
         {
-            return GetRecursoApi(urlBase, recurso, parametros, cuerpo, token);
+            return GetRecursoApi<T>(urlBase, recurso, null, cuerpo, token);
+        }
+
+        public static ApiResponse<T> GetRecurso<T>(string urlBase, string recurso, Dictionary<string, string> parametros, object cuerpo, string token) where T : class
+        {
+            return GetRecursoApi<T>(urlBase, recurso, parametros, cuerpo, token);
         }
 
         private static string PostRecursoApi(string urlBase, string recurso, object cuerpo, string token)
@@ -133,9 +132,9 @@ namespace Creative.Utilidades
                 }
 
                 var reponse = cliente.PostAsync(request);
-                if(reponse.IsCompleted)
+                if (reponse.IsCompleted)
                 {
-                    
+
                 }
             }
             catch (Exception ex)
