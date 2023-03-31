@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Creative.DTO.Defender;
+using Creative.Modelos;
 using Creative.Utilidades;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,7 +16,10 @@ namespace Spherical.Pages
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        public async Task<IActionResult> OnGetAsync(string paramUsername, string paramPassword, string returnUrl)
+        [Inject]
+        private ContextoUsuario Contexto { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(string empresa, string usuario, string clave,  string retornoUrl)
         {            
             try
             {
@@ -30,8 +30,9 @@ namespace Spherical.Pages
             }
             catch { }
             AutenticacionDTO autenticacionDTO = new AutenticacionDTO{
-                Usuario = paramUsername,
-                Clave = paramPassword,
+                Empresa = empresa,
+                Usuario = usuario,
+                Clave = clave,
                 Token = string.Empty,
                 Terminal = string.Empty,
                 FechaInicio = DateTime.Now,
@@ -41,16 +42,18 @@ namespace Spherical.Pages
             var resultado = ClienteApi.PostRecurso(Configuracion.UrlApiDefender(), "api/Autenticar", autenticacionDTO);
             if (!string.IsNullOrEmpty(resultado))
             {
-                var usuario = JsonConvert.DeserializeObject<UsuarioDTO>(resultado);
-                if (usuario != null)
+                var usuarioDTO = JsonConvert.DeserializeObject<UsuarioDTO>(resultado);
+                if (usuarioDTO != null)
                 {
-                    returnUrl = Url.Content($"~/{returnUrl}");
-
+                    Contexto.Usuario = usuarioDTO;
+                    Contexto.Empresa = empresa;
+                    retornoUrl = Url.Content($"~/{retornoUrl}");
+                    
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.Name, usuario.Nombre),
-                        new Claim(ClaimTypes.Email, usuario.Correo),
-                        new Claim(ClaimTypes.NameIdentifier, paramUsername)
+                        new Claim(ClaimTypes.Name, usuarioDTO.Nombre),
+                        new Claim(ClaimTypes.Email, usuarioDTO.Correo),
+                        new Claim(ClaimTypes.NameIdentifier, usuario)
                     };
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var authProperties = new AuthenticationProperties
@@ -65,7 +68,7 @@ namespace Spherical.Pages
                         new ClaimsPrincipal(claimsIdentity),
                         authProperties);
 
-                        return LocalRedirect(returnUrl);
+                        return LocalRedirect(retornoUrl);
                     }
                     catch (Exception ex)
                     {

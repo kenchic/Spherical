@@ -5,7 +5,10 @@ namespace Creative.DTO.Defender
 {
     public class AutenticacionDTO
     {
-		[Required()]
+        [Required()]
+        public string Empresa { get; set; }
+
+        [Required()]
 		public string Usuario { get; set; }
 
 		[Required()]

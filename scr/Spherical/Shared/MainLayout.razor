@@ -44,7 +44,7 @@
                 </MudNavMenu>
             </Authorized>
             <NotAuthorized>
-                <LoginControl ReturnUrl="@ReturnUrl" />
+                <LoginControl RetornoUrl="@RetornoUrl" />
             </NotAuthorized>
         </AuthorizeView>
     </MudDrawer>
@@ -64,18 +64,18 @@
 
 @code {
 
-    string ReturnUrl = "";
+    string RetornoUrl = "";
     protected override async void OnInitialized()
     {
 
         var url = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        if (url.Contains("returnUrl"))
+        if (url.Contains("retornoUrl"))
         {
-            var split = url.Split("returnUrl");
+            var split = url.Split("retornoUrl");
             url = split[1].Substring(1);
         }
 
-        ReturnUrl = url;
+        RetornoUrl = url;
     }
 
     bool open = true;

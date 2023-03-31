@@ -2,62 +2,72 @@
 @inject NavigationManager NavigationManager
 @using System.Web;
 
-<div class="container">
-    <div class="d-flex justify-content-center h-100">
-        <div class="card">
-            <div class="card-header">
-                <div class="text-center my-3">
-                    <img src="_content/Creative/img/spherical.logo.png" height="90" width="120" />
-                    <h3>Iniciar Sesión</h3>
-                </div>
-            </div>
-            <div class="card-body">
-                <form>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text bg-warning text-dark"><i class="fa fa-user"></i></span>
-                        <input @ref="TxtUserName" type="text" class="form-control" placeholder="Usuario" aria-label="Username" aria-describedby="sUsername" @bind="@Username">
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text bg-warning text-dark"><i class="fa fa-key"></i></span>
-                        <input type="password" class="form-control" placeholder="Clave" @bind="@Password">
-                    </div>
-                    <div class="input-group mb-3">
-                        <button type="submit" class="btn bg-warning text-dark form-control"  onclick="@Ingresar">Ingresar</button>
-                    </div>
-                </form>
-            </div>
-            <div class="card-footer">
-            </div>
-        </div>
-    </div>
+
+
+<div class="login-box">
+    <img src="_content/Creative/img/spherical.logo.png" height="90" width="120" />
+    <h1>Iniciar sesión</h1>
+    <form onsubmit="@Ingresar">
+        <label for="company">Empresa:</label>
+        <select id="company" required @bind="Empresa">
+            <option value="">-- Seleccionar --</option>
+            <option value="AYZCORP">AYZCORP</option>
+        </select>
+        <label for="username">Usuario:</label>
+        <input @ref="EntradaUsuario" type="text" id="username" placeholder="Usuario" @bind-value="Usuario" required />
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password"  placeholder="Contraseña" @bind-value="Clave" onclick="Ingresar" required />
+        <button type="submit">Ingresar</button>
+    </form>
 </div>
 
 @code {
 
     [Parameter]
-    [SupplyParameterFromQuery(Name = "returnUrl")]
-    public string ReturnUrl { get; set; } = string.Empty;
+    [SupplyParameterFromQuery(Name = "retornoUrl")]
+    public string RetornoUrl { get; set; } = string.Empty;
 
-    string Username = "";
-    string Password = "";
+    string Usuario = "";
+    string Clave = "";
+    string Empresa = "";
 
-    private ElementReference TxtUserName;
+    private ElementReference EntradaUsuario;
+
+    [Inject] private IDialogService DialogService { get; set; }
+
+    string state = "Message box hasn't been opened yet";
 
     private string encode(string param)
     {
         return HttpUtility.UrlEncode(param);
     }
 
+    /// <summary>
+    /// Método que controla el evento Initialized Async(inicio asicrono) de la pantalla
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            
+        }
+        catch (Exception ex)
+        {
+            
+        }
+    }
+
+
     private void Ingresar()
     {
-        NavigationManager.NavigateTo($"/Login?paramUsername={encode(@Username)}&paramPassword={encode(@Password)}&returnUrl={encode(@ReturnUrl)}", forceLoad: true);
+        NavigationManager.NavigateTo($"/Login?empresa={encode(Empresa)}&usuario={encode(Usuario)}&clave={encode(Clave)}&retornoUrl={encode(@RetornoUrl)}", forceLoad: true);
     }
 
     protected override async Task OnAfterRenderAsync(bool first)
     {
         if (first)
         {
-            await TxtUserName.FocusAsync();
+            await EntradaUsuario.FocusAsync();
         }
     }
 }
