@@ -19,8 +19,8 @@ namespace Spherical.Pages
         [Inject]
         private ContextoUsuario Contexto { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string empresa, string usuario, string clave,  string retornoUrl)
-        {            
+        public async Task<IActionResult> OnGetAsync(string empresa, string usuario, string clave, string retornoUrl)
+        {
             try
             {
                 // Clear the existing external cookie
@@ -29,7 +29,8 @@ namespace Spherical.Pages
                     CookieAuthenticationDefaults.AuthenticationScheme);
             }
             catch { }
-            AutenticacionDTO autenticacionDTO = new AutenticacionDTO{
+            AutenticacionDTO autenticacionDTO = new AutenticacionDTO
+            {
                 Empresa = empresa,
                 Usuario = usuario,
                 Clave = clave,
@@ -48,10 +49,11 @@ namespace Spherical.Pages
                     Contexto.Usuario = usuarioDTO;
                     Contexto.Empresa = empresa;
                     retornoUrl = Url.Content($"~/{retornoUrl}");
-                    
+
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, usuarioDTO.Nombre),
+                        new Claim(ClaimTypes.Locality, empresa),
                         new Claim(ClaimTypes.Email, usuarioDTO.Correo),
                         new Claim(ClaimTypes.NameIdentifier, usuario)
                     };
