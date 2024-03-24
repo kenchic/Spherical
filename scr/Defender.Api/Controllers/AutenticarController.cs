@@ -28,7 +28,10 @@ namespace Defender.Api.Controllers
             }
             else
             {
-                var usuario = await _context.Usuarios.FirstOrDefaultAsync(model => model.Usuario1 == dto.Usuario && model.Clave == dto.Clave);
+                var usuario = await _context.Usuarios.FirstOrDefaultAsync(
+                                    model => model.Empresa.ToUpper() == dto.Empresa.ToUpper() && 
+                                    model.Usuario1.ToUpper() == dto.Usuario.ToUpper() && 
+                                    model.Clave.ToUpper() == dto.Clave.ToUpper());
                 if (usuario == null)
                 {
                     var res = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty, "Usuario o Clave incorrecto");
