@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using Spherical;
 
@@ -11,7 +10,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(x =>
     {
-        x.Cookie.Name = "SharedCookie.Spherical";
+        x.Cookie.Name = ".Spherical.SharedCookie";
         x.LoginPath = "/login";
     });
 builder.Services.AddAuthorization();

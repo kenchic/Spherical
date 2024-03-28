@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Defender")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f5e178936a0557592e6305bbb8c6c0b065d9373d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+36e418e74fd19c8c35f5f9af099f1386cd2aea62")]
 [assembly: System.Reflection.AssemblyProductAttribute("Defender")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Defender")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

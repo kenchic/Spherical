@@ -1,0 +1,70 @@
+﻿@page "/login"
+@using Creative.DTO.Defender
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
+@inject NavigationManager NavManager
+
+<h3>Login</h3>
+
+@* <EditForm method="post" FormName="ClickLogin" OnSubmit="ClickLogin" Model="UserCredentials">
+    <DataAnnotationsValidator />
+    <InputText @bind-Value="UserCredentials.Usuario" placeholder="Username" required></InputText>
+    <InputText @bind-Value="UserCredentials.Clave" placeholder="Password" required />
+    <button type="submit"> SignIn</button>
+</EditForm> *@
+
+
+
+<EditForm method="post" FormName="ClickLogin" OnValidSubmit="OnValidSubmit" Model="@UserCredentials">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect T="string" Label="Empresa" AnchorOrigin="Origin.BottomCenter" @bind-Value="UserCredentials.Empresa">
+                        <MudSelectItem Value="@("AYZCORP")" />
+                    </MudSelect>
+                    <MudTextField Label="Usuario" HelperText="Nombre de usuario"
+                                  @bind-Value="UserCredentials.Usuario" For="@(() => UserCredentials.Usuario)" />
+                    <MudTextField Label="Contraseña" Class="mt-3" HelperText="Contraseña de usuario"
+                                  @bind-Value="UserCredentials.Clave" For="@(() => UserCredentials.Clave)" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Ingresar</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+
+
+@code {
+    [CascadingParameter]
+    public HttpContext httpcontext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    public AutenticacionDTO UserCredentials { get; set; } = new AutenticacionDTO();
+
+    public async Task ClickLogin()
+    {
+        var claims = new List<Claim>();
+        claims.Add(new Claim(ClaimTypes.Name, "test")); // add more claims
+
+        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+        var principal = new ClaimsPrincipal(claimsIdentity);
+
+        // Sign in the user
+        await httpcontext.SignInAsync(principal);
+
+        NavManager.NavigateTo("/");
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        
+        StateHasChanged();
+    }
+}
