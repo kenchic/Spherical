@@ -1,9 +1,0 @@
-D:\Documentos\Proyectos\Spherical\main\src\Control\obj\Debug\net8.0\Control.csproj.AssemblyReference.cache
-D:\Documentos\Proyectos\Spherical\main\src\Control\obj\Debug\net8.0\Control.GeneratedMSBuildEditorConfig.editorconfig
-D:\Documentos\Proyectos\Spherical\main\src\Control\obj\Debug\net8.0\Control.AssemblyInfoInputs.cache
-D:\Documentos\Proyectos\Spherical\main\src\Control\obj\Debug\net8.0\Control.AssemblyInfo.cs
-D:\Documentos\Proyectos\Spherical\main\src\Control\obj\Debug\net8.0\Control.csproj.CoreCompileInputs.cache
-D:\Documentos\Proyectos\Spherical\main\src\Control\obj\Debug\net8.0\Control.MvcApplicationPartsAssemblyInfo.cache
-D:\Documentos\Proyectos\Spherical\main\src\Control\obj\Debug\net8.0\Control.RazorAssemblyInfo.cache
-D:\Documentos\Proyectos\Spherical\main\src\Control\obj\Debug\net8.0\Control.RazorAssemblyInfo.cs
-D:\Documentos\Proyectos\Spherical\main\src\Control\obj\Debug\net8.0\Control.sourcelink.json
