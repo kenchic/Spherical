@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Lineup.Api.props" />
+</Project>

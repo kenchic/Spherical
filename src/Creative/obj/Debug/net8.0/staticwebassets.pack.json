@@ -1,0 +1,321 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Creative.bundle.scp.css",
+      "PackagePath": "staticwebassets\\Creative.bundle.scp.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\background.png",
+      "PackagePath": "staticwebassets\\background.png"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\exampleJsInterop.js",
+      "PackagePath": "staticwebassets\\exampleJsInterop.js"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\img\\Spherical.logo.logout.png",
+      "PackagePath": "staticwebassets\\img\\Spherical.logo.logout.png"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\img\\spherical.logo.png",
+      "PackagePath": "staticwebassets\\img\\spherical.logo.png"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-grid.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-grid.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-grid.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-grid.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-reboot.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-reboot.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-utilities.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-utilities.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap.rtl.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\css\\bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\css\\bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.bundle.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.bundle.js"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.esm.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.esm.js"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.esm.js.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.esm.min.js"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.js"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.js.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.min.js"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\bootstrap\\js\\bootstrap.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\js\\bootstrap.min.js.map"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\all.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\all.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\all.min.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\all.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\brands.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\brands.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\brands.min.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\brands.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\fontawesome.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\fontawesome.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\fontawesome.min.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\fontawesome.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\regular.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\regular.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\regular.min.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\regular.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\solid.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\solid.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\solid.min.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\solid.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\svg-with-js.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\svg-with-js.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\svg-with-js.min.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\svg-with-js.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\v4-font-face.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\v4-font-face.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\v4-font-face.min.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\v4-font-face.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\v4-shims.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\v4-shims.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\v4-shims.min.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\v4-shims.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\v5-font-face.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\v5-font-face.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\css\\v5-font-face.min.css",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\css\\v5-font-face.min.css"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\webfonts\\fa-brands-400.ttf",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\webfonts\\fa-brands-400.ttf"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\webfonts\\fa-brands-400.woff2",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\webfonts\\fa-brands-400.woff2"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\webfonts\\fa-regular-400.ttf",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\webfonts\\fa-regular-400.ttf"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\webfonts\\fa-regular-400.woff2",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\webfonts\\fa-regular-400.woff2"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\webfonts\\fa-solid-900.ttf",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\webfonts\\fa-solid-900.ttf"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\webfonts\\fa-solid-900.woff2",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\webfonts\\fa-solid-900.woff2"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\webfonts\\fa-v4compatibility.ttf",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\webfonts\\fa-v4compatibility.ttf"
+    },
+    {
+      "Id": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Creative\\wwwroot\\lib\\fontawesome\\webfonts\\fa-v4compatibility.woff2",
+      "PackagePath": "staticwebassets\\lib\\fontawesome\\webfonts\\fa-v4compatibility.woff2"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Creative.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.Creative.props",
+      "PackagePath": "build\\Creative.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.Creative.props",
+      "PackagePath": "buildMultiTargeting\\Creative.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.Creative.props",
+      "PackagePath": "buildTransitive\\Creative.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

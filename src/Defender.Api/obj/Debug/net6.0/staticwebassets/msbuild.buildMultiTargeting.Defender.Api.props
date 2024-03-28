@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Defender.Api.props" />
+</Project>
