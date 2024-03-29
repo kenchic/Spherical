@@ -80,3 +80,16 @@
 /scr/Tactic/bin/Release/net6.0
 /scr/Tactic.Api/bin/Release/net6.0
 /scr/Defender.Api/Templates
+/src/.vs
+/src/Control/obj
+/src/Control.Api/obj
+/src/Creative/obj
+/src/Defender/obj
+/src/Defender.Api/obj
+/src/Fordward/obj
+/src/Fordward.Api/obj
+/src/Lineup/obj
+/src/Lineup.Api/obj
+/src/Spherical/obj
+/src/Tactic/obj
+/src/Tactic.Api/obj
