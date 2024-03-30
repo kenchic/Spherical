@@ -93,3 +93,5 @@
 /src/Spherical/obj
 /src/Tactic/obj
 /src/Tactic.Api/obj
+/src/Spherical/bin/Debug/net8.0
+/src/Creative/bin/Debug/net8.0
