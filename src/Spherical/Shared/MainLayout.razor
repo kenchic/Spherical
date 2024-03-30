@@ -66,18 +66,18 @@
 @code {
 
     string RetornoUrl = "";
-    protected override async void OnInitialized()
-    {
+    // protected override async void OnInitialized()
+    // {
 
-        var url = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        if (url.Contains("retornoUrl"))
-        {
-            var split = url.Split("retornoUrl");
-            url = split[1].Substring(1);
-        }
+    //     var url = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+    //     if (url.Contains("retornoUrl"))
+    //     {
+    //         var split = url.Split("retornoUrl");
+    //         url = split[1].Substring(1);
+    //     }
 
-        RetornoUrl = url;
-    }
+    //     RetornoUrl = url;
+    // }
 
     bool open = true;
     void ToggleDrawer()

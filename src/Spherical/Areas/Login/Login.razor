@@ -1,28 +1,32 @@
 ﻿@page "/login"
+
 @using Creative.DTO.Defender
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authentication.Cookies
 @using System.Security.Claims
+@using Spherical.Authentication
 @inject NavigationManager NavManager
+@attribute [AllowAnonymous]
 
 <h3>Login</h3>
-
-@* <EditForm method="post" FormName="ClickLogin" OnSubmit="ClickLogin" Model="UserCredentials">
+@*
+<EditForm method="post" FormName="ClickLogin" OnSubmit="ClickLogin" Model="UserCredentials">
     <DataAnnotationsValidator />
-    <InputText @bind-Value="UserCredentials.Usuario" placeholder="Username" required></InputText>
-    <InputText @bind-Value="UserCredentials.Clave" placeholder="Password" required />
+    <InputText @bind-Value="UserCredentials.Usuario" placeholder="Username" ></InputText>
+    <InputText @bind-Value="UserCredentials.Clave" placeholder="Password"  />
     <button type="submit"> SignIn</button>
-</EditForm> *@
+</EditForm>
 
+ *@
 
-
-<EditForm method="post" FormName="ClickLogin" OnValidSubmit="OnValidSubmit" Model="@UserCredentials">
+<EditForm method="post" FormName="ClickLogin" OnValidSubmit="OnValidSubmit" Model="UserCredentials">
     <DataAnnotationsValidator />
     <MudGrid>
         <MudItem xs="12" sm="12">
             <MudCard>
                 <MudCardContent>
-                    <MudSelect T="string" Label="Empresa" AnchorOrigin="Origin.BottomCenter" @bind-Value="UserCredentials.Empresa">
+                    <MudSelect T="string" Label="Empresa" AnchorOrigin="Origin.BottomCenter" @bind-Value="UserCredentials.Empresa" For="@(() => UserCredentials.Empresa)">
+                        <MudSelectItem Value="@("")" />
                         <MudSelectItem Value="@("AYZCORP")" />
                     </MudSelect>
                     <MudTextField Label="Usuario" HelperText="Nombre de usuario"
@@ -41,30 +45,37 @@
 
 
 @code {
-    [CascadingParameter]
-    public HttpContext httpcontext { get; set; } = default!;
+    // [CascadingParameter]
+    // public HttpContext httpcontext { get; set; } = default!;
+
+    [Inject]
+    private AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
 
     [SupplyParameterFromForm]
     public AutenticacionDTO UserCredentials { get; set; } = new AutenticacionDTO();
 
-    public async Task ClickLogin()
+    // public async Task ClickLogin()
+    // {
+    //     var claims = new List<Claim>();
+    //     claims.Add(new Claim(ClaimTypes.Name, "test")); // add more claims
+
+    //     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+    //     var principal = new ClaimsPrincipal(claimsIdentity);
+
+    //     // Sign in the user
+    //     await httpcontext.SignInAsync(principal);
+
+    //     NavManager.NavigateTo("/");
+    // }
+
+    private async Task OnValidSubmit()
     {
-        var claims = new List<Claim>();
-        claims.Add(new Claim(ClaimTypes.Name, "test")); // add more claims
-
-        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-        var principal = new ClaimsPrincipal(claimsIdentity);
-
-        // Sign in the user
-        await httpcontext.SignInAsync(principal);
+        var usuario = new UsuarioDTO{
+                Usuario = UserCredentials.Usuario
+            };
+        await ((CustomAuthenticationStateProvider)AuthenticationStateProvider!).MarkUserAsAuthentication(usuario);
 
         NavManager.NavigateTo("/");
-    }
-
-    private void OnValidSubmit(EditContext context)
-    {
-        
-        StateHasChanged();
     }
 }
