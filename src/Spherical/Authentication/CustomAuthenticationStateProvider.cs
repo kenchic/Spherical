@@ -7,49 +7,58 @@ namespace Spherical.Authentication
 {
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private ProtectedLocalStorage LocalStorage { get; set; }
+
+        private readonly ProtectedLocalStorage _localStorage;
+
+        private ClaimsPrincipal? _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
         public CustomAuthenticationStateProvider(ProtectedLocalStorage localStorage)
         {
-            LocalStorage = localStorage;
+            _localStorage = localStorage;
+
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             try
             {
-                ClaimsIdentity identity;
-                var appUsuario = await LocalStorage.GetAsync<UsuarioDTO>("appUsuario");
+                var respuesta = await _localStorage.GetAsync<AutenticacionDTO>("userContext");
+                var userContext = respuesta.Success ? respuesta.Value : null;
+                if (userContext == null)
+                    return await Task.FromResult(new AuthenticationState(_anonymous));
 
-                if (appUsuario.Success && appUsuario.Value != null)
+                var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {
-                    identity = new ClaimsIdentity(
-                    [
-                        new Claim(ClaimTypes.Name, appUsuario.Value.Usuario),                        
-                    ], "auth_type");
-                }
-                else
-                {
-                    identity = new ClaimsIdentity();
-                }
-
-                var user = new ClaimsPrincipal(identity);
-                return await Task.FromResult(new AuthenticationState(user));
+                    new Claim(ClaimTypes.Name, userContext.Usuario)
+                }, "CustomAuth"));
+                return await Task.FromResult(new AuthenticationState(claimsPrincipal));                
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity())));
+                return await Task.FromResult(new AuthenticationState(_anonymous));
             }
         }
 
-        public async Task MarkUserAsAuthentication(UsuarioDTO appUsuario)
+        public async Task UpdateAuthenticationState(AutenticacionDTO userContext)
         {
-                await LocalStorage.SetAsync("appUsuario", appUsuario);
-                var identity = new ClaimsIdentity(new[]
+            ClaimsPrincipal claimsPrincipal;
+
+            if (userContext != null)
+            {
+                await _localStorage.SetAsync("userContext", userContext);
+
+                claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, appUsuario.Nombre),
-                }, "auth_type");
-            var claimsPrincipal = new ClaimsPrincipal(identity);
+                    new Claim(ClaimTypes.Name, userContext.Usuario)
+                }));
+
+            }
+            else
+            {
+                await _localStorage.DeleteAsync("userContext");
+                claimsPrincipal = _anonymous;
+            }
+            
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
         }
     }
