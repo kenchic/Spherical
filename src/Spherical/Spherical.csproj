@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Creative\Creative.csproj" />
+    <ProjectReference Include="..\Defender.Cliente\Defender.Cliente.csproj" />
   </ItemGroup>
 
   <ItemGroup>

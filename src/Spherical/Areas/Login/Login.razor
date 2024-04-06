@@ -1,6 +1,7 @@
 ﻿@page "/login"
 
 @using Creative.DTO.Defender
+@using Defender.Cliente
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authentication.Cookies
 @using System.Security.Claims
@@ -44,9 +45,7 @@
 
     private async Task OnValidSubmit()
     {
-        var usuario = new UsuarioDTO{
-                Usuario = UserCredentials.Usuario
-            };
+        new AutenticacionService().Autenticar(UserCredentials);
         await ((CustomAuthenticationStateProvider)AuthenticationStateProvider!).UpdateAuthenticationState(UserCredentials);
 
         NavManager.NavigateTo("/", true);

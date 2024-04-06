@@ -13,13 +13,5 @@ namespace Creative.DTO.Defender
 
 		[Required(ErrorMessage = "Clave es obligatorio")]
 		public string Clave { get; set; }
-
-		public string Token { get; set; }
-
-		public string Terminal { get; set; }
-
-		public DateTime FechaInicio { get; set; }
-
-		public DateTime FechaFin { get; set; }
 	}
 }
