@@ -6,6 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="DTO\**" />
+    <Content Remove="DTO\**" />
+    <EmbeddedResource Remove="DTO\**" />
+    <None Remove="DTO\**" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
@@ -19,10 +26,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog" Version="5.0.2" />
     <PackageReference Include="RestSharp" Version="108.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DTO\Fordward\" />
   </ItemGroup>
 
   <ItemGroup>
