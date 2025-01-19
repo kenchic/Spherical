@@ -27,8 +27,4 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Creative\Creative.csproj" />
-  </ItemGroup>
-
 </Project>

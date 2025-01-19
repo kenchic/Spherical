@@ -7,10 +7,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Components\**" />
     <Compile Remove="DTO\**" />
+    <Compile Remove="Helper\**" />
+    <Compile Remove="Models\**" />
+    <Compile Remove="Negocios\**" />
+    <Compile Remove="Utilidades\**" />
+    <Content Remove="Components\**" />
     <Content Remove="DTO\**" />
+    <Content Remove="Helper\**" />
+    <Content Remove="Models\**" />
+    <Content Remove="Negocios\**" />
+    <Content Remove="Utilidades\**" />
+    <EmbeddedResource Remove="Components\**" />
     <EmbeddedResource Remove="DTO\**" />
+    <EmbeddedResource Remove="Helper\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="Negocios\**" />
+    <EmbeddedResource Remove="Utilidades\**" />
+    <None Remove="Components\**" />
     <None Remove="DTO\**" />
+    <None Remove="Helper\**" />
+    <None Remove="Models\**" />
+    <None Remove="Negocios\**" />
+    <None Remove="Utilidades\**" />
   </ItemGroup>
 
 

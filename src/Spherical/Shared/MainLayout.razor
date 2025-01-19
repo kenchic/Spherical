@@ -1,14 +1,14 @@
 ﻿@using Spherical.Areas.Login
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
-<PageTitle>Spherical</PageTitle>
+<PageTitle>SpheriKal</PageTitle>
 
 <MudThemeProvider />
+<MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <PageTitle>Spherical</PageTitle>
-
 
 <AuthorizeView>
     <Authorized>
@@ -18,31 +18,23 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" Color="Color.Inherit" OnClick="@ToggleDrawer" />
 
                 <MudSpacer />
+                <MudAvatar Color="Color.Tertiary">GA</MudAvatar>
                 <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor" Target="_blank" />
-
             </MudAppBar>
             <MudDrawer @bind-Open="@open"
                        Elevation="1"
                        Style="@($"background-image: linear-gradient(to bottom, {Colors.Yellow.Darken4}, {Colors.Yellow.Darken3}, {Colors.Yellow.Darken2}, {Colors.Yellow.Darken1});")">
-                <MudDrawerHeader>
-                    <MudMenu Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit">
-                        <MudNavMenu>
-                            <MudNavLink Match="NavLinkMatch.All" Href="Tactic/" Icon="@Icons.Filled.AssignmentTurnedIn">Administración</MudNavLink>
-                            <MudNavLink Match="NavLinkMatch.All" Href="Defender/" Icon="@Icons.Material.Filled.Shield">Seguridad</MudNavLink>
-                            <MudNavLink Match="NavLinkMatch.All" Href="Lineup/" Icon="@Icons.Filled.ListAlt">Inventario</MudNavLink>
-                            <MudNavLink Match="NavLinkMatch.All" Href="Control/" Icon="@Icons.Filled.AccountBalanceWallet">Alquiler</MudNavLink>
-                            <MudNavLink Match="NavLinkMatch.All" Href="Fordward/" Icon="@Icons.Filled.ReceiptLong">Facturación</MudNavLink>
-                        </MudNavMenu>
-                    </MudMenu>
+
+                <MudDrawerHeader>                   
                     <MudText Typo="Typo.h5"> Spherical</MudText>
                 </MudDrawerHeader>
 
                 <MudNavMenu Class="">
-                    <MudNavLink Match="NavLinkMatch.All" Href="Tactic/" Icon="@Icons.Filled.AssignmentTurnedIn">Administración</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Tactic/" Icon="@Icons.Material.Filled.AssignmentTurnedIn">Administración</MudNavLink>
                     <MudNavLink Match="NavLinkMatch.All" Href="Defender/" Icon="@Icons.Material.Filled.Shield">Seguridad</MudNavLink>
-                    <MudNavLink Match="NavLinkMatch.All" Href="Lineup/" Icon="@Icons.Filled.ListAlt">Inventario</MudNavLink>
-                    <MudNavLink Match="NavLinkMatch.All" Href="Control/" Icon="@Icons.Filled.AccountBalanceWallet">Alquiler</MudNavLink>
-                    <MudNavLink Match="NavLinkMatch.All" Href="Fordward/" Icon="@Icons.Filled.ReceiptLong">Facturación</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Lineup/" Icon="@Icons.Material.Filled.ListAlt">Inventario</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Control/" Icon="@Icons.Material.Filled.AccountBalanceWallet">Alquiler</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Fordward/" Icon="@Icons.Material.Filled.ReceiptLong">Facturación</MudNavLink>
                 </MudNavMenu>
 
             </MudDrawer>
@@ -63,18 +55,7 @@
 @code {
 
     string RetornoUrl = "";
-    // protected override async void OnInitialized()
-    // {
-
-    //     var url = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-    //     if (url.Contains("retornoUrl"))
-    //     {
-    //         var split = url.Split("retornoUrl");
-    //         url = split[1].Substring(1);
-    //     }
-
-    //     RetornoUrl = url;
-    // }
+    
 
     bool open = true;
     void ToggleDrawer()

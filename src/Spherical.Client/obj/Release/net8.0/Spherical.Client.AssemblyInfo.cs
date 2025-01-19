@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Spherical.Client")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9c667fac6fcda00b5412daac4c31e4a107a22c41")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9a9fc90b050c1e58d5175eb58798b43093a8e3fd")]
 [assembly: System.Reflection.AssemblyProductAttribute("Spherical.Client")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Spherical.Client")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

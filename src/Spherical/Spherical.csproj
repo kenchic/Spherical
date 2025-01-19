@@ -14,15 +14,29 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Forms" Version="8.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.3" />
-    <PackageReference Include="MudBlazor" Version="6.19.1" />
+    <Compile Remove="Components\MenuAplicacion.razor.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Creative\Creative.csproj" />
+    <Content Remove="Components\MenuAplicacion.razor" />
+    <Content Remove="Components\MenuAplicaciones.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Components\MenuAplicacion.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Forms" Version="8.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Spherical.Blazor\Spherical.Creative.csproj" />
+    <ProjectReference Include="..\Spherical.Client\Spherical.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +44,15 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Pages\Defender\" />
+    <Folder Include="Pages\Lineup\" />
+    <Folder Include="Pages\Fordward\" />
+    <Folder Include="Pages\Control\" />
+    <Folder Include="Pages\Tactic\" />
+    <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,16 @@
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\bin\Debug\net8.0\Spherical.Client.deps.json
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\bin\Debug\net8.0\Spherical.Client.dll
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\bin\Debug\net8.0\Spherical.Client.pdb
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\bin\Debug\net8.0\Spherical.Core.dll
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\bin\Debug\net8.0\Spherical.Core.pdb
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\Spherical.Client.csproj.AssemblyReference.cache
 D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\Spherical.Client.GeneratedMSBuildEditorConfig.editorconfig
 D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\Spherical.Client.AssemblyInfoInputs.cache
 D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\Spherical.Client.AssemblyInfo.cs
 D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\Spherical.Client.csproj.CoreCompileInputs.cache
 D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\Spherical.Client.sourcelink.json
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\Spherica.EE7C27F4.Up2Date
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\Spherical.Client.dll
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\refint\Spherical.Client.dll
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\Spherical.Client.pdb
+D:\Documentos\Proyectos\Spherical\main\src\Spherical.Client\obj\Debug\net8.0\ref\Spherical.Client.dll

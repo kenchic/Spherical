@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Creative.DTO.Spherical
+namespace Spherical.Client.DTO.Spherical
 {    
     public class ApiResponse<T>
     {

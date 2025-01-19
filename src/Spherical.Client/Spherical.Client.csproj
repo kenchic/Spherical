@@ -7,7 +7,35 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTO\Fordward\" />
+    <Compile Remove="DTO\Control\**" />
+    <Compile Remove="DTO\Fordward\**" />
+    <Compile Remove="DTO\Lineup\**" />
+    <Compile Remove="DTO\Tactic\**" />
+    <EmbeddedResource Remove="DTO\Control\**" />
+    <EmbeddedResource Remove="DTO\Fordward\**" />
+    <EmbeddedResource Remove="DTO\Lineup\**" />
+    <EmbeddedResource Remove="DTO\Tactic\**" />
+    <None Remove="DTO\Control\**" />
+    <None Remove="DTO\Fordward\**" />
+    <None Remove="DTO\Lineup\**" />
+    <None Remove="DTO\Tactic\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="DTO\Defender\MenuDTO.cs" />
+    <Compile Remove="DTO\Defender\MenuUsuarioDTO.cs" />
+    <Compile Remove="DTO\Defender\SesionDTO.cs" />
+    <Compile Remove="DTO\Defender\UsuarioMenuDTO.cs" />
+    <Compile Remove="DTO\MensajeModelo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="RestSharp" Version="112.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Spherical.Core\Spherical.Core.csproj" />
   </ItemGroup>
 
 </Project>

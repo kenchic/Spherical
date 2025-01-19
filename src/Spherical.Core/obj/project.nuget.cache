@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "ylydyhIOV4g=",
+  "success": true,
+  "projectFilePath": "D:\\Documentos\\Proyectos\\Spherical\\main\\src\\Spherical.Core\\Spherical.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\KenchicPC\\.nuget\\packages\\nlog\\5.3.4\\nlog.5.3.4.nupkg.sha512"
+  ],
+  "logs": []
+}

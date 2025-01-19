@@ -6,16 +6,20 @@
             .AddJsonFile("appsettings.json", true, true)
             .Build();
 
-        internal static string UrlApiDefender()
+        internal static string UrlApi
         {
-            var valor = configuracion["UrlApiDefender"];
-            return string.IsNullOrEmpty(valor) ? string.Empty : valor;
+            get
+            {
+                return configuracion["UrlApi"];
+            }
         }
 
-        internal static string DirectorioLlave()
+        internal static string DirectorioLlave
         {
-            var valor = configuracion["DirectorioLlave"];
-            return string.IsNullOrEmpty(valor) ? string.Empty : valor;
+            get
+            {
+                return configuracion["DirectorioLlave"];
+            }
         }
     }
 }

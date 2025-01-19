@@ -28,15 +28,5 @@ namespace Creative.Negocios
 				LogMensajes.Info(mensaje);
 			}
 		}
-
-		/// <summary>
-		/// Devolver notificación json
-		/// </summary>
-		/// <param name="tipo">tipo de mensaje (1:Exito, 2:Información, 3:Alerta, 4:Error)</param>
-		/// <param name="mensaje"></param>
-		public static string CrearNotificacion(string tipo, string mensaje)
-		{
-			return Newtonsoft.Json.JsonConvert.SerializeObject((new MensajeModelo(tipo, mensaje)));
-		}
 	}
 }

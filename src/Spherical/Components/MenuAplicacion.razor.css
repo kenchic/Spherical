@@ -1,0 +1,16 @@
+﻿.accordion-button {
+    font-size: 18px;
+    margin: 0px;
+    padding: 2px;
+}
+
+.accordion-header {    
+    margin: 0px;
+    padding: 0px;
+}
+
+.accordion-body {
+    margin: 0px;
+    padding: 3px;
+    font-size: 14px;
+}

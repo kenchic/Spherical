@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "Spherical\\Spherical.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Spherical.Api\\Spherical.Api.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

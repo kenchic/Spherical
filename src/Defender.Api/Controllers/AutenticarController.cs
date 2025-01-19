@@ -12,7 +12,7 @@ using System.Text;
 
 namespace Defender.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/seguridad")]
     [ApiController]
     public class AutenticarController : ControllerBase
     {

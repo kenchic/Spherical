@@ -1,28 +1,33 @@
 ﻿@page "/login"
 
-@using Creative.DTO.Defender
-@using Defender.Cliente
+@using Microsoft.Extensions.Options
+@using Spherical.Client.DTO.Defender
+@using Spherical.Client
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authentication.Cookies
 @using System.Security.Claims
 @using Spherical.Authentication
+@using Spherical.Core.Creative
+@using Spherical.Core.Creative.Models
+@using Spherical.Helper
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@inject IOptions<ConfiguracionApp> AppSettings
 
-<h3>Login</h3>
-
-<EditForm FormName="ClickLogin" OnValidSubmit="OnValidSubmit" Model="UserCredentials">
+<EditForm FormName="FormLogin" OnValidSubmit="OnValidSubmit" Model="UserCredentials">
     <DataAnnotationsValidator />
     <MudGrid>
-        <MudItem xs="12" sm="12">
+        <MudItem xs="6" sm="6">
             <MudCard>
                 <MudCardContent>
-                    <MudSelect T="string" Label="Empresa" AnchorOrigin="Origin.BottomCenter" @bind-Value="UserCredentials.Empresa" For="@(() => UserCredentials.Empresa)">
+                    <MudSelect Label="Empresa" AnchorOrigin="Origin.BottomCenter" @bind-Value="UserCredentials.Empresa" HelperText="Empresa del usuario">
                         <MudSelectItem Value="@("")" />
                         <MudSelectItem Value="@("AYZCORP")" />
                     </MudSelect>
                     <MudTextField Label="Usuario" HelperText="Nombre de usuario"
-                                  @bind-Value="UserCredentials.Usuario" For="@(() => UserCredentials.Usuario)" />
+                                  @bind-Value="UserCredentials.Usuario" />
                     <MudTextField Label="Contraseña" Class="mt-3" HelperText="Contraseña de usuario"
-                                  @bind-Value="UserCredentials.Clave" For="@(() => UserCredentials.Clave)" />
+                                  @bind-Value="UserCredentials.Clave" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Ingresar</MudButton>
@@ -34,20 +39,22 @@
 
 @code {
 
-    [Inject]
-    private AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
+    private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
 
-    [Inject]
-    private NavigationManager NavManager { get; set; }
-
-    [SupplyParameterFromForm]
     public AutenticacionDTO UserCredentials { get; set; } = new AutenticacionDTO();
 
     private async Task OnValidSubmit()
     {
-        new AutenticacionService().Autenticar(UserCredentials);
-        await ((CustomAuthenticationStateProvider)AuthenticationStateProvider!).UpdateAuthenticationState(UserCredentials);
-
-        NavManager.NavigateTo("/", true);
+        try
+        {
+            string token = new AutenticacionService(AppSettings.Value.ApiUrl).Autenticar(UserCredentials);
+            await CustomAuthProvider!.SetToken(token);
+            NavigationManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Error al autenticar: {ex.Message}", "Login.razor - OnValidSubmit");
+            throw;
+        }
     }
 }
