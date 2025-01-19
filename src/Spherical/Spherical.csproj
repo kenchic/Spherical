@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Compile Remove="Components\MenuAplicacion.razor.cs" />
+    <Compile Remove="Services\JwtHttpClient.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +53,7 @@
     <Folder Include="Pages\Fordward\" />
     <Folder Include="Pages\Control\" />
     <Folder Include="Pages\Tactic\" />
+    <Folder Include="Services\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 

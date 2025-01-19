@@ -5,7 +5,6 @@ using MudBlazor.Services;
 using Spherical;
 using Spherical.Authentication;
 using Spherical.Core.Creative.Models;
-using Spherical.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
