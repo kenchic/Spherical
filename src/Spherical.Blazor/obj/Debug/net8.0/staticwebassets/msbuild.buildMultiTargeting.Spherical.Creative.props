@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Spherical.Creative.props" />
+</Project>

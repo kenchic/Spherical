@@ -1,0 +1,24 @@
+﻿<div class="page">
+    <div class="sidebar">
+        @SideBar
+    </div>
+    <main>
+        <div class="top-row px-4">
+            @TopBar
+        </div>
+
+        <article class="content px-4">
+            @BodyContent
+        </article>
+    </main>
+</div>
+@code {
+    [Parameter]
+    public RenderFragment? SideBar { get; set; }
+
+    [Parameter]
+    public RenderFragment? TopBar { get; set; }
+
+    [Parameter]
+    public RenderFragment? BodyContent { get; set; }
+}

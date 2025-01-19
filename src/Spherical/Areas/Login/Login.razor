@@ -1,0 +1,60 @@
+﻿@page "/login"
+
+@using Microsoft.Extensions.Options
+@using Spherical.Client.DTO.Defender
+@using Spherical.Client
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
+@using Spherical.Authentication
+@using Spherical.Core.Creative
+@using Spherical.Core.Creative.Models
+@using Spherical.Helper
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@inject IOptions<ConfiguracionApp> AppSettings
+
+<EditForm FormName="FormLogin" OnValidSubmit="OnValidSubmit" Model="UserCredentials">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="6" sm="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect Label="Empresa" AnchorOrigin="Origin.BottomCenter" @bind-Value="UserCredentials.Empresa" HelperText="Empresa del usuario">
+                        <MudSelectItem Value="@("")" />
+                        <MudSelectItem Value="@("AYZCORP")" />
+                    </MudSelect>
+                    <MudTextField Label="Usuario" HelperText="Nombre de usuario"
+                                  @bind-Value="UserCredentials.Usuario" />
+                    <MudTextField Label="Contraseña" Class="mt-3" HelperText="Contraseña de usuario"
+                                  @bind-Value="UserCredentials.Clave" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Ingresar</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+
+    private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
+
+    public AutenticacionDTO UserCredentials { get; set; } = new AutenticacionDTO();
+
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+            string token = new AutenticacionService(AppSettings.Value.ApiUrl).Autenticar(UserCredentials);
+            await CustomAuthProvider!.SetToken(token);
+            NavigationManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Error al autenticar: {ex.Message}", "Login.razor - OnValidSubmit");
+            throw;
+        }
+    }
+}

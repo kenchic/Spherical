@@ -1,0 +1,5 @@
+Scaffold-DbContext "Server=KENCHIC-PC\SQLEXPRESS; Database=Spherical; User=GES; Password=Admin123*;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -force
+
+dotnet tool install -g dotnet-aspnet-codegenerator
+dotnet add -p Lineup.Api package Microsoft.VisualStudio.Web.CodeGeneration.Design
+dotnet-aspnet-codegenerator controller -p Lineup.Api -name ElementoController -m Elemento -outDir Controllers --no-build -api -actions -dc SphericalContext

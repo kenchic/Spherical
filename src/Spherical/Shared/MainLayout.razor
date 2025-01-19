@@ -1,0 +1,65 @@
+﻿@using Spherical.Areas.Login
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+<PageTitle>SpheriKal</PageTitle>
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<PageTitle>Spherical</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+
+        <MudLayout>
+            <MudAppBar Elevation="1" Style="@($"background:{Colors.Yellow.Darken4};")">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" Color="Color.Inherit" OnClick="@ToggleDrawer" />
+
+                <MudSpacer />
+                <MudAvatar Color="Color.Tertiary">GA</MudAvatar>
+                <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor" Target="_blank" />
+            </MudAppBar>
+            <MudDrawer @bind-Open="@open"
+                       Elevation="1"
+                       Style="@($"background-image: linear-gradient(to bottom, {Colors.Yellow.Darken4}, {Colors.Yellow.Darken3}, {Colors.Yellow.Darken2}, {Colors.Yellow.Darken1});")">
+
+                <MudDrawerHeader>                   
+                    <MudText Typo="Typo.h5"> Spherical</MudText>
+                </MudDrawerHeader>
+
+                <MudNavMenu Class="">
+                    <MudNavLink Match="NavLinkMatch.All" Href="Tactic/" Icon="@Icons.Material.Filled.AssignmentTurnedIn">Administración</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Defender/" Icon="@Icons.Material.Filled.Shield">Seguridad</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Lineup/" Icon="@Icons.Material.Filled.ListAlt">Inventario</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Control/" Icon="@Icons.Material.Filled.AccountBalanceWallet">Alquiler</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="Fordward/" Icon="@Icons.Material.Filled.ReceiptLong">Facturación</MudNavLink>
+                </MudNavMenu>
+
+            </MudDrawer>
+            <MudMainContent Class="pt-16 px-16">
+                <MudContainer Class="mt-6">
+                    <MudAlert Severity="Severity.Success" Class="mt-16">
+                        @Body
+                    </MudAlert>
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
+    </Authorized>
+    <NotAuthorized>
+       <Login></Login>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    string RetornoUrl = "";
+    
+
+    bool open = true;
+    void ToggleDrawer()
+    {
+        open = !open;
+    }
+}
