@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Spherical.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9a9fc90b050c1e58d5175eb58798b43093a8e3fd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5f25dfce9b65877fe35b8ebf0c7b233cc5d363ff")]
 [assembly: System.Reflection.AssemblyProductAttribute("Spherical.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Spherical.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
