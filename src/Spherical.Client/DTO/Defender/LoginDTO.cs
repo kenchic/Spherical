@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Spherical.Client.DTO.Defender
 {
-    public class AutenticacionDTO
+    public class LoginDTO
     {
         [Required(ErrorMessage = Constantes.CampoRequerido)]
         public string Empresa { get; set; }

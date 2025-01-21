@@ -14,23 +14,23 @@ using System.Text;
 
 namespace Spherical.Api.Controllers.Defender
 {
-    [Route("api/v1/seguridad")]
+    [Route("api/v1/security")]
     [ApiController]
-    public class SeguridadController : ControllerBase
+    public class SecurityController : ControllerBase
     {
         private readonly SphericalContext _context;
 
         private readonly string _key = "Una_Clave_Secreta_Para_Generar_JWT"; // Clave secreta
 
-        public SeguridadController(SphericalContext context)
+        public SecurityController(SphericalContext context)
         {
             _context = context;
         }
 
-        [Route("autenticar")]
+        [Route("login")]
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Autenticar(AutenticacionDTO dto)
+        public async Task<IActionResult> Autenticar(LoginDTO dto)
         {
             if (_context.Usuarios == null)
             {
@@ -39,11 +39,11 @@ namespace Spherical.Api.Controllers.Defender
             }
             else
             {
-                var usuario = await _context.Usuarios.FirstOrDefaultAsync(
+                var user = await _context.Usuarios.FirstOrDefaultAsync(
                                     model => model.Empresa.ToUpper() == dto.Empresa.ToUpper() &&
                                     model.Usuario1.ToUpper() == dto.Usuario.ToUpper() &&
                                     model.Clave.ToUpper() == dto.Clave.ToUpper());
-                if (usuario == null)
+                if (user == null)
                 {
                     var res = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty, "Usuario o Clave incorrecto");
                     return NotFound(res);
@@ -79,16 +79,5 @@ namespace Spherical.Api.Controllers.Defender
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Ok();
         }
-
-        private static UsuarioDTO EntityToDTO(Usuario usuario) =>
-        new UsuarioDTO
-        {
-            Id = usuario.Id,
-            Nombre = usuario.Nombre,
-            Apellido = usuario.Apellido,
-            Correo = usuario.Correo,
-            Identificacion = usuario.Identificacion,
-            Admin = usuario.Admin
-        };
     }
 }
