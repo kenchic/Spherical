@@ -14,40 +14,73 @@
 @inject NavigationManager NavigationManager
 @inject IOptions<ConfiguracionApp> AppSettings
 
-<EditForm FormName="FormLogin" OnValidSubmit="OnValidSubmit" Model="UserCredentials">
-    <DataAnnotationsValidator />
-    <MudGrid>
-        <MudItem xs="6" sm="6">
-            <MudCard>
-                <MudCardContent>
-                    <MudSelect Label="Empresa" AnchorOrigin="Origin.BottomCenter" @bind-Value="UserCredentials.Empresa" HelperText="Empresa del usuario">
-                        <MudSelectItem Value="@("")" />
-                        <MudSelectItem Value="@("AYZCORP")" />
-                    </MudSelect>
-                    <MudTextField Label="Usuario" HelperText="Nombre de usuario"
-                                  @bind-Value="UserCredentials.Usuario" />
-                    <MudTextField Label="Contraseña" Class="mt-3" HelperText="Contraseña de usuario"
-                                  @bind-Value="UserCredentials.Clave" />
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Ingresar</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</EditForm>
+<MudContainer MaxWidth="MaxWidth.Medium" Class="d-flex justify-center align-center min-height-100">
+    <MudCard Class="pa-4" Style="width: 400px; text-align: center;">
+        <MudCardHeader>
+            <MudText Typo="Typo.h5">Ingresar a Spherical</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <EditForm FormName="FormLogin" OnValidSubmit="OnValidSubmit" Model="UserCredential">
+                <DataAnnotationsValidator />
+
+                <MudSelect Label="Empresa"
+                           AnchorOrigin="Origin.BottomCenter"
+                           Variant="Variant.Outlined"
+                           @bind-Value="UserCredential.Empresa">
+                    <MudSelectItem Value="@("AYZCORP")" />
+                </MudSelect>
+                <ValidationMessage For="@(() => UserCredential.Empresa)" />
+
+                <MudTextField Label="Usuario"
+                              Variant="Variant.Outlined"
+                              FullWidth="true"
+                              @bind-Value="UserCredential.Usuario" />
+                <ValidationMessage For="@(() => UserCredential.Usuario)" />
+                <MudTextField Label="Contraseña"
+                              Class="mt-3"
+                              Variant="Variant.Outlined"
+                              FullWidth="true"
+                              @bind-Value="UserCredential.Clave" />
+                <ValidationMessage For="@(() => UserCredential.Clave)" />
+
+                @if (IsLoading)
+                {
+                    <MudProgressCircular Class="my-4" Color="Color.Primary" Size="Size.Medium" Indeterminate="true" />
+                    <MudText Typo="Typo.subtitle2">Ingresando....</MudText>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Class="mt-2"
+                               FullWidth="true"
+                               ButtonType="ButtonType.Submit">
+                        Ingresar
+                    </MudButton>
+                }
+            </EditForm>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
 
 @code {
+    private bool IsLoading = false;
 
     private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
 
-    public AutenticacionDTO UserCredentials { get; set; } = new AutenticacionDTO();
+    private AutenticacionDTO UserCredential = new AutenticacionDTO
+        {
+            Empresa = "AYZCORP" // Valor por defecto
+        };
+
 
     private async Task OnValidSubmit()
     {
         try
         {
-            string token = new AutenticacionService(AppSettings.Value.ApiUrl).Autenticar(UserCredentials);
+            IsLoading = true;
+            string token = await new AutenticacionService(AppSettings.Value.ApiUrl).AutenticarAsync(UserCredential);
             await CustomAuthProvider!.SetToken(token);
             NavigationManager.NavigateTo("/");
         }
