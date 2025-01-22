@@ -148,3 +148,11 @@
 /src/Spherical.Core/bin/Debug/net8.0/Spherical.Core.pdb
 /src/Spherical.Core/obj/Debug/net8.0/ref/Spherical.Core.dll
 /src/Spherical.Core/obj/Debug/net8.0/refint/Spherical.Core.dll
+/src/Spherical.Api/bin/Debug/net8.0
+/src/Spherical.Api/obj
+/src/Spherical.Blazor/bin/Debug/net8.0
+/src/Spherical.Blazor/obj
+/src/Spherical.Client/bin/Debug/net8.0
+/src/Spherical.Client/obj
+/src/Spherical.Core/bin/Debug/net8.0
+/src/Spherical.Core/obj
