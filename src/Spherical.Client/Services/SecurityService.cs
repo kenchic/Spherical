@@ -16,25 +16,25 @@ namespace Spherical.Client
             _urlApi = urlApi;
         }
 
-        public string Login(LoginDTO autenticacionDTO)
+        public string Login(LoginDTO dto)
         {
             try
             {
-                RestClient cliente = new RestClient($"{_urlApi}/api/v1/security");
+                RestClient client = new RestClient($"{_urlApi}/api/v1/security");
                 var peticion = new RestRequest("login", Method.Post);
-                peticion.AddJsonBody(autenticacionDTO);
-                RestResponse response = cliente.Execute(peticion);
+                peticion.AddJsonBody(dto);
+                RestResponse response = client.Execute(peticion);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    string respuesta = response.ErrorException.Message;
-                    Log.Error(respuesta, "SecurityService - Login");
-                    throw new Exception(respuesta);
+                    string resp = response.ErrorException.Message;
+                    Log.Error(resp, "SecurityService - Login");
+                    throw new Exception(resp);
                 }
 
-                ApiResponse<string> resultado = JsonConvert.DeserializeObject<ApiResponse<string>>(response.Content);
+                ApiResponse<string> result = JsonConvert.DeserializeObject<ApiResponse<string>>(response.Content);
 
-                return resultado.Data;
+                return result.Data;
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace Spherical.Client
             }
         }
 
-        public async Task<string> LoginAsync(LoginDTO autenticacionDTO)
+        public async Task<string> LoginAsync(LoginDTO dto)
         {
             try
             {
@@ -52,22 +52,22 @@ namespace Spherical.Client
 
                 // Crear la solicitud con el endpoint y el método
                 var request = new RestRequest("login", Method.Post);
-                request.AddJsonBody(autenticacionDTO);
+                request.AddJsonBody(dto);
 
                 // Ejecutar la solicitud de forma asíncrona
                 RestResponse response = await client.ExecuteAsync(request);
 
-                // Validar la messageError
+                // Validar la errorMessage
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    string messageError = response.ErrorException?.Message ?? "Error desconocido";
-                    Log.Error(messageError, "SecurityService - LoginAsync");
-                    throw new Exception(messageError);
+                    string errorMessage = response.ErrorException?.Message ?? "Error desconocido";
+                    Log.Error(errorMessage, "SecurityService - LoginAsync");
+                    throw new Exception(errorMessage);
                 }
 
-                // Deserializar y retornar el resultado
+                // Deserializar y retornar el result
                 var result = JsonConvert.DeserializeObject<ApiResponse<string>>(response.Content);
-                return result?.Data ?? throw new Exception("La messageError del servidor fue nula o inválida.");
+                return result?.Data ?? throw new Exception("La errorMessage del servidor fue nula o inválida.");
             }
             catch (Exception ex)
             {

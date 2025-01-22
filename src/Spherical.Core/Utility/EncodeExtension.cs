@@ -2,7 +2,7 @@
 
 namespace Spherical.Core.Creative
 {
-    public static class Codificacion
+    public static class EncodeExtension
     {
         public static string CodificarBase64String(string cadena)
         {

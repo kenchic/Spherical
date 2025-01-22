@@ -5,13 +5,13 @@ namespace Spherical.Client.DTO.Defender
 {
     public class LoginDTO
     {
-        [Required(ErrorMessage = Constantes.CampoRequerido)]
+        [Required(ErrorMessage = Constants.RequiredFieldMsg)]
         public string Empresa { get; set; }
 
-        [Required(ErrorMessage = Constantes.CampoRequerido)]
+        [Required(ErrorMessage = Constants.RequiredFieldMsg)]
 		public string Usuario { get; set; }
 
-		[Required(ErrorMessage = Constantes.CampoRequerido)]
+		[Required(ErrorMessage = Constants.RequiredFieldMsg)]
 		public string Clave { get; set; }
 	}
 }

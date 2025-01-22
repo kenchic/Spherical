@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Spherical.Api.Models;
 
 namespace Spherical.Api.Models
 {
