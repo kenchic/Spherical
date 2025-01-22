@@ -1,2 +1,0 @@
-D:\Documentos\Proyectos\Spherical\main\src\Spherical.Blazor\wwwroot\background.png
-D:\Documentos\Proyectos\Spherical\main\src\Spherical.Blazor\wwwroot\exampleJsInterop.js

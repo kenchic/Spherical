@@ -9,10 +9,9 @@
 @using Spherical.Authentication
 @using Spherical.Core.Creative
 @using Spherical.Core.Creative.Models
-@using Spherical.Helper
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
-@inject IOptions<ConfiguracionApp> AppSettings
+@inject IOptions<AppSettings> AppSettings
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="d-flex justify-center align-center min-height-100">
     <MudCard Class="pa-4" Style="width: 400px; text-align: center;">
@@ -64,24 +63,22 @@
     </MudCard>
 </MudContainer>
 
-
 @code {
     private bool IsLoading = false;
 
     private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
 
-    private AutenticacionDTO UserCredential = new AutenticacionDTO
+    private LoginDTO UserCredential = new LoginDTO
         {
             Empresa = "AYZCORP" // Valor por defecto
         };
-
 
     private async Task OnValidSubmit()
     {
         try
         {
             IsLoading = true;
-            string token = await new AutenticacionService(AppSettings.Value.ApiUrl).AutenticarAsync(UserCredential);
+            string token = await new SecurityService(AppSettings.Value.ApiUrl).LoginAsync(UserCredential);
             await CustomAuthProvider!.SetToken(token);
             NavigationManager.NavigateTo("/");
         }

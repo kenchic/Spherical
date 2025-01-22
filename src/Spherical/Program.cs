@@ -17,7 +17,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-builder.Services.Configure<ConfiguracionApp>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

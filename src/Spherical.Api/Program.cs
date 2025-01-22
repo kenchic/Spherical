@@ -8,7 +8,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<SphericalContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CadenaConexion")));
-builder.Services.Configure<ConfiguracionApp>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
