@@ -1,15 +1,15 @@
-﻿using Spherical.Client.DTO.Defender;
-using Spherical.Client.DTO.Spherical;
-using Spherical.Api.Models;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
+using Spherical.Api.Models;
+using Spherical.Client.DTO.Defender;
+using Spherical.Client.DTO.Spherical;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Claims;
 using System.Text;
 
 namespace Spherical.Api.Controllers.Defender

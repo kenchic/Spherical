@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Creative.DTO.Defender;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
+using Spherical.Client.DTO.Defender;
 
-namespace Defender.Api.Models
+namespace Spherical.Api.Models
 {
     public partial class SphericalContext : DbContext
     {
-        public virtual DbSet<MenuUsuarioDTO> MenuUsuario { get; set; }
+        public virtual DbSet<UserMenuDTO> UserMenuDTO { get; set; }
     }
 }

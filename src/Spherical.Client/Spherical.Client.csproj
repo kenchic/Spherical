@@ -7,14 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove=".vs\**" />
     <Compile Remove="DTO\Control\**" />
     <Compile Remove="DTO\Fordward\**" />
     <Compile Remove="DTO\Lineup\**" />
     <Compile Remove="DTO\Tactic\**" />
+    <EmbeddedResource Remove=".vs\**" />
     <EmbeddedResource Remove="DTO\Control\**" />
     <EmbeddedResource Remove="DTO\Fordward\**" />
     <EmbeddedResource Remove="DTO\Lineup\**" />
     <EmbeddedResource Remove="DTO\Tactic\**" />
+    <None Remove=".vs\**" />
     <None Remove="DTO\Control\**" />
     <None Remove="DTO\Fordward\**" />
     <None Remove="DTO\Lineup\**" />
@@ -22,8 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="DTO\Defender\MenuDTO.cs" />
-    <Compile Remove="DTO\Defender\MenuUsuarioDTO.cs" />
     <Compile Remove="DTO\Defender\SesionDTO.cs" />
     <Compile Remove="DTO\Defender\UsuarioMenuDTO.cs" />
     <Compile Remove="DTO\MensajeModelo.cs" />

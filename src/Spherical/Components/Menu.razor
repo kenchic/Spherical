@@ -1,13 +1,76 @@
-<MenuAplicaciones/>
+@using Microsoft.Extensions.Options
+@using Spherical.Client.DTO.Defender
+@using Spherical.Client.Services
+@using Spherical.Core.Creative.Models
+@using Spherical.Authentication
+@inject IOptions<AppSettings> AppSettings
+@inject AuthenticationStateProvider AuthStateProvider
 
-<MenuAplicacion DataSourceApp="@DataSourceApp" />
+@if (menu == null)
+{
+    <MudSkeleton />
+}
+else
+{
+    <MudNavMenu>
+        @foreach (var item in menu.Where(m => string.IsNullOrEmpty(m.Padre)).OrderBy(m => m.Orden).ToList())
+        {
+            List<UserMenuDTO>? menuChild = menu.Where(m => m.Padre == item.Id).OrderBy(m => m.Orden).ToList();
+            @if (menuChild.Count > 0)
+            {
+                <MudNavGroup Title="@item.Nombre" Icon="@item.Icono" Expanded=false>
+                    @foreach (var sub in menuChild)
+                    {
+                        <MudNavLink Href="@sub.Url">@sub.Nombre</MudNavLink>
+                    }
+                </MudNavGroup>
+            }
+            else
+            {
+                <MudNavLink Href="@item.Url" Icon="@item.Icono">@item.Nombre</MudNavLink>
+            }
+        }
+    </MudNavMenu>
 
+}
 @code {
-    [Parameter]
-    public List<string>? DataSourceApp { get; set; }
+    private List<UserMenuDTO>? menu;
 
-    protected override void OnInitialized ()
+    private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
+
+    /// <summary>
+    /// Evento asíncrono después de renderizado
+    /// </summary>
+    /// <param name="firstRender">Define si es la primera vez que se renderiza</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            var token = (CustomAuthProvider as CustomAuthStateProvider)?.GetToken();
+
+            menu = await new MenuService(AppSettings.Value.ApiUrl, token).GetAsync("uplus", "ayzcorp");
+
+
+            StateHasChanged();
+        }
+    }
+
+
+
+    private List<UserMenuDTO> BuildMenuHierarchy(List<UserMenuDTO> flatMenu)
+    {
+        var lookup = flatMenu.ToDictionary(m => m.Id);
+
+        //foreach (var item in flatMenu)
+        //{
+        //    if (!string.IsNullOrEmpty(item.Padre) && lookup.ContainsKey(item.Padre))
+        //    {
+        //        lookup[item.Padre].SubMenus.Add(item);
+        //    }
+        //}
+
+        return flatMenu.Where(m => string.IsNullOrEmpty(m.Padre)).OrderBy(m => m.Orden).ToList();
     }
 }

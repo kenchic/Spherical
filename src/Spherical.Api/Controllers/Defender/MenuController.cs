@@ -1,15 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Defender.Api.Models;
-using Creative.DTO.Defender;
-using Creative.DTO.Spherical;
-using System.Net;
-using Spherical.Api.Models.Denfender;
 using Spherical.Api.Models;
+using Spherical.Client.DTO.Defender;
+using Spherical.Client.DTO.Spherical;
+using System.Net;
 
 namespace Defender.Api.Controllers
 {
-    [Route("api/Seguridad/[controller]")]
+    [Authorize]
+    [Route("api/v1/menu")]
     [ApiController]
     public class MenuController : ControllerBase
     {
@@ -32,7 +32,7 @@ namespace Defender.Api.Controllers
                     return NotFound(res);
                 }
                 else
-                {                    
+                {
                     var listMenu = await _context.Menus.Select(x => EntityToDTO(x)).ToListAsync();
                     if (listMenu.Count > 0)
                     {
@@ -44,7 +44,7 @@ namespace Defender.Api.Controllers
                     {
                         var res = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty, "No se encontraron datos");
                         return NotFound(res);
-                    }                    
+                    }
                 }
             }
             catch (Exception ex)
@@ -54,7 +54,7 @@ namespace Defender.Api.Controllers
             }
         }
 
-        // GET: api/Menu/5
+        // GET: api/UserMenuApp/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<MenuDTO>>> Menu(string id)
         {
@@ -80,14 +80,17 @@ namespace Defender.Api.Controllers
             }
         }
 
-        // GET: api/Empresa/Usuario/Menu
-        [HttpGet("{usuario}/{empresa}/{sistema}")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<MenuUsuarioDTO>>>> Menu(string empresa, string sistema, string usuario)
+        // GET: api/Empresa/Usuario/UserMenuApp
+        [HttpGet("{user}/{company}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<UserMenuDTO>>>> Menu(string user, string company)
         {
             try
             {
-                var res = new ApiResponse<IEnumerable<MenuUsuarioDTO>>();
-                var listMenu = await _context.MenuUsuario.FromSqlRaw($"Defender.GetMenuUsuario {usuario}, {empresa}, {sistema}").ToListAsync();
+                var res = new ApiResponse<IEnumerable<UserMenuDTO>>();
+                var listMenu = await _context.UserMenuDTO.FromSqlRaw(
+                              $"EXEC Spherical.GetMenuUsuario @p0, @p1", 
+                              user.ToUpper(),company.ToUpper())
+                    .ToListAsync();
                 res.Data = listMenu;
                 return Ok(res);
             }
@@ -98,7 +101,7 @@ namespace Defender.Api.Controllers
             }
         }
 
-        // PUT: api/Menu/5
+        // PUT: api/UserMenuApp/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> Menu(string id, MenuDTO dto)
@@ -161,7 +164,7 @@ namespace Defender.Api.Controllers
             }
         }
 
-        // POST: api/Menu
+        // POST: api/UserMenuApp
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<ApiResponse<MenuDTO>>> Menu(MenuDTO dto)
@@ -219,31 +222,31 @@ namespace Defender.Api.Controllers
             }
         }
 
-        // DELETE: api/Menu/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Menu(string id)
-        {
-            try
-            {
-                var menu = await _context.Menus.FindAsync(id);
-                if (menu == null)
-                {
-                    var res = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty);
-                    return NotFound(res);
-                }
-                else
-                {
-                    _context.Menus.Remove(menu);
-                    await _context.SaveChangesAsync();
-                    return Ok();
-                }
-            }
-            catch (Exception ex)
-            {
-                var res = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
-                return BadRequest(res);
-            }
-        }
+        //// DELETE: api/UserMenuApp/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> UserMenuApp(string id)
+        //{
+        //    try
+        //    {
+        //        var menu = await _context.Menus.FindAsync(id);
+        //        if (menu == null)
+        //        {
+        //            var res = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty);
+        //            return NotFound(res);
+        //        }
+        //        else
+        //        {
+        //            _context.Menus.Remove(menu);
+        //            await _context.SaveChangesAsync();
+        //            return Ok();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var res = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
+        //        return BadRequest(res);
+        //    }
+        //}
 
         private bool MenuExists(string id)
         {
@@ -259,7 +262,7 @@ namespace Defender.Api.Controllers
             Nombre = menu.Nombre,
             Url = menu.Url,
             Orden = menu.Orden,
-            Icono = menu.Icono
+            Icono = menu.Icono            
         };
     }
 }
