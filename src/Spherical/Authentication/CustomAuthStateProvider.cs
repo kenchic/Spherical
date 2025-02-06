@@ -1,6 +1,7 @@
 ﻿using Spherical.Client.DTO.Defender;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
+using Newtonsoft.Json.Linq;
 
 namespace Spherical.Authentication
 {
@@ -27,6 +28,11 @@ namespace Spherical.Authentication
             var user = new ClaimsPrincipal(identity);
 
             return Task.FromResult(new AuthenticationState(user));
+        }
+
+        public string GetToken()
+        {
+            return _jwtToken;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Defender.Api.Models
+﻿namespace Spherical.Client.DTO.Defender
 {
     public class MenuDTO
     {
@@ -12,7 +12,7 @@
 
         public string? Url { get; set; }
 
-        public short Orden { get; set; }
+        public short Orden { get; set; }        
 
         public string? Icono { get; set; }
 

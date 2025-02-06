@@ -1,7 +1,7 @@
 ﻿using System.Net;
 
 namespace Spherical.Client.DTO.Spherical
-{    
+{
     public class ApiResponse<T>
     {
         public bool Success { get; set; } = true;
@@ -14,7 +14,6 @@ namespace Spherical.Client.DTO.Spherical
 
         public ApiResponse()
         {
-
         }
 
         public ApiResponse(HttpStatusCode statusCode, T result, string errorMessage = null)

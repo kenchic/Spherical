@@ -2,7 +2,7 @@
 
 @using Microsoft.Extensions.Options
 @using Spherical.Client.DTO.Defender
-@using Spherical.Client
+@using Spherical.Client.Services
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Authentication.Cookies
 @using System.Security.Claims
@@ -79,7 +79,7 @@
         {
             IsLoading = true;
             string token = await new SecurityService(AppSettings.Value.ApiUrl).LoginAsync(UserCredential);
-            await CustomAuthProvider!.SetToken(token);
+            await CustomAuthProvider!.SetToken(token);            
             NavigationManager.NavigateTo("/");
         }
         catch (Exception ex)
