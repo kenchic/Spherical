@@ -7,24 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Authentication\**" />
+    <Compile Remove="Components\**" />
     <Compile Remove="Data\**" />
+    <Compile Remove="Services\**" />
+    <Content Remove="Authentication\**" />
+    <Content Remove="Components\**" />
     <Content Remove="Data\**" />
+    <Content Remove="Services\**" />
+    <EmbeddedResource Remove="Authentication\**" />
+    <EmbeddedResource Remove="Components\**" />
     <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Authentication\**" />
+    <None Remove="Components\**" />
     <None Remove="Data\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Components\MenuAplicacion.razor.cs" />
-    <Compile Remove="Services\JwtHttpClient.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="Components\MenuAplicacion.razor" />
-    <Content Remove="Components\MenuAplicaciones.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Components\MenuAplicacion.razor.css" />
+    <None Remove="Services\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +31,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Forms" Version="8.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.12" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="8.4.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.4.0" />
+    <PackageReference Include="MudBlazor" Version="8.2.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.4.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,7 +55,6 @@
     <Folder Include="Pages\Fordward\" />
     <Folder Include="Pages\Control\" />
     <Folder Include="Pages\Tactic\" />
-    <Folder Include="Services\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 

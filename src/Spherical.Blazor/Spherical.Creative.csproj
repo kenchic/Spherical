@@ -12,14 +12,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Forms" Version="8.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.12" />
-    <PackageReference Include="MudBlazor" Version="7.16.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="8.4.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.4.0" />
+    <PackageReference Include="MudBlazor" Version="8.2.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\css\" />
     <Folder Include="wwwroot\img\" />
     <Folder Include="wwwroot\js\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Spherical.Client\Spherical.Client.csproj" />
+    <ProjectReference Include="..\Spherical.Core\Spherical.Core.csproj" />
   </ItemGroup>
 
 </Project>

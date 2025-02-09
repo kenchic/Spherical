@@ -1,7 +1,5 @@
-﻿using Spherical.Client.DTO.Defender;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
-using Newtonsoft.Json.Linq;
 
 namespace Spherical.Authentication
 {

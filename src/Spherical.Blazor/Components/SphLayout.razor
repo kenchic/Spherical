@@ -1,0 +1,46 @@
+﻿<MudLayout>
+    <MudAppBar Elevation="1" Style="@($"background:{Colors.Yellow.Darken4};")">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" Color="Color.Inherit" OnClick="@ToggleDrawer" />
+        <MudSpacer />
+        <MudAvatar Color="Color.Tertiary">GA</MudAvatar>
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor" Target="_blank" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="@open"
+               Elevation="1"
+               Style="@($"background-image: linear-gradient(to bottom, {Colors.Yellow.Darken4}, {Colors.Yellow.Darken3}, {Colors.Yellow.Darken2}, {Colors.Yellow.Darken1});")">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h5"> >>Spherical </MudText>
+        </MudDrawerHeader>
+        <SphMenu></SphMenu>
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer Class="mt-6">
+            <MudAlert Severity="Severity.Success" Class="mt-16">
+                @ChildContent
+            </MudAlert>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    string RetornoUrl = "";
+
+    bool open = true;
+    void ToggleDrawer()
+    {
+        open = !open;
+    }
+
+    /// <summary>
+    /// Evento asíncrono después de renderizado
+    /// </summary>
+    /// <param name="firstRender">Define si es la primera vez que se renderiza</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
