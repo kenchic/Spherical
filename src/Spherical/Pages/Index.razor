@@ -1,3 +1,22 @@
 ﻿@page "/"
 
 <PageTitle>Dashboard</PageTitle>
+
+<SphLayout>
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+        <MudText Typo="Typo.h3" Class="mb-4" Color="Color.Primary">
+            <MudIcon Icon="@Icons.Material.Filled.Dashboard" Class="mr-2" />
+            Dashboard de Aplicación
+        </MudText>
+
+        <MudText Typo="Typo.body1" Class="mb-6" Color="Color.Secondary">
+            Resumen de métricas y estadísticas de la aplicación en tiempo real.
+        </MudText>
+
+        <SphDashboard />
+    </MudContainer>
+</SphLayout>
+
+@code {
+    // Lógica adicional de la página si es necesaria
+}

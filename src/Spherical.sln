@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spherical.Api", "Spherical.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spherical.Core", "Spherical.Core\Spherical.Core.csproj", "{EFC49CE4-CA9E-4844-AD3E-ABDB46EB391B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spherical.Creative", "Spherical.Blazor\Spherical.Creative.csproj", "{75B4D2E7-75C2-4E3B-8660-A51EA58DB45D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spherical.Blazor", "Spherical.Blazor\Spherical.Blazor.csproj", "{75B4D2E7-75C2-4E3B-8660-A51EA58DB45D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
