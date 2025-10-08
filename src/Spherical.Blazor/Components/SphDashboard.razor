@@ -1,0 +1,151 @@
+@using System.Globalization
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
+    <!-- Tarjetas de métricas principales -->
+    <MudGrid>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Elevation="4" Class="pa-4" Style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <MudCardContent>
+                    <div class="d-flex justify-space-between align-center">
+                        <div>
+                            <MudText Typo="Typo.h4" Class="mb-2">@TotalFollowers.ToString("N0", CultureInfo.InvariantCulture)</MudText>
+                            <MudText Typo="Typo.body2">Total Followers</MudText>
+                        </div>
+                        <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" />
+                    </div>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Elevation="4" Class="pa-4" Style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <MudCardContent>
+                    <div class="d-flex justify-space-between align-center">
+                        <div>
+                            <MudText Typo="Typo.h4" Class="mb-2">@TotalLikes.ToString("N0", CultureInfo.InvariantCulture)</MudText>
+                            <MudText Typo="Typo.body2">Total Likes</MudText>
+                        </div>
+                        <MudIcon Icon="@Icons.Material.Filled.Favorite" Size="Size.Large" />
+                    </div>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Elevation="4" Class="pa-4" Style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                <MudCardContent>
+                    <div class="d-flex justify-space-between align-center">
+                        <div>
+                            <MudText Typo="Typo.h4" Class="mb-2">@TotalShares.ToString("N0", CultureInfo.InvariantCulture)</MudText>
+                            <MudText Typo="Typo.body2">Total Shares</MudText>
+                        </div>
+                        <MudIcon Icon="@Icons.Material.Filled.Share" Size="Size.Large" />
+                    </div>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Elevation="4" Class="pa-4" Style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                <MudCardContent>
+                    <div class="d-flex justify-space-between align-center">
+                        <div>
+                            <MudText Typo="Typo.h4" Class="mb-2">@TotalComments.ToString("N0", CultureInfo.InvariantCulture)</MudText>
+                            <MudText Typo="Typo.body2">Total Comments</MudText>
+                        </div>
+                        <MudIcon Icon="@Icons.Material.Filled.Comment" Size="Size.Large" />
+                    </div>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Gráficos y estadísticas -->
+    <MudGrid Class="mt-6">
+        <MudItem xs="12" md="8">
+            <MudCard Elevation="4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Engagement por Mes</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudChart ChartType="ChartType.Line"
+                              ChartSeries="@EngagementSeries"
+                              XAxisLabels="@MonthLabels"
+                              Width="100%"
+                              Height="350px"
+                              ChartOptions="@ChartOptions" />
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudCard Elevation="4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Distribución por Red Social</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudChart ChartType="ChartType.Donut"
+                              InputData="@SocialMediaData"
+                              InputLabels="@SocialMediaLabels"
+                              Width="100%"
+                              Height="300px" />
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Tabla de mejores posts -->
+    <MudGrid Class="mt-6">
+        <MudItem xs="12">
+            <MudCard Elevation="4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Mejores Posts</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                                       Color="Color.Primary"
+                                       OnClick="RefreshData" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTable Items="@BestPosts" Hover="true" Striped="true" Dense="true">
+                        <HeaderContent>
+                            <MudTh>Imagen</MudTh>
+                            <MudTh>Descripción</MudTh>
+                            <MudTh>Red Social</MudTh>
+                            <MudTh>Engagement</MudTh>
+                            <MudTh>Fecha</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>
+                                <MudAvatar Size="Size.Medium">
+                                    <MudImage Src="@context.ImageUrl" Alt="Post" />
+                                </MudAvatar>
+                            </MudTd>
+                            <MudTd>
+                                <MudText Typo="Typo.body2">@context.Description</MudText>
+                            </MudTd>
+                            <MudTd>
+                                <MudChip T="string" Color="@GetSocialMediaColor(context.SocialMedia)" Size="Size.Small">
+                                    @context.SocialMedia
+                                </MudChip>
+                            </MudTd>
+                            <MudTd>
+                                <MudText Typo="Typo.body2">@context.Engagement.ToString("P2")</MudText>
+                            </MudTd>
+                            <MudTd>
+                                <MudText Typo="Typo.body2">@context.Date.ToString("dd/MM/yyyy")</MudText>
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>

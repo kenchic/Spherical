@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -10,35 +10,47 @@
     <Compile Remove="Authentication\**" />
     <Compile Remove="Components\**" />
     <Compile Remove="Data\**" />
+    <Compile Remove="Pages\Control\**" />
+    <Compile Remove="Pages\Defender\**" />
+    <Compile Remove="Pages\Fordward\**" />
+    <Compile Remove="Pages\Lineup\**" />
+    <Compile Remove="Pages\Tactic\**" />
     <Compile Remove="Services\**" />
     <Content Remove="Authentication\**" />
     <Content Remove="Components\**" />
     <Content Remove="Data\**" />
+    <Content Remove="Pages\Control\**" />
+    <Content Remove="Pages\Defender\**" />
+    <Content Remove="Pages\Fordward\**" />
+    <Content Remove="Pages\Lineup\**" />
+    <Content Remove="Pages\Tactic\**" />
     <Content Remove="Services\**" />
     <EmbeddedResource Remove="Authentication\**" />
     <EmbeddedResource Remove="Components\**" />
     <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Pages\Control\**" />
+    <EmbeddedResource Remove="Pages\Defender\**" />
+    <EmbeddedResource Remove="Pages\Fordward\**" />
+    <EmbeddedResource Remove="Pages\Lineup\**" />
+    <EmbeddedResource Remove="Pages\Tactic\**" />
     <EmbeddedResource Remove="Services\**" />
     <None Remove="Authentication\**" />
     <None Remove="Components\**" />
     <None Remove="Data\**" />
+    <None Remove="Pages\Control\**" />
+    <None Remove="Pages\Defender\**" />
+    <None Remove="Pages\Fordward\**" />
+    <None Remove="Pages\Lineup\**" />
+    <None Remove="Pages\Tactic\**" />
     <None Remove="Services\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Forms" Version="8.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.12" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="8.4.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.4.0" />
-    <PackageReference Include="MudBlazor" Version="8.2.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Spherical.Blazor\Spherical.Creative.csproj" />
+    <ProjectReference Include="..\Spherical.Blazor\Spherical.Blazor.csproj" />
     <ProjectReference Include="..\Spherical.Client\Spherical.Client.csproj" />
   </ItemGroup>
 
@@ -50,11 +62,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Defender\" />
-    <Folder Include="Pages\Lineup\" />
-    <Folder Include="Pages\Fordward\" />
-    <Folder Include="Pages\Control\" />
-    <Folder Include="Pages\Tactic\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
