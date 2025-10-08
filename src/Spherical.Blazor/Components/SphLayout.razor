@@ -9,16 +9,12 @@
                Elevation="1"
                Style="@($"background-image: linear-gradient(to bottom, {Colors.Yellow.Darken4}, {Colors.Yellow.Darken3}, {Colors.Yellow.Darken2}, {Colors.Yellow.Darken1});")">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h5"> >>Spherical </MudText>
+            <MudText Typo="Typo.h5"> Spherical </MudText>
         </MudDrawerHeader>
         <SphMenu></SphMenu>
     </MudDrawer>
-    <MudMainContent Class="pt-16 px-16">
-        <MudContainer Class="mt-6">
-            <MudAlert Severity="Severity.Success" Class="mt-16">
-                @ChildContent
-            </MudAlert>
-        </MudContainer>
+    <MudMainContent>
+        @ChildContent
     </MudMainContent>
 </MudLayout>
 

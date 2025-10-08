@@ -3,6 +3,7 @@
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
     <!-- Tarjetas de métricas principales -->
     <MudGrid>
+
         <MudItem xs="12" sm="6" md="3">
             <MudCard Elevation="4" Class="pa-4" Style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                 <MudCardContent>
@@ -16,7 +17,7 @@
                 </MudCardContent>
             </MudCard>
         </MudItem>
-        
+
         <MudItem xs="12" sm="6" md="3">
             <MudCard Elevation="4" Class="pa-4" Style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
                 <MudCardContent>
@@ -30,7 +31,7 @@
                 </MudCardContent>
             </MudCard>
         </MudItem>
-        
+
         <MudItem xs="12" sm="6" md="3">
             <MudCard Elevation="4" Class="pa-4" Style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
                 <MudCardContent>
@@ -44,7 +45,7 @@
                 </MudCardContent>
             </MudCard>
         </MudItem>
-        
+
         <MudItem xs="12" sm="6" md="3">
             <MudCard Elevation="4" Class="pa-4" Style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
                 <MudCardContent>
@@ -70,16 +71,16 @@
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
-                    <MudChart ChartType="ChartType.Line" 
-                              ChartSeries="@EngagementSeries" 
-                              XAxisLabels="@MonthLabels" 
-                              Width="100%" 
-                              Height="350px" 
+                    <MudChart ChartType="ChartType.Line"
+                              ChartSeries="@EngagementSeries"
+                              XAxisLabels="@MonthLabels"
+                              Width="100%"
+                              Height="350px"
                               ChartOptions="@ChartOptions" />
                 </MudCardContent>
             </MudCard>
         </MudItem>
-        
+
         <MudItem xs="12" md="4">
             <MudCard Elevation="4">
                 <MudCardHeader>
@@ -88,10 +89,10 @@
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
-                    <MudChart ChartType="ChartType.Donut" 
-                              InputData="@SocialMediaData" 
-                              InputLabels="@SocialMediaLabels" 
-                              Width="100%" 
+                    <MudChart ChartType="ChartType.Donut"
+                              InputData="@SocialMediaData"
+                              InputLabels="@SocialMediaLabels"
+                              Width="100%"
                               Height="300px" />
                 </MudCardContent>
             </MudCard>
@@ -107,8 +108,8 @@
                         <MudText Typo="Typo.h6">Mejores Posts</MudText>
                     </CardHeaderContent>
                     <CardHeaderActions>
-                        <MudIconButton Icon="@Icons.Material.Filled.Refresh" 
-                                       Color="Color.Primary" 
+                        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                                       Color="Color.Primary"
                                        OnClick="RefreshData" />
                     </CardHeaderActions>
                 </MudCardHeader>
@@ -131,9 +132,9 @@
                                 <MudText Typo="Typo.body2">@context.Description</MudText>
                             </MudTd>
                             <MudTd>
-                                @* <MudChip Color="@GetSocialMediaColor(context.SocialMedia)" Size="Size.Small">
+                                <MudChip T="string" Color="@GetSocialMediaColor(context.SocialMedia)" Size="Size.Small">
                                     @context.SocialMedia
-                                </MudChip> *@
+                                </MudChip>
                             </MudTd>
                             <MudTd>
                                 <MudText Typo="Typo.body2">@context.Engagement.ToString("P2")</MudText>
