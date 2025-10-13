@@ -1,0 +1,245 @@
+@using Spherical.Client.DTO.Lineup
+@using Spherical.Client.Services
+@using System.Globalization
+@inject IElementoService ElementoService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
+    <MudCard Elevation="4">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-3" />
+                    <MudText Typo="Typo.h5">Gestión de Elementos</MudText>
+                </div>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Add"
+                           OnClick="AbrirModalCrear">
+                    Nuevo Elemento
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Secondary"
+                           StartIcon="@Icons.Material.Filled.Refresh"
+                           OnClick="CargarElementos"
+                           Class="ml-2">
+                    Actualizar
+                </MudButton>
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (IsLoading)
+            {
+                <div class="d-flex justify-center align-center" style="height: 200px;">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <MudDataGrid T="ElementoDTO"
+                             Items="@Elementos"
+                             Filterable="true"
+                             FilterMode="DataGridFilterMode.ColumnFilterRow"
+                             SortMode="SortMode.Multiple"
+                             Groupable="false"
+                             Pageable="true"
+                             PageSize="10"
+                             RowsPerPageString="Filas por página"
+                             InfoFormat="{first_item}-{last_item} de {all_items}"
+                             PaginationClass="my-custom-class"
+                             Hover="true"
+                             Dense="true"
+                             Striped="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" Filterable="false" />
+                        <PropertyColumn Property="x => x.Referencia" Title="Referencia" Sortable="true" />
+                        <PropertyColumn Property="x => x.Nombre" Title="Nombre" Sortable="true" />
+                        <PropertyColumn Property="x => x.Mt2" Title="M²" Sortable="true" Filterable="false">
+                            <CellTemplate>
+                                @context.Item.Mt2.ToString("N2", CultureInfo.CurrentCulture)
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Peso" Title="Peso (Kg)" Sortable="true" Filterable="false">
+                            <CellTemplate>
+                                @context.Item.Peso.ToString("N2", CultureInfo.CurrentCulture)
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Rotacion" Title="Rotación" Sortable="true" Filterable="false">
+                            <CellTemplate>
+                                @context.Item.Rotacion
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Activo" Title="Estado" Sortable="true" Filterable="false">
+                            <CellTemplate>
+                                <MudChip T="string" 
+                                         Color="@(context.Item.Activo ? Color.Success : Color.Error)" 
+                                         Size="Size.Small">
+                                    @(context.Item.Activo ? "Activo" : "Inactivo")
+                                </MudChip>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <TemplateColumn Title="Acciones" Sortable="false" Filterable="false">
+                            <CellTemplate>
+                                <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                   Color="Color.Primary"
+                                                   Size="Size.Small"
+                                                   OnClick="@(() => AbrirModalEditar(context.Item))"
+                                                   Title="Editar" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                   Color="Color.Error"
+                                                   Size="Size.Small"
+                                                   OnClick="@(() => EliminarElemento(context.Item))"
+                                                   Title="Eliminar" />
+                                </MudButtonGroup>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="ElementoDTO" />
+                    </PagerContent>
+                </MudDataGrid>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private List<ElementoDTO> Elementos = new();
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarElementos();
+    }
+
+    private async Task CargarElementos()
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var response = await ElementoService.GetElementosAsync();
+            if (response.Success && response.Data != null)
+            {
+                Elementos = response.Data.ToList();
+            }
+            else
+            {
+                Snackbar.Add(response.ErrorMessage ?? "Error al cargar elementos", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error inesperado: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task AbrirModalCrear()
+    {
+        var parameters = new DialogParameters<SphElementoModal>
+        {
+            { x => x.Elemento, new ElementoDTO() },
+            { x => x.EsNuevo, true }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<SphElementoModal>("Crear Elemento", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await CargarElementos();
+        }
+    }
+
+    private async Task AbrirModalEditar(ElementoDTO elemento)
+    {
+        // Crear una copia del elemento para evitar modificaciones directas
+        var elementoCopia = new ElementoDTO
+        {
+            Id = elemento.Id,
+            IdGrupoElemento = elemento.IdGrupoElemento,
+            IdUnidadMedida = elemento.IdUnidadMedida,
+            Referencia = elemento.Referencia,
+            Nombre = elemento.Nombre,
+            Mt2 = elemento.Mt2,
+            Peso = elemento.Peso,
+            Rotacion = elemento.Rotacion,
+            Activo = elemento.Activo
+        };
+
+        var parameters = new DialogParameters<SphElementoModal>
+        {
+            { x => x.Elemento, elementoCopia },
+            { x => x.EsNuevo, false }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<SphElementoModal>("Editar Elemento", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await CargarElementos();
+        }
+    }
+
+    private async Task EliminarElemento(ElementoDTO elemento)
+    {
+        var parameters = new DialogParameters<MudDialog>
+        {
+            { "ContentText", $"¿Está seguro que desea eliminar el elemento '{elemento.Nombre}'? Esta acción no se puede deshacer." },
+            { "ButtonText", "Eliminar" },
+            { "Color", Color.Error }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.ShowAsync<MudDialog>("Confirmar Eliminación", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            try
+            {
+                var response = await ElementoService.DeleteElementoAsync(elemento.Id);
+                if (response.Success)
+                {
+                    Snackbar.Add("Elemento eliminado exitosamente", Severity.Success);
+                    await CargarElementos();
+                }
+                else
+                {
+                    Snackbar.Add(response.ErrorMessage ?? "Error al eliminar elemento", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error inesperado: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 Install-Package Microsoft.EntityFrameworkCore.Tools
 Install-Package Microsoft.EntityFrameworkCore.SqlServer
-Scaffold-DbContext "Server=KENCHIC-PC\SQLEXPRESS; Database=Spherical; User=Defender; Password=Admin123*;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -force 
+Scaffold-DbContext "Server=localhost,1433; Database=Spherical; User=spherical; Password=Admin123*;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -force 
 Scaffold-DbContext "Server=KENCHIC-PC\SQLEXPRESS; Database=KGreen; User=KGreen; Password=Admin123*;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -force 
 
 

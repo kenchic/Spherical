@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using MudBlazor.Services;
 using Spherical;
 using Spherical.Authentication;
+using Spherical.Client.Services;
 using Spherical.Core.Creative.Models;
 using System.Text;
 
@@ -18,6 +19,16 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
+// Configurar HttpClient para servicios
+builder.Services.AddHttpClient<IElementoService, ElementoService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+// Registrar servicios
+builder.Services.AddScoped<IElementoService, ElementoService>();
 
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

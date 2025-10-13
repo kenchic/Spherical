@@ -1,0 +1,277 @@
+@using Spherical.Client.DTO.Lineup
+@using Spherical.Client.Services
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@inject IElementoService ElementoService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 70vh; overflow-y: auto;">
+            <EditForm Model="@Elemento" OnValidSubmit="GuardarElemento">
+                <DataAnnotationsValidator />
+                
+                <MudTabs Elevation="4" Rounded="true" PanelClass="pa-6">
+                    <!-- Pestaña de Información Básica -->
+                    <MudTabPanel Text="Información Básica" Icon="@Icons.Material.Filled.Info">
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                <MudTextField @bind-Value="Elemento.Referencia"
+                                              Label="Referencia"
+                                              Variant="Variant.Outlined"
+                                              Required="true"
+                                              For="@(() => Elemento.Referencia)"
+                                              HelperText="Código único del elemento" />
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudTextField @bind-Value="Elemento.Nombre"
+                                              Label="Nombre"
+                                              Variant="Variant.Outlined"
+                                              Required="true"
+                                              For="@(() => Elemento.Nombre)"
+                                              HelperText="Nombre descriptivo del elemento" />
+                            </MudItem>
+                            <MudItem xs="12" md="4">
+                                <MudNumericField @bind-Value="Elemento.Mt2"
+                                                 Label="Metros Cuadrados (M²)"
+                                                 Variant="Variant.Outlined"
+                                                 Format="N2"
+                                                 For="@(() => Elemento.Mt2)"
+                                                 HelperText="Área en metros cuadrados" />
+                            </MudItem>
+                            <MudItem xs="12" md="4">
+                                <MudNumericField @bind-Value="Elemento.Peso"
+                                                 Label="Peso (Kg)"
+                                                 Variant="Variant.Outlined"
+                                                 Format="N2"
+                                                 For="@(() => Elemento.Peso)"
+                                                 HelperText="Peso en kilogramos" />
+                            </MudItem>
+                            <MudItem xs="12" md="4">
+                                <MudNumericField @bind-Value="Elemento.Rotacion"
+                                                 Label="Rotación"
+                                                 Variant="Variant.Outlined"
+                                                 Format="N0"
+                                                 For="@(() => Elemento.Rotacion)"
+                                                 HelperText="Valor de rotación" />
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudSelect @bind-Value="Elemento.IdGrupoElemento"
+                                           Label="Grupo de Elemento"
+                                           Variant="Variant.Outlined"
+                                           For="@(() => Elemento.IdGrupoElemento)"
+                                           HelperText="Seleccione el grupo al que pertenece">
+                                    <MudSelectItem Value="1">Grupo 1</MudSelectItem>
+                                    <MudSelectItem Value="2">Grupo 2</MudSelectItem>
+                                    <MudSelectItem Value="3">Grupo 3</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudSelect @bind-Value="Elemento.IdUnidadMedida"
+                                           Label="Unidad de Medida"
+                                           Variant="Variant.Outlined"
+                                           For="@(() => Elemento.IdUnidadMedida)"
+                                           HelperText="Seleccione la unidad de medida">
+                                    <MudSelectItem Value="1">Unidad</MudSelectItem>
+                                    <MudSelectItem Value="2">Metro</MudSelectItem>
+                                    <MudSelectItem Value="3">Kilogramo</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudSwitch @bind-Value="Elemento.Activo"
+                                           Label="Elemento Activo"
+                                           Color="Color.Primary"
+                                           For="@(() => Elemento.Activo)" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudTabPanel>
+
+                    <!-- Pestaña de Lista de Precios -->
+                    <MudTabPanel Text="Lista de Precios" Icon="@Icons.Material.Filled.AttachMoney" Disabled="@EsNuevo">
+                        @if (EsNuevo)
+                        {
+                            <MudAlert Severity="Severity.Info" Class="mb-4">
+                                <MudText>Los precios solo pueden configurarse después de crear el elemento.</MudText>
+                            </MudAlert>
+                        }
+                        else
+                        {
+                            @if (IsLoadingPrecios)
+                            {
+                                <div class="d-flex justify-center align-center" style="height: 200px;">
+                                    <MudProgressCircular Color="Color.Primary" Size="Size.Medium" Indeterminate="true" />
+                                </div>
+                            }
+                            else
+                            {
+                                <MudGrid>
+                                    <MudItem xs="12">
+                                        <MudButton Variant="Variant.Filled"
+                                                   Color="Color.Secondary"
+                                                   StartIcon="@Icons.Material.Filled.Refresh"
+                                                   OnClick="CargarPrecios"
+                                                   Class="mb-4">
+                                            Actualizar Precios
+                                        </MudButton>
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        @if (Precios.Any())
+                                        {
+                                            <MudTable T="ListaPrecioDetalleModelo" Items="@Precios" Hover="true" Dense="true" Striped="true">
+                                                <HeaderContent>
+                                                    <MudTh>Lista de Precio</MudTh>
+                                                    <MudTh>Precio Alquiler</MudTh>
+                                                    <MudTh>Precio Venta</MudTh>
+                                                    <MudTh>Precio Pérdida</MudTh>
+                                                </HeaderContent>
+                                                <RowTemplate Context="precio">
+                                                    <MudTd DataLabel="Lista de Precio">Lista @precio.idListaPrecio</MudTd>
+                                                    <MudTd DataLabel="Precio Alquiler">
+                                                        <MudText Color="Color.Primary">
+                                                            @precio.PrecioAlquiler.ToString("C2")
+                                                        </MudText>
+                                                    </MudTd>
+                                                    <MudTd DataLabel="Precio Venta">
+                                                        <MudText Color="Color.Success">
+                                                            @precio.PrecioVenta.ToString("C2")
+                                                        </MudText>
+                                                    </MudTd>
+                                                    <MudTd DataLabel="Precio Pérdida">
+                                                        <MudText Color="Color.Error">
+                                                            @precio.PrecioPerdida.ToString("C2")
+                                                        </MudText>
+                                                    </MudTd>
+                                                </RowTemplate>
+                                            </MudTable>
+                                        }
+                                        else
+                                        {
+                                            <MudAlert Severity="Severity.Info">
+                                                <MudText>No hay precios configurados para este elemento.</MudText>
+                                            </MudAlert>
+                                        }
+                                    </MudItem>
+                                </MudGrid>
+                            }
+                        }
+                    </MudTabPanel>
+                </MudTabs>
+
+                <ValidationSummary />
+            </EditForm>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" 
+                   Variant="Variant.Filled" 
+                   OnClick="GuardarElemento"
+                   Disabled="@IsGuardando">
+            @if (IsGuardando)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">Guardando...</MudText>
+            }
+            else
+            {
+                @(EsNuevo ? "Crear" : "Actualizar")
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
+    
+    [Parameter] public ElementoDTO Elemento { get; set; } = new();
+    [Parameter] public bool EsNuevo { get; set; } = true;
+
+    private List<ListaPrecioDetalleModelo> Precios = new();
+    private bool IsGuardando = false;
+    private bool IsLoadingPrecios = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!EsNuevo && Elemento.Id > 0)
+        {
+            await CargarPrecios();
+        }
+    }
+
+    private async Task CargarPrecios()
+    {
+        if (EsNuevo || Elemento.Id <= 0) return;
+
+        IsLoadingPrecios = true;
+        StateHasChanged();
+
+        try
+        {
+            var response = await ElementoService.GetElementoPreciosAsync(Elemento.Id);
+            if (response.Success && response.Data != null)
+            {
+                Precios = response.Data.ToList();
+            }
+            else
+            {
+                Snackbar.Add(response.ErrorMessage ?? "Error al cargar precios", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar precios: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoadingPrecios = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GuardarElemento()
+    {
+        IsGuardando = true;
+        StateHasChanged();
+
+        try
+        {
+            if (EsNuevo)
+            {
+                var response = await ElementoService.CreateElementoAsync(Elemento);
+                if (response.Success)
+                {
+                    Snackbar.Add("Elemento creado exitosamente", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    Snackbar.Add(response.ErrorMessage ?? "Error al crear elemento", Severity.Error);
+                }
+            }
+            else
+            {
+                var response = await ElementoService.UpdateElementoAsync(Elemento.Id, Elemento);
+                if (response.Success)
+                {
+                    Snackbar.Add("Elemento actualizado exitosamente", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    Snackbar.Add(response.ErrorMessage ?? "Error al actualizar elemento", Severity.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error inesperado: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsGuardando = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
