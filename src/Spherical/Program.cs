@@ -23,12 +23,16 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 // Configurar HttpClient para servicios
 builder.Services.AddHttpClient<IElementoService, ElementoService>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/");
+    // Asegura que la BaseAddress esté configurada para que las URIs relativas funcionen
+    var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
+    if (!apiUrl.EndsWith("/")) apiUrl += "/";
+    client.BaseAddress = new Uri(apiUrl);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
-// Registrar servicios
-builder.Services.AddScoped<IElementoService, ElementoService>();
+// Importante: No registrar nuevamente IElementoService con AddScoped,
+// ya que sobrescribe la configuración del HttpClient tipado y provoca
+// que HttpClient no tenga BaseAddress.
 
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

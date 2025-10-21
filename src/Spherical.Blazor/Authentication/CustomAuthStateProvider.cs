@@ -24,7 +24,7 @@ namespace Spherical.Authentication
 
             var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
             var user = new ClaimsPrincipal(identity);
-
+            
             return Task.FromResult(new AuthenticationState(user));
         }
 

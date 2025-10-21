@@ -11,8 +11,11 @@
             <CardHeaderContent>
                 <div class="d-flex align-center">
                     <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-3" />
-                    <MudText Typo="Typo.h5">Gestión de Elementos</MudText>
+                    <MudText Typo="Typo.h5">Gestión de Elementos</MudText>                    
                 </div>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Administre los elementos de su empresa, incluyendo información básica y listas de precios
+                </MudText>
             </CardHeaderContent>
             <CardHeaderActions>
                 <MudButton Variant="Variant.Filled"
@@ -111,9 +114,12 @@
     private List<ElementoDTO> Elementos = new();
     private bool IsLoading = true;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await CargarElementos();
+        if (firstRender)
+        {
+            await CargarElementos();
+        }
     }
 
     private async Task CargarElementos()

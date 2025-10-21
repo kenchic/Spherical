@@ -1,4 +1,4 @@
-@page "/elementos"
+@page "/inventario/consultar"
 @page "/gestion-elementos"
 @using Spherical.Blazor.Components
 @attribute [Authorize]
@@ -7,32 +7,14 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
     <MudBreadcrumbs Items="_breadcrumbItems" Class="mb-4"></MudBreadcrumbs>
-    
-    <MudCard Elevation="4">
-        <MudCardHeader>
-            <CardHeaderContent>
-                <div class="d-flex align-center">
-                    <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-3" />
-                    <div>
-                        <MudText Typo="Typo.h5">Gestión de Elementos</MudText>
-                        <MudText Typo="Typo.body2" Color="Color.Secondary">
-                            Administre los elementos de su empresa, incluyendo información básica y listas de precios
-                        </MudText>
-                    </div>
-                </div>
-            </CardHeaderContent>
-        </MudCardHeader>
-        <MudCardContent>
-            <SphGestionElementos />
-        </MudCardContent>
-    </MudCard>
+    <SphGestionElemento />
 </MudContainer>
 
 @code {
     private List<BreadcrumbItem> _breadcrumbItems = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Inicio", href: "/", icon: Icons.Material.Filled.Home),
-        new BreadcrumbItem("Lineup", href: null, disabled: true),
+        new BreadcrumbItem("Inventarios", href: null, disabled: true),
         new BreadcrumbItem("Elementos", href: "/elementos", disabled: true)
     };
 }

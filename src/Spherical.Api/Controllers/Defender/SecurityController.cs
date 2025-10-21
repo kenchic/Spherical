@@ -53,6 +53,7 @@ namespace Spherical.Api.Controllers.Defender
                     var claims = new[]
                      {
                         new Claim(JwtRegisteredClaimNames.Name , dto.Usuario),
+                        new Claim(JwtRegisteredClaimNames.Locale , dto.Empresa),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };
 

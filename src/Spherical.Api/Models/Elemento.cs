@@ -7,9 +7,9 @@ public partial class Elemento
 {
     public short Id { get; set; }
 
-    public byte IdGrupoElemento { get; set; }
+    public string IdGrupoElemento { get; set; } = null!;
 
-    public byte IdUnidadMedida { get; set; }
+    public string IdUnidadMedida { get; set; } = null!;
 
     public string Empresa { get; set; } = null!;
 

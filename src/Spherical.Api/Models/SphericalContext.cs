@@ -161,6 +161,12 @@ public partial class SphericalContext : DbContext
             entity.Property(e => e.Empresa)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+            entity.Property(e => e.IdGrupoElemento)
+                .HasMaxLength(2)
+                .IsUnicode(false);
+            entity.Property(e => e.IdUnidadMedida)
+                .HasMaxLength(2)
+                .IsUnicode(false);
             entity.Property(e => e.Nombre)
                 .HasMaxLength(100)
                 .IsUnicode(false);
