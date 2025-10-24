@@ -72,7 +72,11 @@
                         </PropertyColumn>
                         <PropertyColumn Property="x => x.Rotacion" Title="Rotación" Sortable="true" Filterable="false">
                             <CellTemplate>
-                                @context.Item.Rotacion
+                                <MudChip T="string"
+                                         Color="@( @context.Item.Rotacion ? Color.Success : Color.Error)"
+                                         Size="Size.Small">
+                                    @( @context.Item.Rotacion ? "Si" : "No")
+                                </MudChip>
                             </CellTemplate>
                         </PropertyColumn>
                         <PropertyColumn Property="x => x.Activo" Title="Estado" Sortable="true" Filterable="false">
@@ -216,15 +220,22 @@
 
     private async Task EliminarElemento(ElementoDTO elemento)
     {
-        var parameters = new DialogParameters<MudDialog>
-        {
-            { "ContentText", $"¿Está seguro que desea eliminar el elemento '{elemento.Nombre}'? Esta acción no se puede deshacer." },
-            { "ButtonText", "Eliminar" },
-            { "Color", Color.Error }
+        var parameters = new DialogParameters<ConfirmDeleteDialog>
+        {            
+            { x => x.Message, $"¿Está seguro que desea eliminar el elemento '{elemento.Nombre}'? Esta acción no se puede deshacer." },
+            { x => x.ConfirmText, "Eliminar" },
+            { x => x.CancelText, "Cancelar" }
         };
 
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-        var dialog = await DialogService.ShowAsync<MudDialog>("Confirmar Eliminación", parameters, options);
+        var options = new DialogOptions
+        {
+            CloseButton = false,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = false,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<ConfirmDeleteDialog>("Eliminar", parameters, options);
         var result = await dialog.Result;
 
         if (!result.Canceled)

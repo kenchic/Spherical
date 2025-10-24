@@ -246,16 +246,18 @@
 
         try
         {
+            // Obtener usuario y claims
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // Extraer name y locale desde los claims (con fallback)
+            var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "ayzcorp";
+            Elemento.Empresa = locale;
+
             if (EsNuevo)
             {
-                // Obtener usuario y claims
-                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-                var user = authState.User;
-
-                // Extraer name y locale desde los claims (con fallback)
-                var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "ayzcorp";
-
-                Elemento.Empresa = locale;
+                
+                
                 var response = await ElementoService.CreateElementoAsync(Elemento);
                 if (response.Success)
                 {

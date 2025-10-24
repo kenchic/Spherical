@@ -46,7 +46,7 @@ namespace Spherical.Api.Controllers.Lineup
 
         // GET: api/v1/elementos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApiResponse<ElementoDTO>>> GetElemento(int id)
+        public async Task<ActionResult<ApiResponse<ElementoDTO>>> GetElemento(short id)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace Spherical.Api.Controllers.Lineup
 
         // PUT: api/v1/elementos/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApiResponse<string>>> PutElemento(int id, ElementoDTO dto)
+        public async Task<ActionResult<ApiResponse<string>>> PutElemento(short id, ElementoDTO dto)
         {
             if (id != dto.Id)
             {
@@ -173,7 +173,7 @@ namespace Spherical.Api.Controllers.Lineup
 
         // DELETE: api/v1/elementos/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<ApiResponse<string>>> DeleteElemento(int id)
+        public async Task<ActionResult<ApiResponse<string>>> DeleteElemento(short id)
         {
             try
             {
@@ -206,7 +206,7 @@ namespace Spherical.Api.Controllers.Lineup
 
         // GET: api/v1/elementos/{id}/precios
         [HttpGet("{id}/precios")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>>> GetElementoPrecios(int id)
+        public async Task<ActionResult<ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>>> GetElementoPrecios(short id)
         {
             try
             {

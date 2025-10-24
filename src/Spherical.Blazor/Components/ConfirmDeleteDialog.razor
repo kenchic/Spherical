@@ -1,0 +1,36 @@
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.body1">@Message</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Default"
+                   StartIcon="@Icons.Material.Filled.Close"
+                   OnClick="Cancel">
+            @CancelText
+        </MudButton>
+        <MudButton Color="@ConfirmColor"
+                   Variant="Variant.Filled"
+                   StartIcon="@ConfirmIcono"
+                   OnClick="Confirm">
+            @ConfirmText
+        </MudButton>
+        
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter] public string Message { get; set; } = "¿Está seguro que desea eliminar este elemento? Esta acción no se puede deshacer.";
+    [Parameter] public string ConfirmText { get; set; } = "Eliminar";
+    [Parameter] public string CancelText { get; set; } = "Cancelar";
+    [Parameter] public Color ConfirmColor { get; set; } = Color.Error;
+    [Parameter] public string ConfirmIcono { get; set; } = Icons.Material.Filled.Delete;
+
+    private void Confirm() => MudDialog.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog.Cancel();
+}
