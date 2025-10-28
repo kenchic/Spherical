@@ -5,6 +5,7 @@
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Forms
 @using System.Security.Claims
+@using Spherical.Client.DTO.Common
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IElementoService ElementoService
 @inject ISnackbar Snackbar
@@ -59,27 +60,43 @@
                                            For="@(() => Elemento.Rotacion)" />
                             </MudItem>
                             <MudItem xs="12" md="6">
-                                <!-- Asegurar tipo byte en el select -->
+                                <!-- Lista dinámica desde BD: GRUPO_ELEMENTO -->
                                 <MudSelect T="string" @bind-Value="Elemento.IdGrupoElemento"
                                            Label="Grupo de Elemento"
                                            Variant="Variant.Outlined"
                                            For="@(() => Elemento.IdGrupoElemento)"
                                            HelperText="Seleccione el grupo al que pertenece">
-                                    <MudSelectItem Value="@("F")">Formaleta</MudSelectItem>
-                                    <MudSelectItem Value="@("A")">Accesorios</MudSelectItem>
-                                    <MudSelectItem Value="@("ES")">Equipo Soporte</MudSelectItem>
+                                    @if (GrupoElementos?.Count > 0)
+                                    {
+                                        @foreach (var item in GrupoElementos)
+                                        {
+                                            <MudSelectItem Value="@item.Id">@item.Nombre</MudSelectItem>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="@Elemento.IdGrupoElemento">(sin datos)</MudSelectItem>
+                                    }
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="12" md="6">
-                                <!-- Asegurar tipo byte en el select -->
+                                <!-- Lista dinámica desde BD: UN_ELEMENTO -->
                                 <MudSelect T="string" @bind-Value="Elemento.IdUnidadMedida"
                                            Label="Unidad de Medida"
                                            Variant="Variant.Outlined"
                                            For="@(() => Elemento.IdUnidadMedida)"
                                            HelperText="Seleccione la unidad de medida [UD_MEDIDA]">
-                                    <MudSelectItem Value="@("U")">Unidad</MudSelectItem>
-                                    <MudSelectItem Value="@("M")">Metro</MudSelectItem>
-                                    <MudSelectItem Value="@("P")">Pulgadas</MudSelectItem>
+                                    @if (UnidadesMedida?.Count > 0)
+                                    {
+                                        @foreach (var item in UnidadesMedida)
+                                        {
+                                            <MudSelectItem Value="@item.Id">@item.Nombre</MudSelectItem>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <MudSelectItem Value="@Elemento.IdUnidadMedida">(sin datos)</MudSelectItem>
+                                    }
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="12">
@@ -196,16 +213,49 @@
     private bool IsGuardando = false;
     private bool IsLoadingPrecios = false;
 
+    private List<CatalogoDetalleModelo> GrupoElementos = new();
+    private List<CatalogoDetalleModelo> UnidadesMedida = new();
+
     private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
+        // Cargar catálogos para selects
+        await CargarCatalogos();
+
+        if (!EsNuevo && Elemento.Id > 0)
         {
-            if (!EsNuevo && Elemento.Id > 0)
+            await CargarPrecios();
+        }
+    }
+
+    private async Task CargarCatalogos()
+    {
+        try
+        {
+            var gruposResp = await ElementoService.GetCatalogoDetallesAsync("GRUPO_ELEMENTO");
+            if (gruposResp.Success && gruposResp.Data != null)
             {
-                await CargarPrecios();
+                GrupoElementos = gruposResp.Data.ToList();
             }
+            else
+            {
+                Snackbar.Add(gruposResp.ErrorMessage ?? "No se pudieron cargar los grupos de elemento", Severity.Warning);
+            }
+
+            var unidadesResp = await ElementoService.GetCatalogoDetallesAsync("UN_ELEMENTO");
+            if (unidadesResp.Success && unidadesResp.Data != null)
+            {
+                UnidadesMedida = unidadesResp.Data.ToList();
+            }
+            else
+            {
+                Snackbar.Add(unidadesResp.ErrorMessage ?? "No se pudieron cargar las unidades de medida", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error cargando catálogos: {ex.Message}", Severity.Error);
         }
     }
 

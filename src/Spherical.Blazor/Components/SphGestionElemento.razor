@@ -22,9 +22,9 @@
                            Color="Color.Primary"
                            StartIcon="@Icons.Material.Filled.Add"
                            OnClick="AbrirModalCrear">
-                    Nuevo Elemento
+                    Nuevo
                 </MudButton>
-                <MudButton Variant="Variant.Outlined"
+                <MudButton Variant="Variant.Filled"
                            Color="Color.Secondary"
                            StartIcon="@Icons.Material.Filled.Refresh"
                            OnClick="CargarElementos"
@@ -118,9 +118,9 @@
     private List<ElementoDTO> Elementos = new();
     private bool IsLoading = true;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
+        //if (firstRender)
         {
             await CargarElementos();
         }

@@ -1,5 +1,6 @@
 using Spherical.Client.DTO.Lineup;
 using Spherical.Client.DTO.Spherical;
+using Spherical.Client.DTO.Common;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -13,6 +14,8 @@ namespace Spherical.Client.Services
         Task<ApiResponse<string>> UpdateElementoAsync(int id, ElementoDTO elemento);
         Task<ApiResponse<string>> DeleteElementoAsync(int id);
         Task<ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>> GetElementoPreciosAsync(int id);
+        // Nuevo: obtener detalles de catálogo por idCatalogo
+        Task<ApiResponse<IEnumerable<CatalogoDetalleModelo>>> GetCatalogoDetallesAsync(string idCatalogo);
     }
 
     public class ElementoService : IElementoService
@@ -208,6 +211,37 @@ namespace Spherical.Client.Services
             catch (Exception ex)
             {
                 return new ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>
+                {
+                    Success = false,
+                    ErrorMessage = $"Error de conexión: {ex.Message}"
+                };
+            }
+        }
+
+        // Nuevo método para obtener detalles de catálogo
+        public async Task<ApiResponse<IEnumerable<CatalogoDetalleModelo>>> GetCatalogoDetallesAsync(string idCatalogo)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/v1/catalogos/{idCatalogo}/detalles");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<ApiResponse<IEnumerable<CatalogoDetalleModelo>>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<IEnumerable<CatalogoDetalleModelo>>();
+                }
+                else
+                {
+                    return new ApiResponse<IEnumerable<CatalogoDetalleModelo>>
+                    {
+                        Success = false,
+                        ErrorMessage = $"Error al obtener detalles de catálogo: {response.StatusCode}"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<IEnumerable<CatalogoDetalleModelo>>
                 {
                     Success = false,
                     ErrorMessage = $"Error de conexión: {ex.Message}"
