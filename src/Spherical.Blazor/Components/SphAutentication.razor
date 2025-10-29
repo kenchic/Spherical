@@ -63,9 +63,31 @@
 </MudContainer>
 
 @code {
-    private bool IsLoading = false;
+    private bool _isLoading = false;
+    private bool _hasStateChanged = true;
+    private CustomAuthStateProvider? _customAuthProvider;
 
-    private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
+    private bool IsLoading
+    {
+        get => _isLoading;
+        set
+        {
+            if (_isLoading != value)
+            {
+                _isLoading = value;
+                _hasStateChanged = true;
+            }
+        }
+    }
+
+    private CustomAuthStateProvider CustomAuthProvider
+    {
+        get
+        {
+            _customAuthProvider ??= (CustomAuthStateProvider)AuthStateProvider;
+            return _customAuthProvider;
+        }
+    }
 
     private LoginDTO UserCredential = new LoginDTO
         {
@@ -74,17 +96,33 @@
 
     private async Task OnValidSubmit()
     {
+        if (IsLoading) return; // Prevenir múltiples envíos
+
         try
         {
             IsLoading = true;
+            StateHasChanged(); // Forzar renderizado para mostrar loading
+
             string token = await new SecurityService(AppSettings.Value.ApiUrl).LoginAsync(UserCredential);
-            await CustomAuthProvider!.SetToken(token);            
+            await CustomAuthProvider.SetToken(token);            
             NavigationManager.NavigateTo("/");
         }
         catch (Exception ex)
         {
+            IsLoading = false;
+            StateHasChanged(); // Forzar renderizado para ocultar loading
             Log.Error($"Error al autenticar: {ex.Message}", "Login.razor - OnValidSubmit");
             throw;
         }
+    }
+
+    protected override bool ShouldRender()
+    {
+        if (_hasStateChanged)
+        {
+            _hasStateChanged = false;
+            return true;
+        }
+        return false;
     }
 }

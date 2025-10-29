@@ -10,12 +10,13 @@
 @inject IElementoService ElementoService
 @inject ISnackbar Snackbar
 
+
 <MudDialog>
     <DialogContent>
         <MudContainer Style="max-height: 70vh; overflow-y: auto;">
-            <EditForm Model="@Elemento" OnValidSubmit="GuardarElemento">
+           <EditForm Model="@Elemento" OnValidSubmit="GuardarElemento" OnInvalidSubmit="OnInvalidSubmit">
                 <DataAnnotationsValidator />
-                
+
                 <MudTabs Elevation="4" Rounded="true" PanelClass="pa-6">
                     <!-- Pestaña de Información Básica -->
                     <MudTabPanel Text="Información Básica" Icon="@Icons.Material.Filled.Info">
@@ -25,6 +26,7 @@
                                               Label="Referencia"
                                               Variant="Variant.Outlined"
                                               Required="true"
+                                              RequiredError="Password is required!"
                                               For="@(() => Elemento.Referencia)"
                                               HelperText="Código único del elemento" />
                             </MudItem>
@@ -33,6 +35,7 @@
                                               Label="Nombre"
                                               Variant="Variant.Outlined"
                                               Required="true"
+                                              RequiredError="Password is required!"
                                               For="@(() => Elemento.Nombre)"
                                               HelperText="Nombre descriptivo del elemento" />
                             </MudItem>
@@ -65,7 +68,8 @@
                                            Label="Grupo de Elemento"
                                            Variant="Variant.Outlined"
                                            For="@(() => Elemento.IdGrupoElemento)"
-                                           HelperText="Seleccione el grupo al que pertenece">
+                                           HelperText="Seleccione el grupo al que pertenece"
+                                           Required=true>
                                     @if (GrupoElementos?.Count > 0)
                                     {
                                         @foreach (var item in GrupoElementos)
@@ -85,7 +89,9 @@
                                            Label="Unidad de Medida"
                                            Variant="Variant.Outlined"
                                            For="@(() => Elemento.IdUnidadMedida)"
-                                           HelperText="Seleccione la unidad de medida [UD_MEDIDA]">
+                                           HelperText="Seleccione la unidad de medida [UD_MEDIDA]"
+                                           Required="true"
+                                           RequiredError="Password is required!">
                                     @if (UnidadesMedida?.Count > 0)
                                     {
                                         @foreach (var item in UnidadesMedida)
@@ -185,9 +191,9 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancelar</MudButton>
-        <MudButton Color="Color.Primary" 
-                   Variant="Variant.Filled" 
-                   OnClick="GuardarElemento"
+        <MudButton Color="Color.Primary"
+                   ButtonType="ButtonType.Submit"
+                   Variant="Variant.Filled"
                    Disabled="@IsGuardando">
             @if (IsGuardando)
             {
@@ -306,8 +312,8 @@
 
             if (EsNuevo)
             {
-                
-                
+
+
                 var response = await ElementoService.CreateElementoAsync(Elemento);
                 if (response.Success)
                 {
@@ -343,6 +349,11 @@
             StateHasChanged();
         }
 
+    }
+
+    private void OnInvalidSubmit(EditContext editContext)
+    {
+        Snackbar.Add("Por favor, completa los campos requeridos antes de continuar.", Severity.Warning);
     }
 
     private string? GetClaim(ClaimsPrincipal user, params string[] types)
