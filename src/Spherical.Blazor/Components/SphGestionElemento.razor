@@ -100,7 +100,7 @@
                                                    Color="Color.Error"
                                                    Size="Size.Small"
                                                    OnClick="@(() => EliminarElemento(context.Item))"
-                                                   Title="Eliminar" />
+                                                   Title="Desactivar" />
                                 </MudButtonGroup>
                             </CellTemplate>
                         </TemplateColumn>
@@ -222,8 +222,8 @@
     {
         var parameters = new DialogParameters<ConfirmDeleteDialog>
         {            
-            { x => x.Message, $"¿Está seguro que desea eliminar el elemento '{elemento.Nombre}'? Esta acción no se puede deshacer." },
-            { x => x.ConfirmText, "Eliminar" },
+            { x => x.Message, $"¿Está seguro que desea desactivar el elemento '{elemento.Nombre}'? Esta acción no se puede deshacer." },
+            { x => x.ConfirmText, "Desactivar" },
             { x => x.CancelText, "Cancelar" }
         };
 

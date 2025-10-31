@@ -25,7 +25,6 @@ namespace Spherical.Api.Controllers.Lineup
             try
             {
                 var elementos = await _context.Elementos
-                    .Where(e => e.Activo)
                     .Select(x => EntityToDTO(x))
                     .ToListAsync();
 

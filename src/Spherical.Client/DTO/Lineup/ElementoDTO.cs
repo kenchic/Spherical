@@ -36,14 +36,10 @@ namespace Spherical.Client.DTO.Lineup
         public string Nombre { get; set; }
 
         // Cambiar a nullable para que la validación Required funcione cuando esté vacío
-        [Required(ErrorMessage = Constants.RequiredFieldMsg)]
-        [Range(0.0000001, double.MaxValue, ErrorMessage = "Debe ser mayor a 0")]
         [Display(Name = "EtiquetaMt2")]
         public double Mt2 { get; set; }
 
         // Cambiar a nullable para que la validación Required funcione cuando esté vacío
-        [Required(ErrorMessage = Constants.RequiredFieldMsg)]
-        [Range(0.0000001, double.MaxValue, ErrorMessage = "Debe ser mayor a 0")]
         [Display(Name = "EtiquetaPeso")]
         public double Peso { get; set; }
 
