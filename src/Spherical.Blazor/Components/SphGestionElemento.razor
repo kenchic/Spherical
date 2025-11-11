@@ -42,10 +42,51 @@
             }
             else
             {
+                <MudGrid Class="mb-4">
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudTextField @bind-Value="searchString" 
+                                      Placeholder="Buscar por referencia, nombre o ID..." 
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Search"
+                                      Immediate="true"
+                                      DebounceInterval="300"
+                                      Clearable="true"
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="2">
+                        <MudSelect @bind-Value="filtroRotacion" 
+                                   Placeholder="Rotación"
+                                   Clearable="true"
+                                   Margin="Margin.Dense"
+                                   Adornment="Adornment.Start"
+                                   AdornmentIcon="@Icons.Material.Filled.Sync">
+                            <MudSelectItem Value="@((bool?)true)">Sí</MudSelectItem>
+                            <MudSelectItem Value="@((bool?)false)">No</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="2">
+                        <MudSelect @bind-Value="filtroActivo" 
+                                   Placeholder="Estado"
+                                   Clearable="true"
+                                   Margin="Margin.Dense"
+                                   Adornment="Adornment.Start"
+                                   AdornmentIcon="@Icons.Material.Filled.Flag">
+                            <MudSelectItem Value="@((bool?)true)">Activo</MudSelectItem>
+                            <MudSelectItem Value="@((bool?)false)">Inactivo</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="2" sm="2" md="2">
+                        <MudButton Variant="Variant.Outlined" 
+                                   Color="Color.Secondary"
+                                   OnClick="LimpiarFiltros"
+                                   StartIcon="@Icons.Material.Filled.DeleteForever">
+                                   Limpiar
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+
                 <MudDataGrid T="ElementoDTO"
-                             Items="@Elementos"
-                             Filterable="true"
-                             FilterMode="DataGridFilterMode.ColumnFilterRow"
+                             Items="@ElementosFiltrados"
                              SortMode="SortMode.Multiple"
                              Groupable="false"
                              Pageable="true"
@@ -57,20 +98,20 @@
                              Dense="true"
                              Striped="true">
                     <Columns>
-                        <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" Filterable="false" />
+                        <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" />
                         <PropertyColumn Property="x => x.Referencia" Title="Referencia" Sortable="true" />
                         <PropertyColumn Property="x => x.Nombre" Title="Nombre" Sortable="true" />
-                        <PropertyColumn Property="x => x.Mt2" Title="M²" Sortable="true" Filterable="false">
+                        <PropertyColumn Property="x => x.Mt2" Title="M²" Sortable="true">
                             <CellTemplate>
                                 @context.Item.Mt2.ToString("N2", CultureInfo.CurrentCulture)
                             </CellTemplate>
                         </PropertyColumn>
-                        <PropertyColumn Property="x => x.Peso" Title="Peso (Kg)" Sortable="true" Filterable="false">
+                        <PropertyColumn Property="x => x.Peso" Title="Peso (Kg)" Sortable="true">
                             <CellTemplate>
                                 @context.Item.Peso.ToString("N2", CultureInfo.CurrentCulture)
                             </CellTemplate>
                         </PropertyColumn>
-                        <PropertyColumn Property="x => x.Rotacion" Title="Rotación" Sortable="true" Filterable="false">
+                        <PropertyColumn Property="x => x.Rotacion" Title="Rotación" Sortable="true">
                             <CellTemplate>
                                 <MudChip T="string"
                                          Color="@( @context.Item.Rotacion ? Color.Success : Color.Error)"
@@ -79,7 +120,7 @@
                                 </MudChip>
                             </CellTemplate>
                         </PropertyColumn>
-                        <PropertyColumn Property="x => x.Activo" Title="Estado" Sortable="true" Filterable="false">
+                        <PropertyColumn Property="x => x.Activo" Title="Estado" Sortable="true">
                             <CellTemplate>
                                 <MudChip T="string" 
                                          Color="@(context.Item.Activo ? Color.Success : Color.Error)" 
@@ -88,7 +129,7 @@
                                 </MudChip>
                             </CellTemplate>
                         </PropertyColumn>
-                        <TemplateColumn Title="Acciones" Sortable="false" Filterable="false">
+                        <TemplateColumn Title="Acciones" Sortable="false">
                             <CellTemplate>
                                 <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
                                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
@@ -116,14 +157,52 @@
 
 @code {
     private List<ElementoDTO> Elementos = new();
+    private List<ElementoDTO> ElementosFiltrados => FiltrarElementos();
     private bool IsLoading = true;
+    private string searchString = string.Empty;
+    private bool? filtroRotacion = null;
+    private bool? filtroActivo = null;
 
     protected override async Task OnInitializedAsync()
     {
-        //if (firstRender)
+        await CargarElementos();
+    }
+
+    private List<ElementoDTO> FiltrarElementos()
+    {
+        var elementosFiltrados = Elementos.AsEnumerable();
+
+        // Filtro por texto de búsqueda
+        if (!string.IsNullOrWhiteSpace(searchString))
         {
-            await CargarElementos();
+            var searchTerm = searchString.ToLowerInvariant();
+            elementosFiltrados = elementosFiltrados.Where(x => 
+                x.Id.ToString().Contains(searchTerm) ||
+                x.Referencia?.ToLowerInvariant().Contains(searchTerm) == true ||
+                x.Nombre?.ToLowerInvariant().Contains(searchTerm) == true
+            );
         }
+
+        // Filtro por Rotación
+        if (filtroRotacion.HasValue)
+        {
+            elementosFiltrados = elementosFiltrados.Where(x => x.Rotacion == filtroRotacion.Value);
+        }
+
+        // Filtro por Estado
+        if (filtroActivo.HasValue)
+        {
+            elementosFiltrados = elementosFiltrados.Where(x => x.Activo == filtroActivo.Value);
+        }
+
+        return elementosFiltrados.ToList();
+    }
+
+    private void LimpiarFiltros()
+    {
+        searchString = string.Empty;
+        filtroRotacion = null;
+        filtroActivo = null;
     }
 
     private async Task CargarElementos()
@@ -181,7 +260,6 @@
 
     private async Task AbrirModalEditar(ElementoDTO elemento)
     {
-        // Crear una copia del elemento para evitar modificaciones directas
         var elementoCopia = new ElementoDTO
         {
             Id = elemento.Id,
