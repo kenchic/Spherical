@@ -249,6 +249,7 @@ namespace Spherical.Api.Controllers.Lineup
                 IdGrupoElemento = elemento.IdGrupoElemento,
                 IdUnidadMedida = elemento.IdUnidadMedida,
                 Referencia = elemento.Referencia,
+                Empresa = elemento.Empresa,
                 Nombre = elemento.Nombre,
                 Mt2 = elemento.Mt2,
                 Peso = elemento.Peso,

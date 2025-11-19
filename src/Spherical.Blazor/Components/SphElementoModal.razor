@@ -10,15 +10,12 @@
 @inject IElementoService ElementoService
 @inject ISnackbar Snackbar
 
-
 <MudDialog >
-
     <DialogContent>
         <EditForm Model="@Elemento" OnValidSubmit="GuardarElemento" OnInvalidSubmit="OnInvalidSubmit">
             <DataAnnotationsValidator />
             <MudCard>
                 <MudCardContent>
-
                     <MudContainer Style="max-height: 70vh; overflow-y: auto;">
                         <MudTabs Elevation="4" Rounded="true" PanelClass="pa-6">
                             <!-- Pestaña de Información Básica -->

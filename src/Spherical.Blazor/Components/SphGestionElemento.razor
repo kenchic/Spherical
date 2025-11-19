@@ -75,14 +75,6 @@
                             <MudSelectItem Value="@((bool?)false)">Inactivo</MudSelectItem>
                         </MudSelect>
                     </MudItem>
-                    <MudItem xs="2" sm="2" md="2">
-                        <MudButton Variant="Variant.Outlined" 
-                                   Color="Color.Secondary"
-                                   OnClick="LimpiarFiltros"
-                                   StartIcon="@Icons.Material.Filled.DeleteForever">
-                                   Limpiar
-                        </MudButton>
-                    </MudItem>
                 </MudGrid>
 
                 <MudDataGrid T="ElementoDTO"
@@ -114,7 +106,7 @@
                         <PropertyColumn Property="x => x.Rotacion" Title="Rotación" Sortable="true">
                             <CellTemplate>
                                 <MudChip T="string"
-                                         Color="@( @context.Item.Rotacion ? Color.Success : Color.Error)"
+                                         Color="@( @context.Item.Rotacion ? Color.Success : Color.Default)"
                                          Size="Size.Small">
                                     @( @context.Item.Rotacion ? "Si" : "No")
                                 </MudChip>
@@ -123,7 +115,7 @@
                         <PropertyColumn Property="x => x.Activo" Title="Estado" Sortable="true">
                             <CellTemplate>
                                 <MudChip T="string" 
-                                         Color="@(context.Item.Activo ? Color.Success : Color.Error)" 
+                                         Color="@(context.Item.Activo ? Color.Success : Color.Default)" 
                                          Size="Size.Small">
                                     @(context.Item.Activo ? "Activo" : "Inactivo")
                                 </MudChip>
@@ -147,7 +139,7 @@
                         </TemplateColumn>
                     </Columns>
                     <PagerContent>
-                        <MudDataGridPager T="ElementoDTO" />
+                        <MudDataGridPager T="ElementoDTO" PageSizeOptions=@(new int[] { 5, 10, 15, 20 }) />
                     </PagerContent>
                 </MudDataGrid>
             }
@@ -198,16 +190,10 @@
         return elementosFiltrados.ToList();
     }
 
-    private void LimpiarFiltros()
-    {
-        searchString = string.Empty;
-        filtroRotacion = null;
-        filtroActivo = null;
-    }
-
     private async Task CargarElementos()
     {
         IsLoading = true;
+        filtroActivo = true;
         StateHasChanged();
 
         try
@@ -266,6 +252,7 @@
             IdGrupoElemento = elemento.IdGrupoElemento,
             IdUnidadMedida = elemento.IdUnidadMedida,
             Referencia = elemento.Referencia,
+            Empresa = elemento.Empresa,
             Nombre = elemento.Nombre,
             Mt2 = elemento.Mt2,
             Peso = elemento.Peso,
