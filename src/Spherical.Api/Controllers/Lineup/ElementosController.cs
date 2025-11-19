@@ -211,7 +211,6 @@ namespace Spherical.Api.Controllers.Lineup
             {
                 var precios = await _context.ListaPrecioDetalles
                     .Where(lpd => lpd.IdElemento == id)
-                    .Include(lpd => lpd.IdListaPrecio)
                     .Select(lpd => new ListaPrecioDetalleModelo
                     {
                         idListaPrecio = lpd.IdListaPrecio,

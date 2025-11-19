@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Spherical.Api.Models;
+﻿namespace Spherical.Api.Models;
 
 public partial class ListaPrecio
 {
