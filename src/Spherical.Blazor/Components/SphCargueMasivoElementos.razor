@@ -2,17 +2,16 @@
 @using Microsoft.JSInterop
 @using Spherical.Client.DTO.Lineup
 @using System.Globalization
+@using Spherical.Client.Services
 @inject ISnackbar Snackbar
 @inject IJSRuntime JS
 
 @code {
-    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
 }
 
 <MudDialog>
-    <TitleContent>
-        <MudText Typo="Typo.h6">Cargar Masiva de Elementos</MudText>
-    </TitleContent>
+    <TitleContent>Cargue masivo de Elementos</TitleContent>
     <DialogContent>
         <MudPaper Class="pa-3 mb-3">
             <MudText Typo="Typo.body1">
@@ -24,7 +23,7 @@
             </MudText>
             <div class="d-flex mt-2">
                 <InputFile OnChange="OnFileSelected" accept=".csv" />
-                <MudButton Class="ml-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="DescargarPlantilla" StartIcon="@Icons.Material.Filled.Download">
+                <MudButton Class="ml-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="DescargarPlantilla" StartIcon="@Icons.Material.Filled.Download" Disabled="@IsUploading">
                     Descargar plantilla
                 </MudButton>
             </div>
@@ -52,16 +51,36 @@
                 </Columns>
             </MudDataGrid>
         }
+
+       
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="Cancelar">Cancelar</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Importados.Count == 0)" OnClick="Confirmar">Cargar</MudButton>
+
+        @if (IsUploading)
+        {
+            <MudPaper Class="pa-3 mt-3">
+                <MudText Typo="Typo.body1">Cargando elementos...</MudText>
+                <MudProgressLinear Color="Color.Primary" Value="@ProgressValue" Class="mt-2" />
+                <MudText Typo="Typo.caption" Class="mt-1">@ProcessedCount / @Total procesados — Éxitos: @OkCount, Fallas: @FailCount</MudText>
+            </MudPaper>
+        }
+
+        <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="Cancelar" Disabled="@IsUploading">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Importados.Count == 0 || IsUploading)" OnClick="Confirmar">@(IsUploading ? "Cargando..." : "Cargar")</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
+    [Inject] private IElementoService ElementoService { get; set; }
+
     private List<ElementoDto> Importados = new();
     private string? ErrorMessage;
+    private bool IsUploading = false;
+    private int OkCount = 0;
+    private int FailCount = 0;
+    private int ProcessedCount = 0;
+    private int Total = 0;
+    private double ProgressValue => Total == 0 ? 0 : (ProcessedCount * 100.0 / Total);
 
     private async Task DescargarPlantilla()
     {
@@ -149,7 +168,6 @@
             {
                 var dto = new ElementoDto
                 {
-                    // Id se deja en 0; lo asigna el servidor si corresponde
                     IdGrupoElemento = cols[idxGrupo].Trim(),
                     IdUnidadMedida = cols[idxUnidad].Trim(),
                     Empresa = cols[idxEmpresa].Trim(),
@@ -164,7 +182,6 @@
             }
             catch (Exception ex)
             {
-                // Acumular error pero continuar
                 ErrorMessage = $"Error en línea {i + 1}: {ex.Message}";
             }
         }
@@ -172,7 +189,6 @@
 
     private static string[] SplitCsvLine(string line, char sep)
     {
-        // Manejo sencillo de valores entre comillas
         var result = new List<string>();
         bool inQuotes = false;
         var sb = new System.Text.StringBuilder();
@@ -181,11 +197,10 @@
             var c = line[i];
             if (c == '"')
             {
-                // toggle quotes o escape
                 if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
                 {
                     sb.Append('"');
-                    i++; // skip escaped quote
+                    i++;
                 }
                 else
                 {
@@ -207,7 +222,6 @@
 
     private static double ParseDouble(string s)
     {
-        // Permitir tanto punto como coma decimal
         if (double.TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out var d)) return d;
         if (double.TryParse(s, NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out d)) return d;
         if (double.TryParse(s, NumberStyles.Any, CultureInfo.GetCultureInfo("es-ES"), out d)) return d;
@@ -219,12 +233,35 @@
         return v is "si" or "true" or "1";
     }
 
-    private void Confirmar()
+    private async Task Confirmar()
     {
-        MudDialog.Close(DialogResult.Ok(Importados));
+        if (Importados.Count == 0) return;
+        IsUploading = true;
+        OkCount = 0; FailCount = 0; ProcessedCount = 0; Total = Importados.Count;
+        StateHasChanged();
+
+        foreach (var e in Importados)
+        {
+            try
+            {
+                var resp = await ElementoService.CreateElementoAsync(e);
+                if (resp.Success) OkCount++; else FailCount++;
+            }
+            catch
+            {
+                FailCount++;
+            }
+            ProcessedCount++;
+            StateHasChanged();
+        }
+
+        var resumen = $"Cargue finalizado. Éxitos: {OkCount}, Fallas: {FailCount}";
+        Snackbar.Add(resumen, FailCount == 0 ? Severity.Success : Severity.Warning);
+        MudDialog.Close(DialogResult.Ok(resumen));
     }
     private void Cancelar()
     {
+        if (IsUploading) return;
         MudDialog.Cancel();
     }
 }

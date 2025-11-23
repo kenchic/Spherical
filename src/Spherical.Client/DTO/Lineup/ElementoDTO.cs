@@ -16,6 +16,8 @@ namespace Spherical.Client.DTO.Lineup
         [Required(AllowEmptyStrings = false, ErrorMessage = Constants.RequiredFieldMsg)]
         [Display(Name = "EtiquetaGrupoElementoNombre")]
         public string IdGrupoElemento { get; set; }
+                
+        public string? NombreGrupoElemento { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = Constants.RequiredFieldMsg)]
         [Display(Name = "EtiquetaUnidadMedidaNombre")]

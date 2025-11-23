@@ -395,8 +395,14 @@
 
         if (!result.Canceled)
         {
-            if (result.Data is List<ElementoDto> nuevos && nuevos.Count > 0)
+            // Si el diálogo ya realizó el cargue, recibiremos un resumen en string.
+            if (result.Data is string resumen)
             {
+                Snackbar.Add(resumen, Severity.Info);
+            }
+            else if (result.Data is List<ElementoDto> nuevos && nuevos.Count > 0)
+            {
+                // Compatibilidad si el diálogo retorna la lista (versión anterior)
                 int ok = 0, fail = 0;
                 foreach (var e in nuevos)
                 {
@@ -414,8 +420,9 @@
                     }
                 }
                 Snackbar.Add($"Cargue finalizado. Éxitos: {ok}, Fallas: {fail}", fail == 0 ? Severity.Success : Severity.Warning);
-                await CargarElementos();
             }
+
+            await CargarElementos();
         }
     }
 }
