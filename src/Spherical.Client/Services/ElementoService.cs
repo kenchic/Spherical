@@ -8,12 +8,12 @@ namespace Spherical.Client.Services
 {
     public interface IElementoService
     {
-        Task<ApiResponse<IEnumerable<ElementoDTO>>> GetElementosAsync();
-        Task<ApiResponse<ElementoDTO>> GetElementoAsync(int id);
-        Task<ApiResponse<ElementoDTO>> CreateElementoAsync(ElementoDTO elemento);
-        Task<ApiResponse<string>> UpdateElementoAsync(int id, ElementoDTO elemento);
+        Task<ApiResponse<IEnumerable<ElementoDto>>> GetElementosAsync();
+        Task<ApiResponse<ElementoDto>> GetElementoAsync(int id);
+        Task<ApiResponse<ElementoDto>> CreateElementoAsync(ElementoDto elemento);
+        Task<ApiResponse<string>> UpdateElementoAsync(int id, ElementoDto elemento);
         Task<ApiResponse<string>> DeleteElementoAsync(int id);
-        Task<ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>> GetElementoPreciosAsync(int id);
+        Task<ApiResponse<IEnumerable<ListaPrecioDetalleDto>>> GetElementoPreciosAsync(int id);
         // Nuevo: obtener detalles de catálogo por idCatalogo
         Task<ApiResponse<IEnumerable<CatalogoDetalleModelo>>> GetCatalogoDetallesAsync(string idCatalogo);
     }
@@ -32,7 +32,7 @@ namespace Spherical.Client.Services
             };
         }
 
-        public async Task<ApiResponse<IEnumerable<ElementoDTO>>> GetElementosAsync()
+        public async Task<ApiResponse<IEnumerable<ElementoDto>>> GetElementosAsync()
         {
             try
             {
@@ -41,12 +41,12 @@ namespace Spherical.Client.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<ApiResponse<IEnumerable<ElementoDTO>>>(content, _jsonOptions);
-                    return result ?? new ApiResponse<IEnumerable<ElementoDTO>>();
+                    var result = JsonSerializer.Deserialize<ApiResponse<IEnumerable<ElementoDto>>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<IEnumerable<ElementoDto>>();
                 }
                 else
                 {
-                    return new ApiResponse<IEnumerable<ElementoDTO>>
+                    return new ApiResponse<IEnumerable<ElementoDto>>
                     {
                         Success = false,
                         ErrorMessage = $"Error al obtener elementos: {response.StatusCode}"
@@ -55,7 +55,7 @@ namespace Spherical.Client.Services
             }
             catch (Exception ex)
             {
-                return new ApiResponse<IEnumerable<ElementoDTO>>
+                return new ApiResponse<IEnumerable<ElementoDto>>
                 {
                     Success = false,
                     ErrorMessage = $"Error de conexión: {ex.Message}"
@@ -63,7 +63,7 @@ namespace Spherical.Client.Services
             }
         }
 
-        public async Task<ApiResponse<ElementoDTO>> GetElementoAsync(int id)
+        public async Task<ApiResponse<ElementoDto>> GetElementoAsync(int id)
         {
             try
             {
@@ -72,12 +72,12 @@ namespace Spherical.Client.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<ApiResponse<ElementoDTO>>(content, _jsonOptions);
-                    return result ?? new ApiResponse<ElementoDTO>();
+                    var result = JsonSerializer.Deserialize<ApiResponse<ElementoDto>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<ElementoDto>();
                 }
                 else
                 {
-                    return new ApiResponse<ElementoDTO>
+                    return new ApiResponse<ElementoDto>
                     {
                         Success = false,
                         ErrorMessage = $"Error al obtener elemento: {response.StatusCode}"
@@ -86,7 +86,7 @@ namespace Spherical.Client.Services
             }
             catch (Exception ex)
             {
-                return new ApiResponse<ElementoDTO>
+                return new ApiResponse<ElementoDto>
                 {
                     Success = false,
                     ErrorMessage = $"Error de conexión: {ex.Message}"
@@ -94,7 +94,7 @@ namespace Spherical.Client.Services
             }
         }
 
-        public async Task<ApiResponse<ElementoDTO>> CreateElementoAsync(ElementoDTO elemento)
+        public async Task<ApiResponse<ElementoDto>> CreateElementoAsync(ElementoDto elemento)
         {
             try
             {
@@ -103,12 +103,12 @@ namespace Spherical.Client.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<ApiResponse<ElementoDTO>>(content, _jsonOptions);
-                    return result ?? new ApiResponse<ElementoDTO>();
+                    var result = JsonSerializer.Deserialize<ApiResponse<ElementoDto>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<ElementoDto>();
                 }
                 else
                 {
-                    return new ApiResponse<ElementoDTO>
+                    return new ApiResponse<ElementoDto>
                     {
                         Success = false,
                         ErrorMessage = $"Error al crear elemento: {response.StatusCode}"
@@ -117,7 +117,7 @@ namespace Spherical.Client.Services
             }
             catch (Exception ex)
             {
-                return new ApiResponse<ElementoDTO>
+                return new ApiResponse<ElementoDto>
                 {
                     Success = false,
                     ErrorMessage = $"Error de conexión: {ex.Message}"
@@ -125,7 +125,7 @@ namespace Spherical.Client.Services
             }
         }
 
-        public async Task<ApiResponse<string>> UpdateElementoAsync(int id, ElementoDTO elemento)
+        public async Task<ApiResponse<string>> UpdateElementoAsync(int id, ElementoDto elemento)
         {
             try
             {
@@ -187,7 +187,7 @@ namespace Spherical.Client.Services
             }
         }
 
-        public async Task<ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>> GetElementoPreciosAsync(int id)
+        public async Task<ApiResponse<IEnumerable<ListaPrecioDetalleDto>>> GetElementoPreciosAsync(int id)
         {
             try
             {
@@ -196,12 +196,12 @@ namespace Spherical.Client.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>>(content, _jsonOptions);
-                    return result ?? new ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>();
+                    var result = JsonSerializer.Deserialize<ApiResponse<IEnumerable<ListaPrecioDetalleDto>>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<IEnumerable<ListaPrecioDetalleDto>>();
                 }
                 else
                 {
-                    return new ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>
+                    return new ApiResponse<IEnumerable<ListaPrecioDetalleDto>>
                     {
                         Success = false,
                         ErrorMessage = $"Error al obtener precios: {response.StatusCode}"
@@ -210,7 +210,7 @@ namespace Spherical.Client.Services
             }
             catch (Exception ex)
             {
-                return new ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>
+                return new ApiResponse<IEnumerable<ListaPrecioDetalleDto>>
                 {
                     Success = false,
                     ErrorMessage = $"Error de conexión: {ex.Message}"

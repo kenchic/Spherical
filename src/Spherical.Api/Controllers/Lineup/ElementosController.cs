@@ -20,7 +20,7 @@ namespace Spherical.Api.Controllers.Lineup
 
         // GET: api/v1/elementos
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<IEnumerable<ElementoDTO>>>> GetElementos()
+        public async Task<ActionResult<ApiResponse<IEnumerable<ElementoDto>>>> GetElementos()
         {
             try
             {
@@ -28,7 +28,7 @@ namespace Spherical.Api.Controllers.Lineup
                     .Select(x => EntityToDTO(x))
                     .ToListAsync();
 
-                var response = new ApiResponse<IEnumerable<ElementoDTO>>
+                var response = new ApiResponse<IEnumerable<ElementoDto>>
                 {
                     Data = elementos,
                     Success = true
@@ -45,7 +45,7 @@ namespace Spherical.Api.Controllers.Lineup
 
         // GET: api/v1/elementos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApiResponse<ElementoDTO>>> GetElemento(short id)
+        public async Task<ActionResult<ApiResponse<ElementoDto>>> GetElemento(short id)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace Spherical.Api.Controllers.Lineup
                     return NotFound(notFoundResponse);
                 }
 
-                var response = new ApiResponse<ElementoDTO>
+                var response = new ApiResponse<ElementoDto>
                 {
                     Data = EntityToDTO(elemento),
                     Success = true
@@ -74,7 +74,7 @@ namespace Spherical.Api.Controllers.Lineup
 
         // POST: api/v1/elementos
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<ElementoDTO>>> PostElemento(ElementoDTO dto)
+        public async Task<ActionResult<ApiResponse<ElementoDto>>> PostElemento(ElementoDto dto)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace Spherical.Api.Controllers.Lineup
 
                 dto.Id = elemento.Id;
 
-                var response = new ApiResponse<ElementoDTO>
+                var response = new ApiResponse<ElementoDto>
                 {
                     Data = dto,
                     Success = true,
@@ -114,7 +114,7 @@ namespace Spherical.Api.Controllers.Lineup
 
         // PUT: api/v1/elementos/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApiResponse<string>>> PutElemento(short id, ElementoDTO dto)
+        public async Task<ActionResult<ApiResponse<string>>> PutElemento(short id, ElementoDto dto)
         {
             if (id != dto.Id)
             {
@@ -205,23 +205,24 @@ namespace Spherical.Api.Controllers.Lineup
 
         // GET: api/v1/elementos/{id}/precios
         [HttpGet("{id}/precios")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>>> GetElementoPrecios(short id)
+        public async Task<ActionResult<ApiResponse<IEnumerable<ListaPrecioDetalleDto>>>> GetElementoPrecios(short id)
         {
             try
             {
                 var precios = await _context.ListaPrecioDetalles
                     .Where(lpd => lpd.IdElemento == id)
-                    .Select(lpd => new ListaPrecioDetalleModelo
+                    .Select(lpd => new ListaPrecioDetalleDto
                     {
                         idListaPrecio = lpd.IdListaPrecio,
                         idElemento = lpd.IdElemento,
                         PrecioAlquiler = lpd.PrecioAlquiler,
                         PrecioVenta = lpd.PrecioVenta,
-                        PrecioPerdida = lpd.PrecioPerdida
+                        PrecioPerdida = lpd.PrecioPerdida,
+                        NombreListaPrecio = lpd.IdListaPrecioNavigation.Nombre
                     })
                     .ToListAsync();
 
-                var response = new ApiResponse<IEnumerable<ListaPrecioDetalleModelo>>
+                var response = new ApiResponse<IEnumerable<ListaPrecioDetalleDto>>
                 {
                     Data = precios,
                     Success = true
@@ -241,8 +242,8 @@ namespace Spherical.Api.Controllers.Lineup
             return _context.Elementos.Any(e => e.Id == id);
         }
 
-        private static ElementoDTO EntityToDTO(Elemento elemento) =>
-            new ElementoDTO
+        private static ElementoDto EntityToDTO(Elemento elemento) =>
+            new ElementoDto
             {
                 Id = elemento.Id,
                 IdGrupoElemento = elemento.IdGrupoElemento,

@@ -141,26 +141,17 @@
                                     {
                                         <MudGrid>
                                             <MudItem xs="12">
-                                                <MudButton Variant="Variant.Filled"
-                                                           Color="Color.Secondary"
-                                                           StartIcon="@Icons.Material.Filled.Refresh"
-                                                           OnClick="CargarPrecios"
-                                                           Class="mb-4">
-                                                    Actualizar Precios
-                                                </MudButton>
-                                            </MudItem>
-                                            <MudItem xs="12">
                                                 @if (Precios.Any())
                                                 {
-                                                    <MudTable T="ListaPrecioDetalleModelo" Items="@Precios" Hover="true" Dense="true" Striped="true">
+                                                    <MudTable T="ListaPrecioDetalleDto" Items="@Precios" Hover="true" Dense="true" Striped="true">
                                                         <HeaderContent>
-                                                            <MudTh>Lista de Precio</MudTh>
+                                                            <MudTh>Nombre</MudTh>
                                                             <MudTh>Precio Alquiler</MudTh>
                                                             <MudTh>Precio Venta</MudTh>
                                                             <MudTh>Precio Pérdida</MudTh>
                                                         </HeaderContent>
                                                         <RowTemplate Context="precio">
-                                                            <MudTd DataLabel="Lista de Precio">Lista @precio.idListaPrecio</MudTd>
+                                                            <MudTd DataLabel="Lista de Precio">@precio.NombreListaPrecio</MudTd>
                                                             <MudTd DataLabel="Precio Alquiler">
                                                                 <MudText Color="Color.Primary">
                                                                     @precio.PrecioAlquiler.ToString("C2")
@@ -225,10 +216,10 @@
 
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
 
-    [Parameter] public ElementoDTO Elemento { get; set; } = new();
+    [Parameter] public ElementoDto Elemento { get; set; } = new();
     [Parameter] public bool EsNuevo { get; set; } = true;
 
-    private List<ListaPrecioDetalleModelo> Precios = new();
+    private List<ListaPrecioDetalleDto> Precios = new();
     private bool IsGuardando = false;
     private bool IsLoadingPrecios = false;
 

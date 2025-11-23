@@ -4,7 +4,7 @@ using Spherical.Core.Creative;
 
 namespace Spherical.Client.DTO.Lineup
 {
-    public class ElementoDTO
+    public class ElementoDto
     {
         #region Propiedades
 
@@ -35,11 +35,9 @@ namespace Spherical.Client.DTO.Lineup
         [Display(Name = "EtiquetaNombre")]
         public string Nombre { get; set; }
 
-        // Cambiar a nullable para que la validación Required funcione cuando esté vacío
         [Display(Name = "EtiquetaMt2")]
         public double Mt2 { get; set; }
 
-        // Cambiar a nullable para que la validación Required funcione cuando esté vacío
         [Display(Name = "EtiquetaPeso")]
         public double Peso { get; set; }
 
