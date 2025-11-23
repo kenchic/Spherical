@@ -1,9 +1,11 @@
+@using Microsoft.JSInterop
 @using Spherical.Client.DTO.Lineup
 @using Spherical.Client.Services
 @using System.Globalization
 @inject IElementoService ElementoService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject IJSRuntime JS
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
     <MudCard Elevation="4">
@@ -18,19 +20,35 @@
                 </MudText>
             </CardHeaderContent>
             <CardHeaderActions>
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           StartIcon="@Icons.Material.Filled.Add"
-                           OnClick="AbrirModalCrear">
-                    Nuevo
-                </MudButton>
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Secondary"
-                           StartIcon="@Icons.Material.Filled.Refresh"
-                           OnClick="CargarElementos"
-                           Class="ml-2">
-                    Actualizar
-                </MudButton>
+                <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+                    <MudIconButton 
+                               Color="Color.Primary"
+                               Title="Nuevo"
+                               Icon="@Icons.Material.Filled.Add"
+                               OnClick="AbrirModalCrear">
+                    </MudIconButton>
+                    <MudIconButton 
+                               Color="Color.Secondary"
+                               Title="Actualizar"
+                               Icon="@Icons.Material.Filled.Refresh"
+                               OnClick="CargarElementos"
+                               Class="ml-2">
+                    </MudIconButton>
+                    <MudIconButton 
+                               Color="Color.Info"
+                               Title="Exportar a Excel"
+                               Icon="@Icons.Material.Filled.Download"
+                               OnClick="ExportarExcel"
+                               Class="ml-2">
+                    </MudIconButton>
+                    <MudIconButton 
+                               Color="Color.Primary"
+                               Title="Cargue masivo"
+                               Icon="@Icons.Material.Filled.Upload"
+                               OnClick="AbrirCargueMasivo"
+                               Class="ml-2">
+                    </MudIconButton>
+                </MudButtonGroup>
             </CardHeaderActions>
         </MudCardHeader>
         <MudCardContent>
@@ -324,4 +342,98 @@
             }
         }
     }
+
+    private async Task ExportarExcel()
+    {
+        try
+        {
+            var separador = ";"; // Excel en es-ES suele usar ';' como separador por el separador decimal ','
+            var sb = new System.Text.StringBuilder();
+            // Cabeceras
+            sb.AppendLine(string.Join(separador, new[] { "ID", "Referencia", "Nombre", "M2", "Peso", "Rotacion", "Activo" }));
+
+            foreach (var e in ElementosFiltrados)
+            {
+                string Esc(string? s) => s == null ? string.Empty : s.Replace("\"", "\"\"");
+                string BoolTxt(bool b) => b ? "Si" : "No";
+                var fila = new[]
+                {
+                    e.Id.ToString(),
+                    $"\"{Esc(e.Referencia)}\"",
+                    $"\"{Esc(e.Nombre)}\"",
+                    e.Mt2.ToString("N2", CultureInfo.CurrentCulture),
+                    e.Peso.ToString("N2", CultureInfo.CurrentCulture),
+                    BoolTxt(e.Rotacion),
+                    BoolTxt(e.Activo)
+                };
+                sb.AppendLine(string.Join(separador, fila));
+            }
+
+            var csv = sb.ToString();
+            var bytes = System.Text.Encoding.UTF8.GetBytes('\uFEFF' + csv); // BOM para Excel
+            await JS.InvokeVoidAsync("downloadFile", "Elementos.csv", "text/csv;charset=utf-8", bytes);
+            Snackbar.Add("Descarga iniciada: Elementos.csv", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No fue posible exportar: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task AbrirCargueMasivo()
+    {
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.ExtraLarge,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<SphCargueMasivoElementos>("Cargue masivo de Elementos", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            if (result.Data is List<ElementoDto> nuevos && nuevos.Count > 0)
+            {
+                int ok = 0, fail = 0;
+                foreach (var e in nuevos)
+                {
+                    try
+                    {
+                        var resp = await ElementoService.CreateElementoAsync(e);
+                        if (resp.Success)
+                            ok++;
+                        else
+                            fail++;
+                    }
+                    catch
+                    {
+                        fail++;
+                    }
+                }
+                Snackbar.Add($"Cargue finalizado. Éxitos: {ok}, Fallas: {fail}", fail == 0 ? Severity.Success : Severity.Warning);
+                await CargarElementos();
+            }
+        }
+    }
 }
+
+<script>
+    window.downloadFile = (fileName, contentType, data) => {
+        try {
+            const blob = new Blob([data], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error('download error', e);
+        }
+    };
+</script>

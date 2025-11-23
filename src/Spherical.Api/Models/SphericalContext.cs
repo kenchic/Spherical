@@ -95,7 +95,7 @@ public partial class SphericalContext : DbContext
             entity.Property(e => e.Id)
                 .HasMaxLength(20)
                 .IsUnicode(false);
-            entity.Property(e => e.Activo).HasDefaultValue(true);
+            entity.Property(e => e.Activo).HasDefaultValue(true, "DF_CatalogoDetalle_Activo");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -156,16 +156,16 @@ public partial class SphericalContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Elementos");
 
-            entity.ToTable("Elemento");
+            entity.ToTable("Elemento", tb => tb.HasTrigger("trg_elemento_crear_listaprecios"));
 
             entity.Property(e => e.Empresa)
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.IdGrupoElemento)
-                .HasMaxLength(2)
+                .HasMaxLength(3)
                 .IsUnicode(false);
             entity.Property(e => e.IdUnidadMedida)
-                .HasMaxLength(2)
+                .HasMaxLength(3)
                 .IsUnicode(false);
             entity.Property(e => e.Nombre)
                 .HasMaxLength(100)
@@ -549,7 +549,7 @@ public partial class SphericalContext : DbContext
             entity.Property(e => e.Estado)
                 .HasMaxLength(20)
                 .IsUnicode(false)
-                .HasDefaultValue("P");
+                .HasDefaultValue("P", "DF_Ticket_Estado");
             entity.Property(e => e.FechaCreacion).HasColumnType("datetime");
             entity.Property(e => e.Prioridad)
                 .HasMaxLength(5)
