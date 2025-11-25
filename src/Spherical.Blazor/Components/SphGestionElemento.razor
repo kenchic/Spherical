@@ -109,6 +109,17 @@
                              Striped="true">
                     <Columns>
                         <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" />
+                        <TemplateColumn Title="Grupo" Sortable="true" SortBy="@(x => GetNombreGrupo(x.IdGrupoElemento))">
+                            <CellTemplate>
+                                @GetNombreGrupo(context.Item.IdGrupoElemento)
+                            </CellTemplate>
+                        </TemplateColumn>
+
+                        <TemplateColumn Title="Unidad" Sortable="true" SortBy="@(x => GetNombreUnidad(x.IdUnidadMedida))">
+                            <CellTemplate>
+                                @GetNombreUnidad(context.Item.IdUnidadMedida)
+                            </CellTemplate>
+                        </TemplateColumn>
                         <PropertyColumn Property="x => x.Referencia" Title="Referencia" Sortable="true" />
                         <PropertyColumn Property="x => x.Nombre" Title="Nombre" Sortable="true" />
                         <PropertyColumn Property="x => x.Mt2" Title="M²" Sortable="true">
@@ -173,8 +184,14 @@
     private bool? filtroRotacion = null;
     private bool? filtroActivo = null;
 
+    // NUEVO: mapas de catálogo para mostrar nombres
+    private Dictionary<string, string> GrupoNombre = new();
+    private Dictionary<string, string> UnidadNombre = new();
+
     protected override async Task OnInitializedAsync()
     {
+        // Primero cargamos catálogos para tener los nombres y luego los elementos
+        await CargarCatalogos();
         await CargarElementos();
     }
 
@@ -189,7 +206,9 @@
             elementosFiltrados = elementosFiltrados.Where(x => 
                 x.Id.ToString().Contains(searchTerm) ||
                 x.Referencia?.ToLowerInvariant().Contains(searchTerm) == true ||
-                x.Nombre?.ToLowerInvariant().Contains(searchTerm) == true
+                x.Nombre?.ToLowerInvariant().Contains(searchTerm) == true ||
+                GetNombreGrupo(x.IdGrupoElemento).ToLowerInvariant().Contains(searchTerm) ||
+                GetNombreUnidad(x.IdUnidadMedida).ToLowerInvariant().Contains(searchTerm)
             );
         }
 
@@ -206,6 +225,41 @@
         }
 
         return elementosFiltrados.ToList();
+    }
+
+    // NUEVO: cargar nombres de catálogos
+    private async Task CargarCatalogos()
+    {
+        try
+        {
+            var grupos = await ElementoService.GetCatalogoDetallesAsync("GRUPO_ELEMENTO");
+            if (grupos.Success && grupos.Data != null)
+                GrupoNombre = grupos.Data.ToDictionary(d => d.Id, d => d.Nombre);
+            else if (!string.IsNullOrWhiteSpace(grupos.ErrorMessage))
+                Snackbar.Add(grupos.ErrorMessage!, Severity.Warning);
+
+            var unidades = await ElementoService.GetCatalogoDetallesAsync("UN_ELEMENTO");
+            if (unidades.Success && unidades.Data != null)
+                UnidadNombre = unidades.Data.ToDictionary(d => d.Id, d => d.Nombre);
+            else if (!string.IsNullOrWhiteSpace(unidades.ErrorMessage))
+                Snackbar.Add(unidades.ErrorMessage!, Severity.Warning);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar catálogos: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private string GetNombreGrupo(string? id)
+    {
+        if (string.IsNullOrWhiteSpace(id)) return "-";
+        return GrupoNombre.TryGetValue(id, out var nombre) ? nombre : id;
+    }
+
+    private string GetNombreUnidad(string? id)
+    {
+        if (string.IsNullOrWhiteSpace(id)) return "-";
+        return UnidadNombre.TryGetValue(id, out var nombre) ? nombre : id;
     }
 
     private async Task CargarElementos()

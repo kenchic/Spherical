@@ -64,9 +64,11 @@
                 <MudText Typo="Typo.caption" Class="mt-1">@ProcessedCount / @Total procesados — Éxitos: @OkCount, Fallas: @FailCount</MudText>
             </MudPaper>
         }
-
-        <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="Cancelar" Disabled="@IsUploading">Cancelar</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Importados.Count == 0 || IsUploading)" OnClick="Confirmar">@(IsUploading ? "Cargando..." : "Cargar")</MudButton>
+        else
+        {
+            <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="Cancelar" Disabled="@IsUploading">Cancelar</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Importados.Count == 0 || IsUploading)" OnClick="Confirmar">@(IsUploading ? "Cargando..." : "Cargar")</MudButton>     
+        }
     </DialogActions>
 </MudDialog>
 
