@@ -4,6 +4,7 @@
 @using Spherical.Client.Services
 @using Spherical.Core.Creative.Models
 @using Spherical.Authentication
+@using System.Security.Claims
 @inject IOptions<AppSettings> AppSettings
 @inject AuthenticationStateProvider AuthStateProvider
 
@@ -39,25 +40,41 @@ else
     private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
 
     /// <summary>
-    /// Evento asíncrono después de renderizado
+    /// Evento asÃ­ncrono despuÃ©s de renderizado
     /// </summary>
     /// <param name="firstRender">Define si es la primera vez que se renderiza</param>
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        await base.OnAfterRenderAsync(firstRender);
+        //await base.OnAfterRenderAsync(firstRender);
 
-        if (firstRender)
+        //if (firstRender)
         {
             var token = (CustomAuthProvider as CustomAuthStateProvider)?.GetToken();
 
-            menu = await new MenuService(AppSettings.Value.ApiUrl, token).GetAsync("uplus", "ayzcorp");
+            // Obtener usuario y claims
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
 
+            // Extraer name y locale desde los claims (con fallback)
+            var name = GetClaim(user, ClaimTypes.Name, "name", "preferred_username", "unique_name") ?? "uplus";
+            var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "ayzcorp";
+
+            menu = await new MenuService(AppSettings.Value.ApiUrl, token).GetAsync(name, locale);
 
             StateHasChanged();
         }
     }
 
-
+    private string? GetClaim(ClaimsPrincipal user, params string[] types)
+    {
+        foreach (var type in types)
+        {
+            var claim = user.FindFirst(type);
+            if (claim != null && !string.IsNullOrEmpty(claim.Value))
+                return claim.Value;
+        }
+        return null;
+    }
 
     private List<UserMenuDTO> BuildMenuHierarchy(List<UserMenuDTO> flatMenu)
     {

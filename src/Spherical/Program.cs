@@ -1,11 +1,9 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.IdentityModel.Tokens;
 using MudBlazor.Services;
 using Spherical;
 using Spherical.Authentication;
+using Spherical.Client.Services;
 using Spherical.Core.Creative.Models;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,25 +17,15 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = jwtSettings["Key"];
-var issuer = jwtSettings["Issuer"];
-var audience = jwtSettings["Audience"];
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = issuer,
-            ValidAudience = audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
-        };
-    });
+// Configurar HttpClient para servicios
+builder.Services.AddHttpClient<IElementoService, ElementoService>(client =>
+{
+    // Asegura que la BaseAddress esté configurada para que las URIs relativas funcionen
+    var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
+    if (!apiUrl.EndsWith("/")) apiUrl += "/";
+    client.BaseAddress = new Uri(apiUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
 
 builder.Services.AddAuthorizationCore();
 var app = builder.Build();

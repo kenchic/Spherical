@@ -1,0 +1,377 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Spherical.Authentication
+@using Spherical.Client.DTO.Lineup
+@using Spherical.Client.Services
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Security.Claims
+@using Spherical.Client.DTO.Common
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IElementoService ElementoService
+@inject ISnackbar Snackbar
+
+<MudDialog >
+    <DialogContent>
+        <EditForm Model="@Elemento" OnValidSubmit="GuardarElemento" OnInvalidSubmit="OnInvalidSubmit">
+            <DataAnnotationsValidator />
+            <MudCard>
+                <MudCardContent>
+                    <MudContainer Style="max-height: 70vh; overflow-y: auto;">
+                        <MudTabs Elevation="4" Rounded="true" PanelClass="pa-6">
+                            <!-- Pestaña de Información Básica -->
+                            <MudTabPanel Text="Información Básica" Icon="@Icons.Material.Filled.Info">
+                                <MudGrid>
+                                    <MudItem xs="12" md="5">
+                                        <!-- Lista dinámica desde BD: GRUPO_ELEMENTO -->
+                                        <MudSelect T="string" @bind-Value="Elemento.IdGrupoElemento"
+                                                   Label="Grupo de Elemento"
+                                                   Variant="Variant.Outlined"
+                                                   Margin="Margin.Dense"
+                                                   For="@(() => Elemento.IdGrupoElemento)"
+                                                   HelperText="Seleccione el grupo al que pertenece [GRUPO_ELEMENTO]"
+                                                   Required="true">
+                                            @if (GrupoElementos?.Count > 0)
+                                            {
+                                                @foreach (var item in GrupoElementos)
+                                                {
+                                                    <MudSelectItem Value="@item.Id">@item.Nombre</MudSelectItem>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <MudSelectItem Value="@Elemento.IdGrupoElemento">(sin datos)</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12" md="7">
+                                        <MudTextField @bind-Value="Elemento.Referencia"
+                                                      Label="Referencia"
+                                                      Variant="Variant.Outlined"
+                                                      Margin="Margin.Dense"
+                                                      Required="true"
+                                                      RequiredError="Este campo es obligatorio"
+                                                      For="@(() => Elemento.Referencia)"
+                                                      HelperText="Código único del elemento" />
+                                    </MudItem>
+                                    <MudItem xs="12" md="5">
+                                        <!-- Lista dinámica desde BD: UN_ELEMENTO -->
+                                        <MudSelect T="string" @bind-Value="Elemento.IdUnidadMedida"
+                                                   Label="Unidad de Medida"
+                                                   Variant="Variant.Outlined"
+                                                   Margin="Margin.Dense"
+                                                   For="@(() => Elemento.IdUnidadMedida)"
+                                                   HelperText="Seleccione la unidad de medida [UD_MEDIDA]"
+                                                   Required="true"
+                                                   RequiredError="Este campo es obligatorio">
+                                            @if (UnidadesMedida?.Count > 0)
+                                            {
+                                                @foreach (var item in UnidadesMedida)
+                                                {
+                                                    <MudSelectItem Value="@item.Id">@item.Nombre</MudSelectItem>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <MudSelectItem Value="@Elemento.IdUnidadMedida">(sin datos)</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>                                    
+                                    <MudItem xs="12" md="7">
+                                        <MudTextField @bind-Value="Elemento.Nombre"
+                                                      Label="Nombre"
+                                                      Variant="Variant.Outlined"
+                                                      Margin="Margin.Dense"
+                                                      Required="true"
+                                                      RequiredError="Este campo es obligatorio"
+                                                      For="@(() => Elemento.Nombre)"
+                                                      HelperText="Nombre descriptivo del elemento" />
+                                    </MudItem>
+                                    <MudItem xs="12" md="3">
+                                        <MudNumericField @bind-Value="Elemento.Mt2"
+                                                         Label="Metros Cuadrados (M²)"
+                                                         Variant="Variant.Outlined"
+                                                         Margin="Margin.Dense"
+                                                         Format="N2"
+                                                         For="@(() => Elemento.Mt2)"
+                                                         HelperText="Área en metros cuadrados" />
+                                    </MudItem>
+                                    <MudItem xs="12" md="3">
+                                        <MudNumericField @bind-Value="Elemento.Peso"
+                                                         Label="Peso (Kg)"
+                                                         Variant="Variant.Outlined"
+                                                         Margin="Margin.Dense"
+                                                         Format="N2"
+                                                         For="@(() => Elemento.Peso)"
+                                                         HelperText="Peso en kilogramos" />
+                                    </MudItem>
+                                    <!-- Cambiar Rotacion a un switch (es booleano) -->
+                                    <MudItem xs="12" md="3">
+                                        <MudSwitch @bind-Value="Elemento.Rotacion"
+                                                   Label="Rotación"
+                                                   Color="Color.Primary"
+                                                   For="@(() => Elemento.Rotacion)" />
+                                    </MudItem>
+                                    
+                                    <MudItem xs="12" md="3">
+                                        <MudSwitch @bind-Value="Elemento.Activo"
+                                                   Label="Activo"
+                                                   Color="Color.Primary"
+                                                   For="@(() => Elemento.Activo)" />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudTabPanel>
+
+                            <!-- Pestaña de Lista de Precios -->
+                            <MudTabPanel Text="Lista de Precios" Icon="@Icons.Material.Filled.AttachMoney" Disabled="@EsNuevo">
+                                @if (EsNuevo)
+                                {
+                                    <MudAlert Severity="Severity.Info" Class="mb-4">
+                                        <MudText>Los precios solo pueden configurarse después de crear el elemento.</MudText>
+                                    </MudAlert>
+                                }
+                                else
+                                {
+                                    @if (IsLoadingPrecios)
+                                    {
+                                        <div class="d-flex justify-center align-center" style="height: 200px;">
+                                            <MudProgressCircular Color="Color.Primary" Size="Size.Medium" Indeterminate="true" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <MudGrid>
+                                            <MudItem xs="12">
+                                                @if (Precios.Any())
+                                                {
+                                                    <MudTable T="ListaPrecioDetalleDto" Items="@Precios" Hover="true" Dense="true" Striped="true">
+                                                        <HeaderContent>
+                                                            <MudTh>Nombre</MudTh>
+                                                            <MudTh>Precio Alquiler</MudTh>
+                                                            <MudTh>Precio Venta</MudTh>
+                                                            <MudTh>Precio Pérdida</MudTh>
+                                                        </HeaderContent>
+                                                        <RowTemplate Context="precio">
+                                                            <MudTd DataLabel="Lista de Precio">@precio.NombreListaPrecio</MudTd>
+                                                            <MudTd DataLabel="Precio Alquiler">
+                                                                <MudText Color="Color.Primary">
+                                                                    @precio.PrecioAlquiler.ToString("C2")
+                                                                </MudText>
+                                                            </MudTd>
+                                                            <MudTd DataLabel="Precio Venta">
+                                                                <MudText Color="Color.Success">
+                                                                    @precio.PrecioVenta.ToString("C2")
+                                                                </MudText>
+                                                            </MudTd>
+                                                            <MudTd DataLabel="Precio Pérdida">
+                                                                <MudText Color="Color.Error">
+                                                                    @precio.PrecioPerdida.ToString("C2")
+                                                                </MudText>
+                                                            </MudTd>
+                                                        </RowTemplate>
+                                                    </MudTable>
+                                                }
+                                                else
+                                                {
+                                                    <MudAlert Severity="Severity.Info">
+                                                        <MudText>No hay precios configurados para este elemento.</MudText>
+                                                    </MudAlert>
+                                                }
+                                            </MudItem>
+                                        </MudGrid>
+                                    }
+                                }
+                            </MudTabPanel>
+                        </MudTabs>
+
+                    </MudContainer>
+
+                </MudCardContent>
+                <MudCardActions Class="d-flex justify-end">
+                    <MudButton OnClick="Cancel" Class="me-2">Cancelar</MudButton>
+                    <MudButton Color="Color.Primary"
+                               ButtonType="ButtonType.Submit"
+                               Variant="Variant.Filled"
+                               Disabled="@IsGuardando">
+                        @if (IsGuardando)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Guardando...</MudText>
+                        }
+                        else
+                        {
+                            @(EsNuevo ? "Crear" : "Actualizar")
+                        }
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter] public ElementoDto Elemento { get; set; } = new();
+    [Parameter] public bool EsNuevo { get; set; } = true;
+
+    private List<ListaPrecioDetalleDto> Precios = new();
+    private bool IsGuardando = false;
+    private bool IsLoadingPrecios = false;
+
+    private List<CatalogoDetalleModelo> GrupoElementos = new();
+    private List<CatalogoDetalleModelo> UnidadesMedida = new();
+
+    private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Cargar catálogos para selects
+        await CargarCatalogos();
+
+        if (!EsNuevo && Elemento.Id > 0)
+        {
+            await CargarPrecios();
+        }
+        else
+        {
+            // Obtener usuario y claims
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // Extraer name y locale desde los claims (con fallback)
+            var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "AYZCORP";
+            Elemento.Empresa = locale;
+        }
+    }
+
+    private async Task CargarCatalogos()
+    {
+        try
+        {
+            var gruposResp = await ElementoService.GetCatalogoDetallesAsync("GRUPO_ELEMENTO");
+            if (gruposResp.Success && gruposResp.Data != null)
+            {
+                GrupoElementos = gruposResp.Data.ToList();
+            }
+            else
+            {
+                Snackbar.Add(gruposResp.ErrorMessage ?? "No se pudieron cargar los grupos de elemento", Severity.Warning);
+            }
+
+            var unidadesResp = await ElementoService.GetCatalogoDetallesAsync("UN_ELEMENTO");
+            if (unidadesResp.Success && unidadesResp.Data != null)
+            {
+                UnidadesMedida = unidadesResp.Data.ToList();
+            }
+            else
+            {
+                Snackbar.Add(unidadesResp.ErrorMessage ?? "No se pudieron cargar las unidades de medida", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error cargando catálogos: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task CargarPrecios()
+    {
+        if (EsNuevo || Elemento.Id <= 0) return;
+
+        IsLoadingPrecios = true;
+        StateHasChanged();
+
+        try
+        {
+            var response = await ElementoService.GetElementoPreciosAsync(Elemento.Id);
+            if (response.Success && response.Data != null)
+            {
+                Precios = response.Data.ToList();
+            }
+            else
+            {
+                Snackbar.Add(response.ErrorMessage ?? "Error al cargar precios", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar precios: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoadingPrecios = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GuardarElemento()
+    {
+        IsGuardando = true;
+        StateHasChanged();
+
+        try
+        {
+            if (EsNuevo)
+            {
+
+
+                var response = await ElementoService.CreateElementoAsync(Elemento);
+                if (response.Success)
+                {
+                    Snackbar.Add("Elemento creado exitosamente", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    Snackbar.Add(response.ErrorMessage ?? "Error al crear elemento", Severity.Error);
+                }
+            }
+            else
+            {
+                var response = await ElementoService.UpdateElementoAsync(Elemento.Id, Elemento);
+                if (response.Success)
+                {
+                    Snackbar.Add("Elemento actualizado exitosamente", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    Snackbar.Add(response.ErrorMessage ?? "Error al actualizar elemento", Severity.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error inesperado: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsGuardando = false;
+            StateHasChanged();
+        }
+
+    }
+
+    private void OnInvalidSubmit(EditContext editContext)
+    {
+        Snackbar.Add("Por favor, completa los campos requeridos antes de continuar.", Severity.Warning);
+    }
+
+    private string? GetClaim(ClaimsPrincipal user, params string[] types)
+    {
+        foreach (var type in types)
+        {
+            var claim = user.FindFirst(type);
+            if (claim != null && !string.IsNullOrEmpty(claim.Value))
+                return claim.Value;
+        }
+        return null;
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

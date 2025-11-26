@@ -1,0 +1,269 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+@using Spherical.Client.DTO.Lineup
+@using System.Globalization
+@using Spherical.Client.Services
+@inject ISnackbar Snackbar
+@inject IJSRuntime JS
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+}
+
+<MudDialog>
+    <TitleContent>Cargue masivo de Elementos</TitleContent>
+    <DialogContent>
+        <MudPaper Class="pa-3 mb-3">
+            <MudText Typo="Typo.body1">
+                Seleccione un archivo CSV con las columnas: IdGrupoElemento;IdUnidadMedida;Empresa;Referencia;Nombre;Mt2;Peso;Rotacion;Activo
+            </MudText>
+            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                - Use ';' como separador. Rotacion/Activo aceptan "Si/No", "True/False" o "1/0". Los decimales se interpretan según su configuración regional.<br />
+                - Puede descargar una plantilla vacía.
+            </MudText>
+            <div class="d-flex mt-2">
+                <InputFile OnChange="OnFileSelected" accept=".csv" />
+                <MudButton Class="ml-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="DescargarPlantilla" StartIcon="@Icons.Material.Filled.Download" Disabled="@IsUploading">
+                    Descargar plantilla
+                </MudButton>
+            </div>
+        </MudPaper>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+        }
+
+        @if (Importados.Count > 0)
+        {
+            <MudText Typo="Typo.body1" Class="mb-2">Vista previa (@Importados.Count registros)</MudText>
+            <MudDataGrid T="ElementoDto" Items="Importados" Dense="true" Striped="true" Hover="true" PageSize="5">
+                <Columns>
+                    <PropertyColumn Property="x => x.IdGrupoElemento" Title="Grupo" />
+                    <PropertyColumn Property="x => x.IdUnidadMedida" Title="Unidad" />
+                    <PropertyColumn Property="x => x.Empresa" Title="Empresa" />
+                    <PropertyColumn Property="x => x.Referencia" Title="Referencia" />
+                    <PropertyColumn Property="x => x.Nombre" Title="Nombre" />
+                    <PropertyColumn Property="x => x.Mt2" Title="M²" />
+                    <PropertyColumn Property="x => x.Peso" Title="Peso" />
+                    <PropertyColumn Property="x => x.Rotacion" Title="Rotación" />
+                    <PropertyColumn Property="x => x.Activo" Title="Activo" />
+                </Columns>
+            </MudDataGrid>
+        }
+
+       
+    </DialogContent>
+    <DialogActions>
+
+        @if (IsUploading)
+        {
+            <MudPaper Class="pa-3 mt-3">
+                <MudText Typo="Typo.body1">Cargando elementos...</MudText>
+                <MudProgressLinear Color="Color.Primary" Value="@ProgressValue" Class="mt-2" />
+                <MudText Typo="Typo.caption" Class="mt-1">@ProcessedCount / @Total procesados — Éxitos: @OkCount, Fallas: @FailCount</MudText>
+            </MudPaper>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="Cancelar" Disabled="@IsUploading">Cancelar</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(Importados.Count == 0 || IsUploading)" OnClick="Confirmar">@(IsUploading ? "Cargando..." : "Cargar")</MudButton>     
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Inject] private IElementoService ElementoService { get; set; }
+
+    private List<ElementoDto> Importados = new();
+    private string? ErrorMessage;
+    private bool IsUploading = false;
+    private int OkCount = 0;
+    private int FailCount = 0;
+    private int ProcessedCount = 0;
+    private int Total = 0;
+    private double ProgressValue => Total == 0 ? 0 : (ProcessedCount * 100.0 / Total);
+
+    private async Task DescargarPlantilla()
+    {
+        var separador = ";";
+        var encabezado = string.Join(separador, new[] { "IdGrupoElemento", "IdUnidadMedida", "Empresa", "Referencia", "Nombre", "Mt2", "Peso", "Rotacion", "Activo" });
+        var bytes = System.Text.Encoding.UTF8.GetBytes('\uFEFF' + encabezado + System.Environment.NewLine);
+        await JS.InvokeVoidAsync("downloadFile", "PlantillaElementos.csv", "text/csv;charset=utf-8", bytes);
+        Snackbar.Add("Se descargó la plantilla", Severity.Info);
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        ErrorMessage = null;
+        Importados.Clear();
+
+        var file = e.File;
+        if (file == null)
+        {
+            ErrorMessage = "No se seleccionó archivo";
+            return;
+        }
+        if (!file.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+        {
+            ErrorMessage = "Formato inválido. Solo CSV";
+            return;
+        }
+
+        try
+        {
+            using var stream = file.OpenReadStream(maxAllowedSize: 20 * 1024 * 1024); // 20MB
+            using var reader = new StreamReader(stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
+            var contenido = await reader.ReadToEndAsync();
+            ParseCsv(contenido);
+            if (Importados.Count == 0)
+                ErrorMessage = "No se encontraron registros en el archivo";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error leyendo archivo: {ex.Message}";
+        }
+    }
+
+    private void ParseCsv(string csv)
+    {
+        var separador = ';';
+        var lineas = csv.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        if (lineas.Length < 2)
+        {
+            ErrorMessage = "El archivo no contiene encabezado y datos";
+            return;
+        }
+
+        var headers = lineas[0].Split(separador);
+        int idxGrupo = Array.IndexOf(headers, "IdGrupoElemento");
+        int idxUnidad = Array.IndexOf(headers, "IdUnidadMedida");
+        int idxEmpresa = Array.IndexOf(headers, "Empresa");
+        int idxRef = Array.IndexOf(headers, "Referencia");
+        int idxNom = Array.IndexOf(headers, "Nombre");
+        int idxMt2 = Array.IndexOf(headers, "Mt2");
+        int idxPeso = Array.IndexOf(headers, "Peso");
+        int idxRot = Array.IndexOf(headers, "Rotacion");
+        int idxAct = Array.IndexOf(headers, "Activo");
+
+        var faltantes = new List<string>();
+        if (idxGrupo < 0) faltantes.Add("IdGrupoElemento");
+        if (idxUnidad < 0) faltantes.Add("IdUnidadMedida");
+        if (idxEmpresa < 0) faltantes.Add("Empresa");
+        if (idxRef < 0) faltantes.Add("Referencia");
+        if (idxNom < 0) faltantes.Add("Nombre");
+        if (idxMt2 < 0) faltantes.Add("Mt2");
+        if (idxPeso < 0) faltantes.Add("Peso");
+        if (idxRot < 0) faltantes.Add("Rotacion");
+        if (idxAct < 0) faltantes.Add("Activo");
+
+        if (faltantes.Count > 0)
+        {
+            ErrorMessage = $"Faltan columnas: {string.Join(", ", faltantes)}";
+            return;
+        }
+
+        for (int i = 1; i < lineas.Length; i++)
+        {
+            var cols = SplitCsvLine(lineas[i], separador);
+            try
+            {
+                var dto = new ElementoDto
+                {
+                    IdGrupoElemento = cols[idxGrupo].Trim(),
+                    IdUnidadMedida = cols[idxUnidad].Trim(),
+                    Empresa = cols[idxEmpresa].Trim(),
+                    Referencia = cols[idxRef].Trim(),
+                    Nombre = cols[idxNom].Trim(),
+                    Mt2 = ParseDouble(cols[idxMt2]),
+                    Peso = ParseDouble(cols[idxPeso]),
+                    Rotacion = ParseBool(cols[idxRot]),
+                    Activo = ParseBool(cols[idxAct])
+                };
+                Importados.Add(dto);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error en línea {i + 1}: {ex.Message}";
+            }
+        }
+    }
+
+    private static string[] SplitCsvLine(string line, char sep)
+    {
+        var result = new List<string>();
+        bool inQuotes = false;
+        var sb = new System.Text.StringBuilder();
+        for (int i = 0; i < line.Length; i++)
+        {
+            var c = line[i];
+            if (c == '"')
+            {
+                if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
+                {
+                    sb.Append('"');
+                    i++;
+                }
+                else
+                {
+                    inQuotes = !inQuotes;
+                }
+            }
+            else if (c == sep && !inQuotes)
+            {
+                result.Add(sb.ToString()); sb.Clear();
+            }
+            else
+            {
+                sb.Append(c);
+            }
+        }
+        result.Add(sb.ToString());
+        return result.ToArray();
+    }
+
+    private static double ParseDouble(string s)
+    {
+        if (double.TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out var d)) return d;
+        if (double.TryParse(s, NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out d)) return d;
+        if (double.TryParse(s, NumberStyles.Any, CultureInfo.GetCultureInfo("es-ES"), out d)) return d;
+        throw new FormatException($"Número inválido: {s}");
+    }
+    private static bool ParseBool(string s)
+    {
+        var v = s.Trim().ToLowerInvariant();
+        return v is "si" or "true" or "1";
+    }
+
+    private async Task Confirmar()
+    {
+        if (Importados.Count == 0) return;
+        IsUploading = true;
+        OkCount = 0; FailCount = 0; ProcessedCount = 0; Total = Importados.Count;
+        StateHasChanged();
+
+        foreach (var e in Importados)
+        {
+            try
+            {
+                var resp = await ElementoService.CreateElementoAsync(e);
+                if (resp.Success) OkCount++; else FailCount++;
+            }
+            catch
+            {
+                FailCount++;
+            }
+            ProcessedCount++;
+            StateHasChanged();
+        }
+
+        var resumen = $"Cargue finalizado. Éxitos: {OkCount}, Fallas: {FailCount}";
+        Snackbar.Add(resumen, FailCount == 0 ? Severity.Success : Severity.Warning);
+        MudDialog.Close(DialogResult.Ok(resumen));
+    }
+    private void Cancelar()
+    {
+        if (IsUploading) return;
+        MudDialog.Cancel();
+    }
+}

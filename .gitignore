@@ -161,3 +161,8 @@
 /src/Spherical.Blazor/bin/Debug/net9.0
 /src/Spherical.Client/bin/Debug/net9.0
 /src/Spherical.Core/bin/Debug/net9.0
+/src/Spherical/bin/Debug/net10.0
+/src/Spherical.Api/bin/Debug/net10.0
+/src/Spherical.Blazor/bin/Debug/net10.0
+/src/Spherical.Client/bin/Debug/net10.0
+/src/Spherical.Core/bin/Debug/net10.0

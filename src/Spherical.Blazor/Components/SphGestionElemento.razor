@@ -1,0 +1,500 @@
+@using Microsoft.JSInterop
+@using Spherical.Client.DTO.Lineup
+@using Spherical.Client.Services
+@using System.Globalization
+@inject IElementoService ElementoService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
+    <MudCard Elevation="4">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-3" />
+                    <MudText Typo="Typo.h5">Gestión de Elementos</MudText>                    
+                </div>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Administre los elementos de su empresa, incluyendo información básica y listas de precios
+                </MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+                    <MudIconButton 
+                               Color="Color.Primary"
+                               Title="Nuevo"
+                               Icon="@Icons.Material.Filled.Add"
+                               OnClick="AbrirModalCrear">
+                    </MudIconButton>
+                    <MudIconButton 
+                               Color="Color.Secondary"
+                               Title="Actualizar"
+                               Icon="@Icons.Material.Filled.Refresh"
+                               OnClick="CargarElementos"
+                               Class="ml-2">
+                    </MudIconButton>
+                    <MudIconButton 
+                               Color="Color.Info"
+                               Title="Exportar a Excel"
+                               Icon="@Icons.Material.Filled.Download"
+                               OnClick="ExportarExcel"
+                               Class="ml-2">
+                    </MudIconButton>
+                    <MudIconButton 
+                               Color="Color.Primary"
+                               Title="Cargue masivo"
+                               Icon="@Icons.Material.Filled.Upload"
+                               OnClick="AbrirCargueMasivo"
+                               Class="ml-2">
+                    </MudIconButton>
+                </MudButtonGroup>
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (IsLoading)
+            {
+                <div class="d-flex justify-center align-center" style="height: 200px;">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <MudGrid Class="mb-4">
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudTextField @bind-Value="searchString" 
+                                      Placeholder="Buscar por referencia, nombre o ID..." 
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Search"
+                                      Immediate="true"
+                                      DebounceInterval="300"
+                                      Clearable="true"
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="2">
+                        <MudSelect @bind-Value="filtroRotacion" 
+                                   Placeholder="Rotación"
+                                   Clearable="true"
+                                   Margin="Margin.Dense"
+                                   Adornment="Adornment.Start"
+                                   AdornmentIcon="@Icons.Material.Filled.Sync">
+                            <MudSelectItem Value="@((bool?)true)">Sí</MudSelectItem>
+                            <MudSelectItem Value="@((bool?)false)">No</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="2">
+                        <MudSelect @bind-Value="filtroActivo" 
+                                   Placeholder="Estado"
+                                   Clearable="true"
+                                   Margin="Margin.Dense"
+                                   Adornment="Adornment.Start"
+                                   AdornmentIcon="@Icons.Material.Filled.Flag">
+                            <MudSelectItem Value="@((bool?)true)">Activo</MudSelectItem>
+                            <MudSelectItem Value="@((bool?)false)">Inactivo</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+
+                <MudDataGrid T="ElementoDto"
+                             Items="@ElementosFiltrados"
+                             SortMode="SortMode.Multiple"
+                             Groupable="false"
+                             Pageable="true"
+                             PageSize="10"
+                             RowsPerPageString="Filas por página"
+                             InfoFormat="{first_item}-{last_item} de {all_items}"
+                             PaginationClass="my-custom-class"
+                             Hover="true"
+                             Dense="true"
+                             Striped="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" />
+                        <TemplateColumn Title="Grupo" Sortable="true" SortBy="@(x => GetNombreGrupo(x.IdGrupoElemento))">
+                            <CellTemplate>
+                                @GetNombreGrupo(context.Item.IdGrupoElemento)
+                            </CellTemplate>
+                        </TemplateColumn>
+
+                        <TemplateColumn Title="Unidad" Sortable="true" SortBy="@(x => GetNombreUnidad(x.IdUnidadMedida))">
+                            <CellTemplate>
+                                @GetNombreUnidad(context.Item.IdUnidadMedida)
+                            </CellTemplate>
+                        </TemplateColumn>
+                        <PropertyColumn Property="x => x.Referencia" Title="Referencia" Sortable="true" />
+                        <PropertyColumn Property="x => x.Nombre" Title="Nombre" Sortable="true" />
+                        <PropertyColumn Property="x => x.Mt2" Title="M²" Sortable="true">
+                            <CellTemplate>
+                                @context.Item.Mt2.ToString("N2", CultureInfo.CurrentCulture)
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Peso" Title="Peso (Kg)" Sortable="true">
+                            <CellTemplate>
+                                @context.Item.Peso.ToString("N2", CultureInfo.CurrentCulture)
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Rotacion" Title="Rotación" Sortable="true">
+                            <CellTemplate>
+                                <MudChip T="string"
+                                         Color="@( @context.Item.Rotacion ? Color.Success : Color.Default)"
+                                         Size="Size.Small">
+                                    @( @context.Item.Rotacion ? "Si" : "No")
+                                </MudChip>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Activo" Title="Estado" Sortable="true">
+                            <CellTemplate>
+                                <MudChip T="string" 
+                                         Color="@(context.Item.Activo ? Color.Success : Color.Default)" 
+                                         Size="Size.Small">
+                                    @(context.Item.Activo ? "Activo" : "Inactivo")
+                                </MudChip>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <TemplateColumn Title="Acciones" Sortable="false">
+                            <CellTemplate>
+                                <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                   Color="Color.Primary"
+                                                   Size="Size.Small"
+                                                   OnClick="@(() => AbrirModalEditar(context.Item))"
+                                                   Title="Editar" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                   Color="Color.Error"
+                                                   Size="Size.Small"
+                                                   OnClick="@(() => EliminarElemento(context.Item))"
+                                                   Title="Desactivar" />
+                                </MudButtonGroup>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="ElementoDto" PageSizeOptions=@(new int[] { 5, 10, 15, 20 }) />
+                    </PagerContent>
+                </MudDataGrid>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private List<ElementoDto> Elementos = new();
+    private List<ElementoDto> ElementosFiltrados => FiltrarElementos();
+    private bool IsLoading = true;
+    private string searchString = string.Empty;
+    private bool? filtroRotacion = null;
+    private bool? filtroActivo = null;
+
+    // NUEVO: mapas de catálogo para mostrar nombres
+    private Dictionary<string, string> GrupoNombre = new();
+    private Dictionary<string, string> UnidadNombre = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Primero cargamos catálogos para tener los nombres y luego los elementos
+        await CargarCatalogos();
+        await CargarElementos();
+    }
+
+    private List<ElementoDto> FiltrarElementos()
+    {
+        var elementosFiltrados = Elementos.AsEnumerable();
+
+        // Filtro por texto de búsqueda
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var searchTerm = searchString.ToLowerInvariant();
+            elementosFiltrados = elementosFiltrados.Where(x => 
+                x.Id.ToString().Contains(searchTerm) ||
+                x.Referencia?.ToLowerInvariant().Contains(searchTerm) == true ||
+                x.Nombre?.ToLowerInvariant().Contains(searchTerm) == true ||
+                GetNombreGrupo(x.IdGrupoElemento).ToLowerInvariant().Contains(searchTerm) ||
+                GetNombreUnidad(x.IdUnidadMedida).ToLowerInvariant().Contains(searchTerm)
+            );
+        }
+
+        // Filtro por Rotación
+        if (filtroRotacion.HasValue)
+        {
+            elementosFiltrados = elementosFiltrados.Where(x => x.Rotacion == filtroRotacion.Value);
+        }
+
+        // Filtro por Estado
+        if (filtroActivo.HasValue)
+        {
+            elementosFiltrados = elementosFiltrados.Where(x => x.Activo == filtroActivo.Value);
+        }
+
+        return elementosFiltrados.ToList();
+    }
+
+    // NUEVO: cargar nombres de catálogos
+    private async Task CargarCatalogos()
+    {
+        try
+        {
+            var grupos = await ElementoService.GetCatalogoDetallesAsync("GRUPO_ELEMENTO");
+            if (grupos.Success && grupos.Data != null)
+                GrupoNombre = grupos.Data.ToDictionary(d => d.Id, d => d.Nombre);
+            else if (!string.IsNullOrWhiteSpace(grupos.ErrorMessage))
+                Snackbar.Add(grupos.ErrorMessage!, Severity.Warning);
+
+            var unidades = await ElementoService.GetCatalogoDetallesAsync("UN_ELEMENTO");
+            if (unidades.Success && unidades.Data != null)
+                UnidadNombre = unidades.Data.ToDictionary(d => d.Id, d => d.Nombre);
+            else if (!string.IsNullOrWhiteSpace(unidades.ErrorMessage))
+                Snackbar.Add(unidades.ErrorMessage!, Severity.Warning);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar catálogos: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private string GetNombreGrupo(string? id)
+    {
+        if (string.IsNullOrWhiteSpace(id)) return "-";
+        return GrupoNombre.TryGetValue(id, out var nombre) ? nombre : id;
+    }
+
+    private string GetNombreUnidad(string? id)
+    {
+        if (string.IsNullOrWhiteSpace(id)) return "-";
+        return UnidadNombre.TryGetValue(id, out var nombre) ? nombre : id;
+    }
+
+    private async Task CargarElementos()
+    {
+        IsLoading = true;
+        filtroActivo = true;
+        StateHasChanged();
+
+        try
+        {
+            var response = await ElementoService.GetElementosAsync();
+            if (response.Success && response.Data != null)
+            {
+                Elementos = response.Data.ToList();
+            }
+            else
+            {
+                Snackbar.Add(response.ErrorMessage ?? "Error al cargar elementos", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error inesperado: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task AbrirModalCrear()
+    {
+        var parameters = new DialogParameters<SphElementoModal>
+        {
+            { x => x.Elemento, new ElementoDto() },
+            { x => x.EsNuevo, true }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<SphElementoModal>("Crear Elemento", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await CargarElementos();
+        }
+    }
+
+    private async Task AbrirModalEditar(ElementoDto elemento)
+    {
+        var elementoCopia = new ElementoDto
+        {
+            Id = elemento.Id,
+            IdGrupoElemento = elemento.IdGrupoElemento,
+            IdUnidadMedida = elemento.IdUnidadMedida,
+            Referencia = elemento.Referencia,
+            Empresa = elemento.Empresa,
+            Nombre = elemento.Nombre,
+            Mt2 = elemento.Mt2,
+            Peso = elemento.Peso,
+            Rotacion = elemento.Rotacion,
+            Activo = elemento.Activo
+        };
+
+        var parameters = new DialogParameters<SphElementoModal>
+        {
+            { x => x.Elemento, elementoCopia },
+            { x => x.EsNuevo, false }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<SphElementoModal>("Editar Elemento", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await CargarElementos();
+        }
+    }
+
+    private async Task EliminarElemento(ElementoDto elemento)
+    {
+        var parameters = new DialogParameters<ConfirmDeleteDialog>
+        {            
+            { x => x.Message, $"¿Está seguro que desea desactivar el elemento '{elemento.Nombre}'? Esta acción no se puede deshacer." },
+            { x => x.ConfirmText, "Desactivar" },
+            { x => x.CancelText, "Cancelar" }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseButton = false,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = false,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<ConfirmDeleteDialog>("Eliminar", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            try
+            {
+                var response = await ElementoService.DeleteElementoAsync(elemento.Id);
+                if (response.Success)
+                {
+                    Snackbar.Add("Elemento eliminado exitosamente", Severity.Success);
+                    await CargarElementos();
+                }
+                else
+                {
+                    Snackbar.Add(response.ErrorMessage ?? "Error al eliminar elemento", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error inesperado: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task ExportarExcel()
+    {
+        try
+        {
+            var separador = ";"; // Excel en es-ES suele usar ';' como separador por el separador decimal ','
+            var sb = new System.Text.StringBuilder();
+            // Cabeceras
+            sb.AppendLine(string.Join(separador, new[] { "ID", "Referencia", "Nombre", "M2", "Peso", "Rotacion", "Activo" }));
+
+            foreach (var e in ElementosFiltrados)
+            {
+                string Esc(string? s) => s == null ? string.Empty : s.Replace("\"", "\"\"");
+                string BoolTxt(bool b) => b ? "Si" : "No";
+                var fila = new[]
+                {
+                    e.Id.ToString(),
+                    $"\"{Esc(e.Referencia)}\"",
+                    $"\"{Esc(e.Nombre)}\"",
+                    e.Mt2.ToString("N2", CultureInfo.CurrentCulture),
+                    e.Peso.ToString("N2", CultureInfo.CurrentCulture),
+                    BoolTxt(e.Rotacion),
+                    BoolTxt(e.Activo)
+                };
+                sb.AppendLine(string.Join(separador, fila));
+            }
+
+            var csv = sb.ToString();
+            var bytes = System.Text.Encoding.UTF8.GetBytes('\uFEFF' + csv); // BOM para Excel
+            await JS.InvokeVoidAsync("downloadFile", "Elementos.csv", "text/csv;charset=utf-8", bytes);
+            Snackbar.Add("Descarga iniciada: Elementos.csv", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No fue posible exportar: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task AbrirCargueMasivo()
+    {
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.ExtraLarge,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<SphCargueMasivoElementos>("Cargue masivo de Elementos", options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            // Si el diálogo ya realizó el cargue, recibiremos un resumen en string.
+            if (result.Data is string resumen)
+            {
+                Snackbar.Add(resumen, Severity.Info);
+            }
+            else if (result.Data is List<ElementoDto> nuevos && nuevos.Count > 0)
+            {
+                // Compatibilidad si el diálogo retorna la lista (versión anterior)
+                int ok = 0, fail = 0;
+                foreach (var e in nuevos)
+                {
+                    try
+                    {
+                        var resp = await ElementoService.CreateElementoAsync(e);
+                        if (resp.Success)
+                            ok++;
+                        else
+                            fail++;
+                    }
+                    catch
+                    {
+                        fail++;
+                    }
+                }
+                Snackbar.Add($"Cargue finalizado. Éxitos: {ok}, Fallas: {fail}", fail == 0 ? Severity.Success : Severity.Warning);
+            }
+
+            await CargarElementos();
+        }
+    }
+}
+
+<script>
+    window.downloadFile = (fileName, contentType, data) => {
+        try {
+            const blob = new Blob([data], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error('download error', e);
+        }
+    };
+</script>
