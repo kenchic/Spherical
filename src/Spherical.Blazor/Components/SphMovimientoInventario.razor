@@ -1,0 +1,208 @@
+@using Spherical.Client.DTO.Inventory
+@using Spherical.Client.DTO.Lineup
+@inject Spherical.Client.Services.IDocumentoService DocumentoService
+@inject Spherical.Client.Services.IElementoService ElementoService
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h5" Class="mb-3">Movimiento de Inventario</MudText>
+
+    <MudGrid Class="mb-3">
+        <MudItem xs="12" sm="6" md="4">
+            <MudSelect T="string" Label="Tipo de Documento" @bind-Value="selectedTipoId" Dense="true" Clearable="true" Required="true" CoerceText="true" Immediate="true" OnBlurred="OnTipoChanged">
+                @if (Tipos != null)
+                {
+                    foreach (var t in Tipos)
+                    {
+                        <MudSelectItem Value="@t.Id">@t.Nombre (@t.Operacion)</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="3" md="2">
+            <MudTextField T="int" Label="Bodega Origen" @bind-Value="idBodegaOrigen" Dense="true" />
+        </MudItem>
+        <MudItem xs="12" sm="3" md="2">
+            <MudTextField T="int" Label="Bodega Destino" @bind-Value="idBodegaDestino" Dense="true" />
+        </MudItem>
+        <MudItem xs="12" sm="4" md="2">
+            <MudDatePicker Label="Fecha" @bind-Date="fecha" Dense="true" />
+        </MudItem>
+        <MudItem xs="12" sm="8" md="4">
+            <MudTextField Label="Observación" @bind-Value="descripcion" Dense="true" />
+        </MudItem>
+        <MudItem xs="12" sm="4" md="2" Class="d-flex align-center">
+            <MudChip T="string" Color="@OperacionColor" Variant="Variant.Filled">Operación: @OperacionTexto</MudChip>
+        </MudItem>
+    </MudGrid>
+
+    <MudTable Items="Detalles" Dense="true" Hover="true" Class="mb-2">
+        <HeaderContent>
+            <MudTh>Elemento</MudTh>
+            <MudTh style="width:120px">Cantidad</MudTh>
+            <MudTh style="width:60px"></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudAutocomplete T="ElementoDto"
+                                 @bind-Value="context.ItemElemento"
+                                 Dense="true"
+                                 Clearable="true"
+                                 ResetValueOnEmptyText="true"
+                                 ToStringFunc="@(e => e == null ? string.Empty : $"{e.Referencia} - {e.Nombre}")"
+                                 SearchFunc="BuscarElementos"
+                                 MaxItems="8" />
+            </MudTd>
+            <MudTd>
+                <MudNumericField T="int" @bind-Value="context.Cantidad" Min="0" Dense="true" />
+            </MudTd>
+            <MudTd>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => QuitarFila(context))" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    <MudStack Direction="Row" Spacing="2">
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="AgregarFila">Agregar fila</MudButton>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Guardar" Disabled="@(string.IsNullOrWhiteSpace(selectedTipoId) || Detalles.Count == 0)">Guardar</MudButton>
+    </MudStack>
+</MudPaper>
+
+@code {
+
+    private List<DocumentoTipoDto> Tipos = new();
+    private string? selectedTipoId;
+    private int idBodegaOrigen;
+    private int idBodegaDestino;
+    private DateTime? fecha = DateTime.Today;
+    private string? descripcion;
+
+    private List<FilaDetalle> Detalles = new();
+
+    // Estado de operación según tipo seleccionado
+    private string OperacionTexto => Tipos.FirstOrDefault(t => t.Id == selectedTipoId)?.Operacion == "-" ? "Salida (-)" : "Entrada (+)";
+    private Color OperacionColor => Tipos.FirstOrDefault(t => t.Id == selectedTipoId)?.Operacion == "-" ? Color.Error : Color.Success;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CargarTipos();
+            AgregarFila();
+        }
+    }
+
+    private async Task CargarTipos()
+    {
+        var resp = await DocumentoService.GetTiposAsync();
+        if (resp.Success && resp.Data != null)
+        {
+            Tipos = resp.Data.ToList();
+        }
+        else
+        {
+            Snackbar.Add(resp.ErrorMessage ?? "No fue posible cargar los tipos de documento", Severity.Error);
+        }
+    }
+
+    private void OnTipoChanged()
+    {
+        StateHasChanged();
+    }
+
+    private void AgregarFila()
+    {
+        Detalles.Add(new FilaDetalle());
+    }
+
+    private void QuitarFila(FilaDetalle fila)
+    {
+        Detalles.Remove(fila);
+    }
+
+    private async Task<IEnumerable<ElementoDto>> BuscarElementos(string value, CancellationToken token)
+    {
+        await Task.Delay(5, token);
+
+        if (string.IsNullOrWhiteSpace(value))
+            return Enumerable.Empty<ElementoDto>();
+
+        var result = await ElementoService.GetElementosAsync();
+        var listado = result.Success && result.Data != null ? result.Data : Enumerable.Empty<ElementoDto>();
+        return listado.Where(e => ($"{e.Referencia} - {e.Nombre}").Contains(value, StringComparison.InvariantCultureIgnoreCase)).Take(8);
+    }
+
+    private void OnElementoSeleccionado(FilaDetalle fila, ElementoDto? elemento)
+    {
+        if (elemento == null)
+        {
+            fila.IdElemento = 0;
+            fila.ElementoNombre = null;
+            fila.ItemElemento = null;
+        }
+        else
+        {
+            fila.IdElemento = elemento.Id;
+            fila.ElementoNombre = elemento.Nombre;
+            fila.ItemElemento = elemento;
+        }
+    }
+
+    private async Task Guardar()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(selectedTipoId))
+            {
+                Snackbar.Add("Seleccione el tipo de documento", Severity.Warning);
+                return;
+            }
+            var detallesValidos = Detalles.Where(d => d.IdElemento > 0 && d.Cantidad > 0)
+                                          .Select(d => new DocumentoDetalleDto { IdElemento = (short)d.IdElemento, Cantidad = d.Cantidad })
+                                          .ToList();
+            if (detallesValidos.Count == 0)
+            {
+                Snackbar.Add("Agregue al menos un elemento con cantidad", Severity.Warning);
+                return;
+            }
+
+            var dto = new DocumentoDto
+            {
+                IdDocumentoTipo = selectedTipoId!,
+                IdBodegaOrigen = idBodegaOrigen,
+                IdBodegaDestino = idBodegaDestino,
+                Empresa = "SPH", // ajustar según su contexto
+                Fecha = fecha ?? DateTime.Now,
+                Descripcion = descripcion,
+                Detalles = detallesValidos
+            };
+
+            var resp = await DocumentoService.CrearDocumentoAsync(dto);
+            if (resp.Success && resp.Data != null)
+            {
+                Snackbar.Add($"Documento creado Nº {resp.Data.Numero}", Severity.Success);
+                // Reset formulario
+                Detalles.Clear();
+                AgregarFila();
+                descripcion = string.Empty;
+            }
+            else
+            {
+                Snackbar.Add(resp.ErrorMessage ?? "No fue posible guardar el documento", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al guardar: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private class FilaDetalle
+    {
+        public int IdElemento { get; set; }
+        public int Cantidad { get; set; } = 0;
+        public string? ElementoNombre { get; set; }
+        public ElementoDto ItemElemento { get; set; } = null!;
+    }
+}

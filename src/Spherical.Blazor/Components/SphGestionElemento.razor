@@ -188,11 +188,14 @@
     private Dictionary<string, string> GrupoNombre = new();
     private Dictionary<string, string> UnidadNombre = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Primero cargamos catálogos para tener los nombres y luego los elementos
-        await CargarCatalogos();
-        await CargarElementos();
+        if (firstRender)
+        {
+            // Primero cargamos catálogos para tener los nombres y luego los elementos
+            await CargarCatalogos();
+            await CargarElementos();
+        }
     }
 
     private List<ElementoDto> FiltrarElementos()

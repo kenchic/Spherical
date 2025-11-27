@@ -15,11 +15,19 @@ public partial class SphericalContext : DbContext
     {
     }
 
+    public virtual DbSet<Bodega> Bodegas { get; set; }
+
     public virtual DbSet<Catalogo> Catalogos { get; set; }
 
     public virtual DbSet<CatalogoDetalle> CatalogoDetalles { get; set; }
 
     public virtual DbSet<Cliente> Clientes { get; set; }
+
+    public virtual DbSet<Documento> Documentos { get; set; }
+
+    public virtual DbSet<DocumentoDetalle> DocumentoDetalles { get; set; }
+
+    public virtual DbSet<DocumentoTipo> DocumentoTipos { get; set; }
 
     public virtual DbSet<Elemento> Elementos { get; set; }
 
@@ -58,6 +66,25 @@ public partial class SphericalContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("Spherical");
+
+        modelBuilder.Entity<Bodega>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Bodegas");
+
+            entity.ToTable("Bodega");
+
+            entity.Property(e => e.Codigo)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Empresa)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.IdProveedor).HasColumnName("idProveedor");
+            entity.Property(e => e.IdProyecto).HasColumnName("idProyecto");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(150)
+                .IsUnicode(false);
+        });
 
         modelBuilder.Entity<Catalogo>(entity =>
         {
@@ -149,6 +176,54 @@ public partial class SphericalContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Telefono)
                 .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Documento>(entity =>
+        {
+            entity.ToTable("Documento");
+
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(1000)
+                .IsUnicode(false);
+            entity.Property(e => e.Empresa)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Estado)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.Fecha).HasColumnType("datetime");
+            entity.Property(e => e.IdBodegaDestino).HasColumnName("idBodegaDestino");
+            entity.Property(e => e.IdBodegaOrigen).HasColumnName("idBodegaOrigen");
+            entity.Property(e => e.IdDocumentoTipo)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("idDocumentoTipo");
+        });
+
+        modelBuilder.Entity<DocumentoDetalle>(entity =>
+        {
+            entity.ToTable("DocumentoDetalle");
+
+            entity.Property(e => e.IdDocumento).HasColumnName("idDocumento");
+            entity.Property(e => e.IdElemento).HasColumnName("idElemento");
+        });
+
+        modelBuilder.Entity<DocumentoTipo>(entity =>
+        {
+            entity.ToTable("DocumentoTipo");
+
+            entity.Property(e => e.Id)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.Empresa)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Operacion)
+                .HasMaxLength(1)
                 .IsUnicode(false);
         });
 

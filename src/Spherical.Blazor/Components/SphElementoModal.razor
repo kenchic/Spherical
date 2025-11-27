@@ -10,7 +10,7 @@
 @inject IElementoService ElementoService
 @inject ISnackbar Snackbar
 
-<MudDialog >
+<MudDialog>
     <DialogContent>
         <EditForm Model="@Elemento" OnValidSubmit="GuardarElemento" OnInvalidSubmit="OnInvalidSubmit">
             <DataAnnotationsValidator />
@@ -75,7 +75,7 @@
                                                 <MudSelectItem Value="@Elemento.IdUnidadMedida">(sin datos)</MudSelectItem>
                                             }
                                         </MudSelect>
-                                    </MudItem>                                    
+                                    </MudItem>
                                     <MudItem xs="12" md="7">
                                         <MudTextField @bind-Value="Elemento.Nombre"
                                                       Label="Nombre"
@@ -111,7 +111,7 @@
                                                    Color="Color.Primary"
                                                    For="@(() => Elemento.Rotacion)" />
                                     </MudItem>
-                                    
+
                                     <MudItem xs="12" md="3">
                                         <MudSwitch @bind-Value="Elemento.Activo"
                                                    Label="Activo"
@@ -228,24 +228,27 @@
 
     private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Cargar catálogos para selects
-        await CargarCatalogos();
-
-        if (!EsNuevo && Elemento.Id > 0)
+        if (firstRender)
         {
-            await CargarPrecios();
-        }
-        else
-        {
-            // Obtener usuario y claims
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
+            // Cargar catálogos para selects
+            await CargarCatalogos();
 
-            // Extraer name y locale desde los claims (con fallback)
-            var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "AYZCORP";
-            Elemento.Empresa = locale;
+            if (!EsNuevo && Elemento.Id > 0)
+            {
+                await CargarPrecios();
+            }
+            else
+            {
+                // Obtener usuario y claims
+                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+
+                // Extraer name y locale desde los claims (con fallback)
+                var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "AYZCORP";
+                Elemento.Empresa = locale;
+            }
         }
     }
 
