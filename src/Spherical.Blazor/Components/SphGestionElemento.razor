@@ -5,7 +5,10 @@
 @inject IElementoService ElementoService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
-@inject IJSRuntime JS
+@inject IJSRuntime JS 
+
+@* Opción de pantalla = OInventario *@
+
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4" Gutters="false">
     <MudCard Elevation="4">
@@ -118,21 +121,6 @@
                                                  Icon="@Icons.Material.Filled.Delete"
                                                  OnClick="@(() => EliminarElemento(context.Item))" />
                                 </MudMenu>
-
-
-
-                                @* <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                                   Color="Color.Primary"
-                                                   Size="Size.Small"
-                                                   OnClick="@(() => AbrirModalEditar(context.Item))"
-                                                   Title="Editar" />
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                   Color="Color.Error"
-                                                   Size="Size.Small"
-                                                   OnClick="@(() => EliminarElemento(context.Item))"
-                                                   Title="Desactivar" />
-                                </MudButtonGroup> *@
                             </CellTemplate>
                         </TemplateColumn>
                         <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" />
