@@ -54,6 +54,96 @@ namespace Spherical.Api.Controllers.Lineup
             }
         }
 
+        // GET: api/v1/documentos
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<IEnumerable<DocumentoDto>>>> GetDocumentos()
+        {
+            try
+            {
+                var documentos = await _context.Documentos
+                    .OrderByDescending(d => d.Fecha)
+                    .Select(d => new DocumentoDto
+                    {
+                        Id = d.Id,
+                        IdDocumentoTipo = d.IdDocumentoTipo,
+                        IdBodegaOrigen = d.IdBodegaOrigen,
+                        IdBodegaDestino = d.IdBodegaDestino,
+                        Empresa = d.Empresa,
+                        Numero = d.Numero,
+                        Fecha = d.Fecha,
+                        Descripcion = d.Descripcion,
+                        Estado = d.Estado,
+                        Detalles = new List<DocumentoDetalleDto>()
+                    })
+                    .ToListAsync();
+
+                var response = new ApiResponse<IEnumerable<DocumentoDto>>
+                {
+                    Data = documentos,
+                    Success = true
+                };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
+                return BadRequest(response);
+            }
+        }
+
+        // GET: api/v1/documentos/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ApiResponse<DocumentoDto>>> GetDocumento(int id)
+        {
+            try
+            {
+                var d = await _context.Documentos.FirstOrDefaultAsync(x => x.Id == id);
+                if (d == null)
+                {
+                    var notFound = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty, "Documento no encontrado");
+                    return NotFound(notFound);
+                }
+
+                var detalles = await _context.DocumentoDetalles
+                    .Where(dd => dd.IdDocumento == id)
+                    .Select(dd => new DocumentoDetalleDto
+                    {
+                        Id = dd.Id,
+                        IdElemento = (short)dd.IdElemento,
+                        IdDocumento = dd.IdDocumento,
+                        Cantidad = dd.Cantidad,
+                        ElementoNombre = _context.Elementos.Where(e => e.Id == dd.IdElemento).Select(e => e.Nombre).FirstOrDefault()
+                    })
+                    .ToListAsync();
+
+                var dto = new DocumentoDto
+                {
+                    Id = d.Id,
+                    IdDocumentoTipo = d.IdDocumentoTipo,
+                    IdBodegaOrigen = d.IdBodegaOrigen,
+                    IdBodegaDestino = d.IdBodegaDestino,
+                    Empresa = d.Empresa,
+                    Numero = d.Numero,
+                    Fecha = d.Fecha,
+                    Descripcion = d.Descripcion,
+                    Estado = d.Estado,
+                    Detalles = detalles
+                };
+
+                var response = new ApiResponse<DocumentoDto>
+                {
+                    Data = dto,
+                    Success = true
+                };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                var response = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
+                return BadRequest(response);
+            }
+        }
+
         // POST: api/v1/documentos
         [HttpPost]
         public async Task<ActionResult<ApiResponse<DocumentoDto>>> CrearDocumento([FromBody] DocumentoDto dto)

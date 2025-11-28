@@ -8,6 +8,8 @@ namespace Spherical.Client.Services
     public interface IDocumentoService
     {
         Task<ApiResponse<IEnumerable<DocumentoTipoDto>>> GetTiposAsync();
+        Task<ApiResponse<IEnumerable<DocumentoDto>>> GetDocumentosAsync();
+        Task<ApiResponse<DocumentoDto>> GetDocumentoAsync(int id);
         Task<ApiResponse<DocumentoDto>> CrearDocumentoAsync(DocumentoDto documento);
     }
 
@@ -47,6 +49,66 @@ namespace Spherical.Client.Services
             catch (Exception ex)
             {
                 return new ApiResponse<IEnumerable<DocumentoTipoDto>>
+                {
+                    Success = false,
+                    ErrorMessage = $"Error de conexión: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<ApiResponse<IEnumerable<DocumentoDto>>> GetDocumentosAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/v1/documentos");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<ApiResponse<IEnumerable<DocumentoDto>>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<IEnumerable<DocumentoDto>>();
+                }
+                else
+                {
+                    return new ApiResponse<IEnumerable<DocumentoDto>>
+                    {
+                        Success = false,
+                        ErrorMessage = $"Error al obtener documentos: {response.StatusCode}"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<IEnumerable<DocumentoDto>>
+                {
+                    Success = false,
+                    ErrorMessage = $"Error de conexión: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<ApiResponse<DocumentoDto>> GetDocumentoAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/v1/documentos/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<ApiResponse<DocumentoDto>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<DocumentoDto>();
+                }
+                else
+                {
+                    return new ApiResponse<DocumentoDto>
+                    {
+                        Success = false,
+                        ErrorMessage = $"Error al obtener documento: {response.StatusCode}"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<DocumentoDto>
                 {
                     Success = false,
                     ErrorMessage = $"Error de conexión: {ex.Message}"

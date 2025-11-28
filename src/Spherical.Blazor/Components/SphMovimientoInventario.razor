@@ -4,72 +4,84 @@
 @inject Spherical.Client.Services.IElementoService ElementoService
 @inject ISnackbar Snackbar
 
-<MudPaper Class="pa-4">
-    <MudText Typo="Typo.h5" Class="mb-3">Movimiento de Inventario</MudText>
+<MudDialog>
+    <DialogContent>
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h5" Class="mb-3">Movimiento de Inventario</MudText>
 
-    <MudGrid Class="mb-3">
-        <MudItem xs="12" sm="6" md="4">
-            <MudSelect T="string" Label="Tipo de Documento" @bind-Value="selectedTipoId" Dense="true" Clearable="true" Required="true" CoerceText="true" Immediate="true" OnBlurred="OnTipoChanged">
-                @if (Tipos != null)
-                {
-                    foreach (var t in Tipos)
-                    {
-                        <MudSelectItem Value="@t.Id">@t.Nombre (@t.Operacion)</MudSelectItem>
-                    }
-                }
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12" sm="3" md="2">
-            <MudTextField T="int" Label="Bodega Origen" @bind-Value="idBodegaOrigen" Dense="true" />
-        </MudItem>
-        <MudItem xs="12" sm="3" md="2">
-            <MudTextField T="int" Label="Bodega Destino" @bind-Value="idBodegaDestino" Dense="true" />
-        </MudItem>
-        <MudItem xs="12" sm="4" md="2">
-            <MudDatePicker Label="Fecha" @bind-Date="fecha" Dense="true" />
-        </MudItem>
-        <MudItem xs="12" sm="8" md="4">
-            <MudTextField Label="Observación" @bind-Value="descripcion" Dense="true" />
-        </MudItem>
-        <MudItem xs="12" sm="4" md="2" Class="d-flex align-center">
-            <MudChip T="string" Color="@OperacionColor" Variant="Variant.Filled">Operación: @OperacionTexto</MudChip>
-        </MudItem>
-    </MudGrid>
+            <MudGrid Class="mb-3">
+                <MudItem xs="12" sm="6" md="4">
+                    <MudSelect T="string" Label="Tipo de Documento" @bind-Value="selectedTipoId" Dense="true" Clearable="true" Required="true" CoerceText="true" Immediate="true" OnBlurred="OnTipoChanged">
+                        @if (Tipos != null)
+                        {
+                            foreach (var t in Tipos)
+                            {
+                                <MudSelectItem Value="@t.Id">@t.Nombre (@t.Operacion)</MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="3" md="2">
+                    <MudTextField T="int" Label="Bodega Origen" @bind-Value="idBodegaOrigen" Dense="true" />
+                </MudItem>
+                <MudItem xs="12" sm="3" md="2">
+                    <MudTextField T="int" Label="Bodega Destino" @bind-Value="idBodegaDestino" Dense="true" />
+                </MudItem>
+                <MudItem xs="12" sm="4" md="2">
+                    <MudDatePicker Label="Fecha" @bind-Date="fecha" Dense="true" />
+                </MudItem>
+                <MudItem xs="12" sm="8" md="4">
+                    <MudTextField Label="Observación" @bind-Value="descripcion" Dense="true" />
+                </MudItem>
+                <MudItem xs="12" sm="4" md="2" Class="d-flex align-center">
+                    <MudChip T="string" Color="@OperacionColor" Variant="Variant.Filled">Operación: @OperacionTexto</MudChip>
+                </MudItem>
+            </MudGrid>
 
-    <MudTable Items="Detalles" Dense="true" Hover="true" Class="mb-2">
-        <HeaderContent>
-            <MudTh>Elemento</MudTh>
-            <MudTh style="width:120px">Cantidad</MudTh>
-            <MudTh style="width:60px"></MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd>
-                <MudAutocomplete T="ElementoDto"
-                                 @bind-Value="context.ItemElemento"
-                                 Dense="true"
-                                 Clearable="true"
-                                 ResetValueOnEmptyText="true"
-                                 ToStringFunc="@(e => e == null ? string.Empty : $"{e.Referencia} - {e.Nombre}")"
-                                 SearchFunc="BuscarElementos"
-                                 MaxItems="8" />
-            </MudTd>
-            <MudTd>
-                <MudNumericField T="int" @bind-Value="context.Cantidad" Min="0" Dense="true" />
-            </MudTd>
-            <MudTd>
-                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => QuitarFila(context))" />
-            </MudTd>
-        </RowTemplate>
-    </MudTable>
+            <MudTable Items="Detalles" Dense="true" Hover="true" Class="mb-2">
+                <HeaderContent>
+                    <MudTh>Elemento</MudTh>
+                    <MudTh style="width:120px">Cantidad</MudTh>
+                    <MudTh style="width:60px"></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudAutocomplete T="ElementoDto"
+                                         @bind-Value="context.ItemElemento"
+                                         Dense="true"
+                                         Clearable="true"
+                                         ResetValueOnEmptyText="true"
+                                         ToStringFunc="@(e => e == null ? string.Empty : $"{e.Referencia} - {e.Nombre}")"
+                                         SearchFunc="BuscarElementos"
+                                         MaxItems="8" />
+                    </MudTd>
+                    <MudTd>
+                        <MudNumericField T="int" @bind-Value="context.Cantidad" Min="0" Dense="true" />
+                    </MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => QuitarFila(context))" />
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
 
-    <MudStack Direction="Row" Spacing="2">
-        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="AgregarFila">Agregar fila</MudButton>
-        <MudSpacer />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Guardar" Disabled="@(string.IsNullOrWhiteSpace(selectedTipoId) || Detalles.Count == 0)">Guardar</MudButton>
-    </MudStack>
-</MudPaper>
+            <MudStack Direction="Row" Spacing="2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="AgregarFila">Agregar fila</MudButton>
+                <MudSpacer />
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Guardar" Disabled="@(string.IsNullOrWhiteSpace(selectedTipoId) || Detalles.Count == 0)">Guardar</MudButton>
+            </MudStack>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Guardar">Guardar</MudButton>
+        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="Cancelar">Cancelar</MudButton>
+    </DialogActions>
+</MudDialog>
 
 @code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter] public int? DocumentoId { get; set; }
+    [Parameter] public bool EsNuevo { get; set; } = true;
 
     private List<DocumentoTipoDto> Tipos = new();
     private string? selectedTipoId;
@@ -90,6 +102,10 @@
         {
             await CargarTipos();
             AgregarFila();
+            if (!EsNuevo && DocumentoId.HasValue)
+            {
+                await CargarDocumento(DocumentoId.Value);
+            }
         }
     }
 
@@ -166,26 +182,21 @@
                 Snackbar.Add("Agregue al menos un elemento con cantidad", Severity.Warning);
                 return;
             }
-
             var dto = new DocumentoDto
             {
                 IdDocumentoTipo = selectedTipoId!,
                 IdBodegaOrigen = idBodegaOrigen,
                 IdBodegaDestino = idBodegaDestino,
-                Empresa = "SPH", // ajustar según su contexto
+                Empresa = "SPH",
                 Fecha = fecha ?? DateTime.Now,
                 Descripcion = descripcion,
                 Detalles = detallesValidos
             };
-
             var resp = await DocumentoService.CrearDocumentoAsync(dto);
-            if (resp.Success && resp.Data != null)
+            if (resp.Success)
             {
-                Snackbar.Add($"Documento creado Nº {resp.Data.Numero}", Severity.Success);
-                // Reset formulario
-                Detalles.Clear();
-                AgregarFila();
-                descripcion = string.Empty;
+                Snackbar.Add($"Documento creado Nº {resp.Data?.Numero}", Severity.Success);
+                MudDialog?.Close(DialogResult.Ok(true));
             }
             else
             {
@@ -204,5 +215,41 @@
         public int Cantidad { get; set; } = 0;
         public string? ElementoNombre { get; set; }
         public ElementoDto ItemElemento { get; set; } = null!;
+    }
+
+    private async Task CargarDocumento(int id)
+    {
+        try
+        {
+            var resp = await DocumentoService.GetDocumentoAsync(id);
+            if (resp.Success && resp.Data != null)
+            {
+                selectedTipoId = resp.Data.IdDocumentoTipo;
+                idBodegaOrigen = resp.Data.IdBodegaOrigen;
+                idBodegaDestino = resp.Data.IdBodegaDestino;
+                fecha = resp.Data.Fecha;
+                descripcion = resp.Data.Descripcion;
+                Detalles = resp.Data.Detalles.Select(d => new FilaDetalle
+                {
+                    IdElemento = d.IdElemento,
+                    ElementoNombre = d.ElementoNombre,
+                    Cantidad = d.Cantidad
+                }).ToList();
+                StateHasChanged();
+            }
+            else if (!string.IsNullOrWhiteSpace(resp.ErrorMessage))
+            {
+                Snackbar.Add(resp.ErrorMessage!, Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar documento: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void Cancelar()
+    {
+        MudDialog?.Cancel();
     }
 }

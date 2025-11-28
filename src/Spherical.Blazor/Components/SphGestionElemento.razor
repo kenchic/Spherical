@@ -7,7 +7,7 @@
 @inject IDialogService DialogService
 @inject IJSRuntime JS
 
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4" Gutters="false">
     <MudCard Elevation="4">
         <MudCardHeader>
             <CardHeaderContent>
@@ -16,11 +16,11 @@
                     <MudText Typo="Typo.h5">Gestión de Elementos</MudText>                    
                 </div>
                 <MudText Typo="Typo.body2" Color="Color.Secondary">
-                    Administre los elementos de su empresa, incluyendo información básica y listas de precios
+                    Administra los elementos de tu empresa, incluyendo información básica y listas de precios
                 </MudText>
             </CardHeaderContent>
             <CardHeaderActions>
-                <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+                <MudButtonGroup Variant="Variant.Filled" Size="Size.Small" OverrideStyles="false" >
                     <MudIconButton 
                                Color="Color.Primary"
                                Title="Nuevo"
@@ -31,22 +31,19 @@
                                Color="Color.Secondary"
                                Title="Actualizar"
                                Icon="@Icons.Material.Filled.Refresh"
-                               OnClick="CargarElementos"
-                               Class="ml-2">
+                               OnClick="CargarElementos">
                     </MudIconButton>
                     <MudIconButton 
                                Color="Color.Info"
                                Title="Exportar a Excel"
                                Icon="@Icons.Material.Filled.Download"
-                               OnClick="ExportarExcel"
-                               Class="ml-2">
+                               OnClick="ExportarExcel">
                     </MudIconButton>
                     <MudIconButton 
                                Color="Color.Primary"
                                Title="Cargue masivo"
                                Icon="@Icons.Material.Filled.Upload"
-                               OnClick="AbrirCargueMasivo"
-                               Class="ml-2">
+                               OnClick="AbrirCargueMasivo">
                     </MudIconButton>
                 </MudButtonGroup>
             </CardHeaderActions>
@@ -108,6 +105,36 @@
                              Dense="true"
                              Striped="true">
                     <Columns>
+                        <TemplateColumn Sortable="false">
+                            <CellTemplate>
+
+                                <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" AriaLabel="Acciones" Dense>
+                                    <MudMenuItem Label="Editar"
+                                                 IconColor="Color.Primary"
+                                                 Icon="@Icons.Material.Filled.Edit"
+                                                 OnClick="@(() => AbrirModalEditar(context.Item))" />
+                                    <MudMenuItem Label="Eliminar"
+                                                 IconColor="Color.Error"
+                                                 Icon="@Icons.Material.Filled.Delete"
+                                                 OnClick="@(() => EliminarElemento(context.Item))" />
+                                </MudMenu>
+
+
+
+                                @* <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                   Color="Color.Primary"
+                                                   Size="Size.Small"
+                                                   OnClick="@(() => AbrirModalEditar(context.Item))"
+                                                   Title="Editar" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                   Color="Color.Error"
+                                                   Size="Size.Small"
+                                                   OnClick="@(() => EliminarElemento(context.Item))"
+                                                   Title="Desactivar" />
+                                </MudButtonGroup> *@
+                            </CellTemplate>
+                        </TemplateColumn>
                         <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" />
                         <TemplateColumn Title="Grupo" Sortable="true" SortBy="@(x => GetNombreGrupo(x.IdGrupoElemento))">
                             <CellTemplate>
@@ -150,22 +177,7 @@
                                 </MudChip>
                             </CellTemplate>
                         </PropertyColumn>
-                        <TemplateColumn Title="Acciones" Sortable="false">
-                            <CellTemplate>
-                                <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                                   Color="Color.Primary"
-                                                   Size="Size.Small"
-                                                   OnClick="@(() => AbrirModalEditar(context.Item))"
-                                                   Title="Editar" />
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                   Color="Color.Error"
-                                                   Size="Size.Small"
-                                                   OnClick="@(() => EliminarElemento(context.Item))"
-                                                   Title="Desactivar" />
-                                </MudButtonGroup>
-                            </CellTemplate>
-                        </TemplateColumn>
+                       
                     </Columns>
                     <PagerContent>
                         <MudDataGridPager T="ElementoDto" PageSizeOptions=@(new int[] { 5, 10, 15, 20 }) />

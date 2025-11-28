@@ -1,0 +1,183 @@
+@using Spherical.Client.DTO.Inventory
+@inject Spherical.Client.Services.IDocumentoService DocumentoService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4" Gutters="false">
+    <MudCard Elevation="4">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-3" />
+                    <MudText Typo="Typo.h5">Movimiento de Inventario</MudText>
+                </div>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Administra entrada y salida de movimiento de inventario de tu empresa
+                </MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudButtonGroup Variant="Variant.Filled" Size="Size.Small" OverrideStyles="false">
+                    <MudIconButton Color="Color.Primary"
+                                   Title="Nuevo"
+                                   OnClick="NuevoMovimiento"
+                                   Icon="@Icons.Material.Filled.Add">
+                    </MudIconButton>
+                    <MudIconButton Color="Color.Secondary"
+                                   Title="Actualizar"
+                                   OnClick="CargarDocumentos"
+                                   Icon="@Icons.Material.Filled.Refresh">
+                    </MudIconButton>
+                </MudButtonGroup>
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (IsLoading)
+            {
+                <div class="d-flex justify-center align-center" style="height: 200px;">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                <MudGrid Class="mb-4">
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudTextField @bind-Value="searchString" 
+                                      Placeholder="Buscar..." 
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Search"
+                                      Immediate="true"
+                                      DebounceInterval="300"
+                                      Clearable="true"
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                </MudGrid>
+
+
+                <MudTable Items="FiltrarDocumentos()" Hover="true" Dense="true" Bordered="true" Striped="true">
+                    <HeaderContent>
+                        <MudTh>No.</MudTh>
+                        <MudTh>Fecha</MudTh>
+                        <MudTh>Tipo</MudTh>
+                        <MudTh>Estado</MudTh>
+                        <MudTh>Descripción</MudTh>
+                        <MudTh class="text-right">Acciones</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context.Numero</MudTd>
+                        <MudTd>@context.Fecha.ToString("yyyy-MM-dd")</MudTd>
+                        <MudTd>@context.IdDocumentoTipo</MudTd>
+                        <MudTd>@context.Estado</MudTd>
+                        <MudTd>@context.Descripcion</MudTd>
+                        <MudTd Class="text-right">
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Info" OnClick="(() => AbrirMovimiento(context.Id, false))" />
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+
+
+@code {
+    private List<DocumentoDto> Documentos = new();
+    private string? searchString;
+    private bool IsLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CargarDocumentos();
+        }
+    }
+
+    private async Task CargarDocumentos()
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var resp = await DocumentoService.GetDocumentosAsync();
+            if (resp.Success && resp.Data != null)
+            {
+                Documentos = resp.Data.ToList();
+                StateHasChanged();
+            }
+            else if (!string.IsNullOrWhiteSpace(resp.ErrorMessage))
+            {
+                Snackbar.Add(resp.ErrorMessage!, Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar documentos: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private IEnumerable<DocumentoDto> FiltrarDocumentos()
+    {
+        var listado = Documentos.AsEnumerable();
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var t = searchString.ToLowerInvariant();
+            listado = listado.Where(d =>
+                d.Numero.ToString().Contains(t) ||
+                d.IdDocumentoTipo.ToLowerInvariant().Contains(t) ||
+                (d.Descripcion?.ToLowerInvariant().Contains(t) ?? false) ||
+                d.Estado.ToLowerInvariant().Contains(t)
+            );
+        }
+        return listado.OrderByDescending(d => d.Fecha).ToList();
+    }
+
+    private async Task NuevoMovimiento()
+    {
+        var parameters = new DialogParameters<SphMovimientoInventario>
+        {
+            { x => x.EsNuevo, true }
+        };
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+        var dialog = await DialogService.ShowAsync<SphMovimientoInventario>("Nuevo Movimiento", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await CargarDocumentos();
+        }
+    }
+
+    private async Task AbrirMovimiento(int id, bool editable)
+    {
+        var parameters = new DialogParameters<SphMovimientoInventario>
+        {
+            { x => x.EsNuevo, false },
+            { x => x.DocumentoId, id }
+        };
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+        var dialog = await DialogService.ShowAsync<SphMovimientoInventario>("Movimiento", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await CargarDocumentos();
+        }
+    }
+}
