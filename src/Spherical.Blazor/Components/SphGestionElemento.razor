@@ -1,14 +1,17 @@
 @using Microsoft.JSInterop
 @using Spherical.Client.DTO.Lineup
-@using Spherical.Client.Services
 @using System.Globalization
+@using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
+
 @inject IElementoService ElementoService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IJSRuntime JS 
+@inject IPermisoService PermisoService
+@inject AuthenticationStateProvider AuthStateProvider
 
 @* Opción de pantalla = OInventario *@
-
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4" Gutters="false">
     <MudCard Elevation="4">
@@ -24,35 +27,44 @@
             </CardHeaderContent>
             <CardHeaderActions>
                 <MudButtonGroup Variant="Variant.Filled" Size="Size.Small" OverrideStyles="false" >
-                    <MudIconButton 
-                               Color="Color.Primary"
-                               Title="Nuevo"
-                               Icon="@Icons.Material.Filled.Add"
-                               OnClick="AbrirModalCrear">
-                    </MudIconButton>
-                    <MudIconButton 
-                               Color="Color.Secondary"
-                               Title="Actualizar"
-                               Icon="@Icons.Material.Filled.Refresh"
-                               OnClick="CargarElementos">
-                    </MudIconButton>
-                    <MudIconButton 
-                               Color="Color.Info"
-                               Title="Exportar a Excel"
-                               Icon="@Icons.Material.Filled.Download"
-                               OnClick="ExportarExcel">
-                    </MudIconButton>
-                    <MudIconButton 
-                               Color="Color.Primary"
-                               Title="Cargue masivo"
-                               Icon="@Icons.Material.Filled.Upload"
-                               OnClick="AbrirCargueMasivo">
-                    </MudIconButton>
+                    @if (Permisos.Crear)
+                    {
+                        <MudIconButton 
+                                   Color="Color.Primary"
+                                   Title="Nuevo"
+                                   Icon="@Icons.Material.Filled.Add"
+                                   OnClick="AbrirModalCrear">
+                        </MudIconButton>
+                    }
+                    @if (Permisos.Consultar)
+                    {
+                        <MudIconButton 
+                                   Color="Color.Secondary"
+                                   Title="Actualizar"
+                                   Icon="@Icons.Material.Filled.Refresh"
+                                   OnClick="CargarElementos">
+                        </MudIconButton>
+                        <MudIconButton 
+                                   Color="Color.Info"
+                                   Title="Exportar a Excel"
+                                   Icon="@Icons.Material.Filled.Download"
+                                   OnClick="ExportarExcel">
+                        </MudIconButton>
+                    }
+                    @if (Permisos.Crear)
+                    {
+                        <MudIconButton 
+                                   Color="Color.Primary"
+                                   Title="Cargue masivo"
+                                   Icon="@Icons.Material.Filled.Upload"
+                                   OnClick="AbrirCargueMasivo">
+                        </MudIconButton>
+                    }
                 </MudButtonGroup>
             </CardHeaderActions>
         </MudCardHeader>
         <MudCardContent>
-            @if (IsLoading)
+            @if (isLoading)
             {
                 <div class="d-flex justify-center align-center" style="height: 200px;">
                     <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
@@ -60,6 +72,14 @@
             }
             else
             {
+                @if (!Permisos.Consultar)
+                {
+                    <MudAlert Severity="Severity.Warning" Elevation="0">
+                        No tiene permiso para consultar esta opción.
+                    </MudAlert>
+                }
+                else
+                {
                 <MudGrid Class="mb-4">
                     <MudItem xs="12" sm="6" md="4">
                         <MudTextField @bind-Value="searchString" 
@@ -108,22 +128,31 @@
                              Dense="true"
                              Striped="true">
                     <Columns>
-                        <TemplateColumn Sortable="false">
-                            <CellTemplate>
+                            @if (Permisos.Editar || Permisos.Eliminar)
+                            {
+                                <TemplateColumn Sortable="false">
+                                    <CellTemplate>
 
-                                <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" AriaLabel="Acciones" Dense>
-                                    <MudMenuItem Label="Editar"
-                                                 IconColor="Color.Primary"
-                                                 Icon="@Icons.Material.Filled.Edit"
-                                                 OnClick="@(() => AbrirModalEditar(context.Item))" />
-                                    <MudMenuItem Label="Eliminar"
-                                                 IconColor="Color.Error"
-                                                 Icon="@Icons.Material.Filled.Delete"
-                                                 OnClick="@(() => EliminarElemento(context.Item))" />
-                                </MudMenu>
-                            </CellTemplate>
-                        </TemplateColumn>
-                        <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" />
+                                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" AriaLabel="Acciones" Dense>
+                                            @if (Permisos.Editar)
+                                            {
+                                                <MudMenuItem Label="Editar"
+                                                IconColor="Color.Primary"
+                                                Icon="@Icons.Material.Filled.Edit"
+                                                OnClick="@(() => AbrirModalEditar(context.Item))" />
+                                            }
+                                            @if (Permisos.Eliminar)
+                                            {
+                                                <MudMenuItem Label="Eliminar"
+                                                IconColor="Color.Error"
+                                                Icon="@Icons.Material.Filled.Delete"
+                                                OnClick="@(() => EliminarElemento(context.Item))" />
+                                            }
+                                        </MudMenu>
+                                    </CellTemplate>
+                                </TemplateColumn>
+                            }
+                            <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" />
                         <TemplateColumn Title="Grupo" Sortable="true" SortBy="@(x => GetNombreGrupo(x.IdGrupoElemento))">
                             <CellTemplate>
                                 @GetNombreGrupo(context.Item.IdGrupoElemento)
@@ -171,6 +200,7 @@
                         <MudDataGridPager T="ElementoDto" PageSizeOptions=@(new int[] { 5, 10, 15, 20 }) />
                     </PagerContent>
                 </MudDataGrid>
+                }
             }
         </MudCardContent>
     </MudCard>
@@ -179,24 +209,89 @@
 @code {
     private List<ElementoDto> Elementos = new();
     private List<ElementoDto> ElementosFiltrados => FiltrarElementos();
-    private bool IsLoading = true;
+    private bool isLoading = true;
     private string searchString = string.Empty;
     private bool? filtroRotacion = null;
     private bool? filtroActivo = null;
+
+    private PermisoUsuarioDto Permisos = new();
 
     // NUEVO: mapas de catálogo para mostrar nombres
     private Dictionary<string, string> GrupoNombre = new();
     private Dictionary<string, string> UnidadNombre = new();
 
+    private string tokenApp = string.Empty;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await base.OnAfterRenderAsync(firstRender);
+
         if (firstRender)
         {
-            // Primero cargamos catálogos para tener los nombres y luego los elementos
-            await CargarCatalogos();
-            await CargarElementos();
+            tokenApp = (AuthStateProvider as CustomAuthStateProvider)?.GetToken();
+            PermisoService.SetAuth(tokenApp);
+
+            await CargarPermisos();
+            if (Permisos.Consultar)
+            {
+                await CargarCatalogos();
+                await CargarElementos();
+            }
+            else
+            {
+                isLoading = false;
+                StateHasChanged();
+            }
         }
     }
+
+    private async Task CargarPermisos()
+    {
+        try
+        {
+            var usuario = await ObtenerUsuarioDesdeJwtAsync();
+            if (string.IsNullOrWhiteSpace(usuario))
+            {
+                Permisos = new PermisoUsuarioDto();
+                return;
+            }
+            var resp = await PermisoService.GetPermisosAsync("OInventario", usuario);
+            if (resp.Success && resp.Data != null)
+                Permisos = resp.Data;
+            else
+                Permisos = new PermisoUsuarioDto();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar permisos: {ex.Message}", Severity.Error);
+            Permisos = new PermisoUsuarioDto();
+        }
+    }
+
+    private async Task<string> ObtenerUsuarioDesdeJwtAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(tokenApp))
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(tokenApp);
+                var claim = jwt.Claims.FirstOrDefault(c => EsClaimUsuario(c.Type));
+                return claim?.Value ?? string.Empty;
+            }
+
+            var state = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = state.User;
+            var fromName = user?.Identity?.Name;
+            if (!string.IsNullOrWhiteSpace(fromName)) return fromName;
+            var alt = user?.Claims.FirstOrDefault(c => EsClaimUsuario(c.Type))?.Value;
+            return alt ?? string.Empty;
+        }
+        catch { return string.Empty; }
+    }
+
+    private bool EsClaimUsuario(string type)
+        => type == ClaimTypes.Name || type == "name" || type == "unique_name" || type == "preferred_username" || type == "email" || type == "sub" || type == "Usuario";
 
     private List<ElementoDto> FiltrarElementos()
     {
@@ -267,7 +362,7 @@
 
     private async Task CargarElementos()
     {
-        IsLoading = true;
+        isLoading = true;
         filtroActivo = true;
         StateHasChanged();
 
@@ -289,7 +384,7 @@
         }
         finally
         {
-            IsLoading = false;
+            isLoading = false;
             StateHasChanged();
         }
     }

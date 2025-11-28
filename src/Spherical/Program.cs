@@ -18,6 +18,14 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 // Configurar HttpClient para servicios
+builder.Services.AddHttpClient<IMenuService, MenuService>(client =>
+{
+    var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
+    if (!apiUrl.EndsWith("/")) apiUrl += "/";
+    client.BaseAddress = new Uri(apiUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 builder.Services.AddHttpClient<IElementoService, ElementoService>(client =>
 {
     var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
@@ -27,6 +35,14 @@ builder.Services.AddHttpClient<IElementoService, ElementoService>(client =>
 });
 
 builder.Services.AddHttpClient<IDocumentoService, DocumentoService>(client =>
+{
+    var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
+    if (!apiUrl.EndsWith("/")) apiUrl += "/";
+    client.BaseAddress = new Uri(apiUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+builder.Services.AddHttpClient<IPermisoService, PermisoService>(client =>
 {
     var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
     if (!apiUrl.EndsWith("/")) apiUrl += "/";
