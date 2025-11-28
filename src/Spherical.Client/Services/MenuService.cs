@@ -19,12 +19,11 @@ namespace Spherical.Client.Services
             try
             {
                 EnsureToken();
-
                 var response = await _httpClient.GetAsync($"api/v1/menu/{user}/{company}");
-                var content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
+                    var content = await response.Content.ReadAsStringAsync();
                     var result = JsonSerializer.Deserialize<ApiResponse<List<UserMenuDTO>>>(content, _jsonOptions);
                     return result ?? new ApiResponse<List<UserMenuDTO>>();
                 }
@@ -34,7 +33,7 @@ namespace Spherical.Client.Services
                     {
                         Success = false,
                         StatusCode = (int)response.StatusCode,
-                        ErrorMessage = $"Error al obtener permisos: {response.StatusCode}"
+                        ErrorMessage = $"Error al obtener menu: {response.StatusCode}"
                     };
                 }
             }

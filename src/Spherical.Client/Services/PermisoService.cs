@@ -19,12 +19,11 @@ namespace Spherical.Client.Services
             try
             {
                 EnsureToken();
-
                 var response = await _httpClient.GetAsync($"api/v1/permisos/{opcion}/{usuario}");
-                var content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
+                    var content = await response.Content.ReadAsStringAsync();
                     var result = JsonSerializer.Deserialize<ApiResponse<PermisoUsuarioDto>>(content, _jsonOptions);
                     return result ?? new ApiResponse<PermisoUsuarioDto>();
                 }

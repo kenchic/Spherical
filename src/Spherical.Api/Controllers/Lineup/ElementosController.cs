@@ -8,6 +8,7 @@ using System.Net;
 
 namespace Spherical.Api.Controllers.Lineup
 {
+    [Authorize]
     [Route("api/v1/elementos")]
     [ApiController]
     public class ElementosController : ControllerBase

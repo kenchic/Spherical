@@ -11,26 +11,20 @@ namespace Spherical.Client.Services
         Task<ApiResponse<IEnumerable<DocumentoDto>>> GetDocumentosAsync();
         Task<ApiResponse<DocumentoDto>> GetDocumentoAsync(int id);
         Task<ApiResponse<DocumentoDto>> CrearDocumentoAsync(DocumentoDto documento);
+        void SetAuth(string token);
     }
 
-    public class DocumentoService : IDocumentoService
+    public class DocumentoService : ApiServiceBase, IDocumentoService
     {
-        private readonly HttpClient _httpClient;
-        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-
-        public DocumentoService(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+        public DocumentoService(HttpClient httpClient) : base(httpClient) { }
 
         public async Task<ApiResponse<IEnumerable<DocumentoTipoDto>>> GetTiposAsync()
         {
             try
             {
+                EnsureToken();
                 var response = await _httpClient.GetAsync("api/v1/documentos/tipos");
+
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();

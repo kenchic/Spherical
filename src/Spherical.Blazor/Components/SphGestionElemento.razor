@@ -5,10 +5,10 @@
 @using System.IdentityModel.Tokens.Jwt
 
 @inject IElementoService ElementoService
+@inject IPermisoService PermisoService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IJSRuntime JS 
-@inject IPermisoService PermisoService
 @inject AuthenticationStateProvider AuthStateProvider
 
 @* Opción de pantalla = OInventario *@
@@ -229,6 +229,7 @@
         if (firstRender)
         {
             tokenApp = (AuthStateProvider as CustomAuthStateProvider)?.GetToken();
+            ElementoService.SetAuth(tokenApp);
             PermisoService.SetAuth(tokenApp);
 
             await CargarPermisos();

@@ -1,7 +1,9 @@
 @using Spherical.Client.DTO.Inventory
-@inject Spherical.Client.Services.IDocumentoService DocumentoService
+
+@inject IDocumentoService DocumentoService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4" Gutters="false">
     <MudCard Elevation="4">
@@ -89,6 +91,9 @@
     {
         if (firstRender)
         {
+            var token = (AuthStateProvider as CustomAuthStateProvider)?.GetToken();
+            DocumentoService.SetAuth(token);
+
             await CargarDocumentos();
         }
     }

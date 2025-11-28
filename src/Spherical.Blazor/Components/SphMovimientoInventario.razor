@@ -1,8 +1,10 @@
 @using Spherical.Client.DTO.Inventory
 @using Spherical.Client.DTO.Lineup
-@inject Spherical.Client.Services.IDocumentoService DocumentoService
-@inject Spherical.Client.Services.IElementoService ElementoService
+
+@inject IDocumentoService DocumentoService
+@inject IElementoService ElementoService
 @inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthStateProvider
 
 <MudDialog>
     <DialogContent>
@@ -100,6 +102,10 @@
     {
         if (firstRender)
         {
+            var token = (AuthStateProvider as CustomAuthStateProvider)?.GetToken();
+            DocumentoService.SetAuth(token);
+            ElementoService.SetAuth(token);
+
             await CargarTipos();
             AgregarFila();
             if (!EsNuevo && DocumentoId.HasValue)
