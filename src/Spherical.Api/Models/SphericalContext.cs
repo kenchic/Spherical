@@ -59,6 +59,8 @@ public partial class SphericalContext : DbContext
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
+    public virtual DbSet<VusuarioPermiso> VusuarioPermisos { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=localhost,1433; Database=Spherical; User=spherical; Password=Admin123*;TrustServerCertificate=True;");
@@ -691,6 +693,20 @@ public partial class SphericalContext : DbContext
                             .IsUnicode(false)
                             .HasColumnName("idRol");
                     });
+        });
+
+        modelBuilder.Entity<VusuarioPermiso>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VUsuarioPermiso");
+
+            entity.Property(e => e.Opcion)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Usuario)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         OnModelCreatingPartial(modelBuilder);
