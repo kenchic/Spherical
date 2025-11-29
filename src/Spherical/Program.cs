@@ -42,6 +42,14 @@ builder.Services.AddHttpClient<IElementoService, ElementoService>(client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
+builder.Services.AddHttpClient<IBodegaService, BodegaService>(client =>
+{
+    var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
+    if (!apiUrl.EndsWith("/")) apiUrl += "/";
+    client.BaseAddress = new Uri(apiUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 builder.Services.AddHttpClient<IDocumentoService, DocumentoService>(client =>
 {
     var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";

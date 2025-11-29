@@ -145,7 +145,7 @@
 
     private async Task NuevoMovimiento()
     {
-        var parameters = new DialogParameters<SphMovimientoInventario>
+        var parameters = new DialogParameters<SphMovimientoInventarioModal>
         {
             { x => x.EsNuevo, true }
         };
@@ -156,7 +156,7 @@
             FullWidth = true,
             CloseOnEscapeKey = true
         };
-        var dialog = await DialogService.ShowAsync<SphMovimientoInventario>("Nuevo Movimiento", parameters, options);
+        var dialog = await DialogService.ShowAsync<SphMovimientoInventarioModal>("Nuevo Movimiento", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
         {
@@ -166,10 +166,10 @@
 
     private async Task AbrirMovimiento(int id, bool editable)
     {
-        var parameters = new DialogParameters<SphMovimientoInventario>
+        var parameters = new DialogParameters<SphMovimientoInventarioModal>
         {
             { x => x.EsNuevo, false },
-            { x => x.DocumentoId, id }
+            { x => x.Documento.Id, id }
         };
         var options = new DialogOptions
         {
@@ -178,7 +178,7 @@
             FullWidth = true,
             CloseOnEscapeKey = true
         };
-        var dialog = await DialogService.ShowAsync<SphMovimientoInventario>("Movimiento", parameters, options);
+        var dialog = await DialogService.ShowAsync<SphMovimientoInventarioModal>("Movimiento", parameters, options);
         var result = await dialog.Result;
         if (!result.Canceled)
         {
