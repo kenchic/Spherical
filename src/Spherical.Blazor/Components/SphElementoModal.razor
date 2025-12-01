@@ -38,10 +38,6 @@
                                                     <MudSelectItem Value="@item.Id">@item.Nombre</MudSelectItem>
                                                 }
                                             }
-                                            else
-                                            {
-                                                <MudSelectItem Value="@Elemento.IdGrupoElemento">(sin datos)</MudSelectItem>
-                                            }
                                         </MudSelect>
                                     </MudItem>
                                     <MudItem xs="12" md="7">
@@ -70,10 +66,6 @@
                                                 {
                                                     <MudSelectItem Value="@item.Id">@item.Nombre</MudSelectItem>
                                                 }
-                                            }
-                                            else
-                                            {
-                                                <MudSelectItem Value="@Elemento.IdUnidadMedida">(sin datos)</MudSelectItem>
                                             }
                                         </MudSelect>
                                     </MudItem>
@@ -105,14 +97,12 @@
                                                          For="@(() => Elemento.Peso)"
                                                          HelperText="Peso en kilogramos" />
                                     </MudItem>
-                                    <!-- Cambiar Rotacion a un switch (es booleano) -->
                                     <MudItem xs="12" md="3">
                                         <MudSwitch @bind-Value="Elemento.Rotacion"
                                                    Label="Rotación"
                                                    Color="Color.Primary"
                                                    For="@(() => Elemento.Rotacion)" />
                                     </MudItem>
-
                                     <MudItem xs="12" md="3">
                                         <MudSwitch @bind-Value="Elemento.Activo"
                                                    Label="Activo"
@@ -187,8 +177,7 @@
                     </MudContainer>
 
                 </MudCardContent>
-                <MudCardActions Class="d-flex justify-end">
-                    <MudButton OnClick="Cancel" Class="me-2">Cancelar</MudButton>
+                <MudCardActions Class="d-flex justify-end">                    
                     <MudButton Color="Color.Primary"
                                ButtonType="ButtonType.Submit"
                                Variant="Variant.Filled"
@@ -203,14 +192,11 @@
                             @(EsNuevo ? "Crear" : "Actualizar")
                         }
                     </MudButton>
+                    <MudButton OnClick="Cancel" Color="Color.Secondary" Variant="Variant.Outlined">Cancelar</MudButton>
                 </MudCardActions>
             </MudCard>
         </EditForm>
     </DialogContent>
-    <DialogActions>
-
-    </DialogActions>
-
 </MudDialog>
 
 @code {

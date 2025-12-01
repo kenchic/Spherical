@@ -1,6 +1,8 @@
+@using Microsoft.AspNetCore.Components.Forms
 @using Spherical.Client.DTO.Inventory
 @using Spherical.Client.DTO.Lineup
 @using System.Security.Claims
+@using MudBlazor
 
 @inject IDocumentoService DocumentoService
 @inject IElementoService ElementoService
@@ -10,91 +12,133 @@
 
 <MudDialog>
     <DialogContent>
-        <MudPaper Class="pa-4">
-            <MudText Typo="Typo.h5" Class="mb-3">Movimiento de Inventario</MudText>
 
-            <MudGrid Class="mb-3">
-                <MudItem xs="12" sm="6" md="4">
-                    <MudSelect T="string" Label="Tipo de Documento" @bind-Value="Documento.IdDocumentoTipo" Dense="true" Clearable="true" Required="true" CoerceText="true" Immediate="true" OnBlurred="OnTipoChanged">
-                        @if (Tipos != null)
-                        {
-                            foreach (var t in Tipos)
-                            {
-                                <MudSelectItem Value="@t.Id">@t.Nombre (@t.Operacion)</MudSelectItem>
-                            }
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12" sm="3" md="2">
-                    <MudSelect T="int" Label="Bodega Origen" @bind-Value="Documento.IdBodegaOrigen" Dense="true" Clearable="true">
-                        @if (Bodegas != null)
-                        {
-                            foreach (var b in Bodegas)
-                            {
-                                <MudSelectItem Value="@b.Id">@($"{b.Nombre}")</MudSelectItem>
-                            }
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12" sm="3" md="2">
-                    <MudSelect T="int" Label="Bodega Destino" @bind-Value="Documento.IdBodegaDestino" Dense="true" Clearable="true">
-                        @if (Bodegas != null)
-                        {
-                            foreach (var b in Bodegas)
-                            {
-                                <MudSelectItem Value="@b.Id">@($"{b.Nombre}")</MudSelectItem>
-                            }
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12" sm="4" md="2">
-                    <MudDatePicker Label="Fecha" @bind-Value="Documento.Fecha" Dense="true" />
-                </MudItem>
-                <MudItem xs="12" sm="8" md="4">
-                    <MudTextField Label="Observación" @bind-Value="Documento.Descripcion" Dense="true" />
-                </MudItem>
-                <MudItem xs="12" sm="4" md="2" Class="d-flex align-center">
-                    <MudChip T="string" Color="@OperacionColor" Variant="Variant.Filled">Operación: @OperacionTexto</MudChip>
-                </MudItem>
-            </MudGrid>
+        <EditForm Model="@Documento" OnValidSubmit="GuardarMovimiento" OnInvalidSubmit="OnInvalidSubmit">
+            <DataAnnotationsValidator />
+            <MudCard>
+                <MudCardContent>
+                    <MudPaper Class="pa-4">
+                        <MudGrid Class="mb-3">
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudSelect T="string" @bind-Value="Documento.IdDocumentoTipo"
+                                           Label="Tipo de Documento"
+                                           Variant="Variant.Outlined"
+                                           Margin="Margin.Dense"
+                                           For="@(() => Documento.IdDocumentoTipo)"
+                                           HelperText="Seleccione el tipo de documento"
+                                           Required="true"
+                                           RequiredError="Este campo es requerido">
+                                    @if (Tipos != null)
+                                    {
+                                        foreach (var t in Tipos)
+                                        {
+                                            <MudSelectItem Value="@t.Id">@t.Nombre (@t.Operacion)</MudSelectItem>
+                                        }
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" sm="3" md="2">
+                                <MudSelect T="int" @bind-Value="Documento.IdBodegaOrigen"
+                                           Label="Bodega Origen"
+                                           Variant="Variant.Outlined"
+                                           Margin="Margin.Dense"
+                                           For="@(() => Documento.IdBodegaOrigen)"
+                                           HelperText="Seleccione la bodega origen"
+                                           Required="true">
+                                    @if (Bodegas != null)
+                                    {
+                                        foreach (var b in Bodegas)
+                                        {
+                                            <MudSelectItem Value="@b.Id">@b.Nombre</MudSelectItem>
+                                        }
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" sm="3" md="2">
+                                <MudSelect T="int" @bind-Value="Documento.IdBodegaDestino"
+                                           Label="Bodega Destino"
+                                           Variant="Variant.Outlined"
+                                           Margin="Margin.Dense"
+                                           For="@(() => Documento.IdBodegaDestino)"
+                                           HelperText="Seleccione la bodega destino"
+                                           Required="true">
+                                    @if (Bodegas != null)
+                                    {
+                                        foreach (var b in Bodegas)
+                                        {
+                                            <MudSelectItem Value="@b.Id">@b.Nombre</MudSelectItem>
+                                        }
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" sm="4" md="2">
+                                <MudDatePicker Label="Fecha" @bind-Value="Documento.Fecha" Dense="true" />
+                            </MudItem>
+                            <MudItem xs="12" sm="8" md="4">
+                                <MudTextField @bind-Value="Documento.Descripcion"
+                                              Label="Observación"
+                                              Variant="Variant.Outlined"
+                                              Lines="3"
+                                              Required="true" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4" md="2" Class="d-flex align-center">
+                                <MudChip T="string" Color="@OperacionColor" Variant="Variant.Filled">Operación: @OperacionTexto</MudChip>
+                            </MudItem>
+                        </MudGrid>
 
-            <MudTable Items="Detalles" Dense="true" Hover="true" Class="mb-2">
-                <HeaderContent>
-                    <MudTh>Elemento</MudTh>
-                    <MudTh style="width:120px">Cantidad</MudTh>
-                    <MudTh style="width:60px"></MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>
-                        <MudAutocomplete T="ElementoDto"
-                                         @bind-Value="context.ItemElemento"
-                                         Dense="true"
-                                         Clearable="true"
-                                         ResetValueOnEmptyText="true"
-                                         ToStringFunc="@(e => e == null ? string.Empty : $"{e.Referencia} - {e.Nombre}")"
-                                         SearchFunc="BuscarElementos"
-                                         MaxItems="8" />
-                    </MudTd>
-                    <MudTd>
-                        <MudNumericField T="int" @bind-Value="context.Cantidad" Min="0" Dense="true" />
-                    </MudTd>
-                    <MudTd>
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => QuitarFila(context))" />
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
+                        <MudTable Items="Detalles" Dense="true" Hover="true" Class="mb-2">
+                            <HeaderContent>
+                                <MudTh>Elemento</MudTh>
+                                <MudTh style="width:120px">Cantidad</MudTh>
+                                <MudTh style="width:60px"></MudTh>
+                            </HeaderContent>
+                            <RowTemplate Context="rowContext">
+                                <MudTd>
+                                    <MudAutocomplete T="ElementoDto"
+                                                     @bind-Value="rowContext.ItemElemento"
+                                                     Dense="true"
+                                                     Clearable="true"
+                                                     ResetValueOnEmptyText="true"
+                                                     ToStringFunc="@(e => e == null ? string.Empty : $"{e.Referencia} - {e.Nombre}")"
+                                                     SearchFunc="BuscarElementos"
+                                                     MaxItems="8" />
+                                </MudTd>
+                                <MudTd>
+                                    <MudNumericField T="int" @bind-Value="rowContext.Cantidad" Min="0" Dense="true" />
+                                </MudTd>
+                                <MudTd>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => QuitarFila(rowContext))" />
+                                </MudTd>
+                            </RowTemplate>
+                        </MudTable>
 
-            <MudStack Direction="Row" Spacing="2">
-                <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="AgregarFila">Agregar fila</MudButton>
-                <MudSpacer />
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Guardar" Disabled="@(string.IsNullOrWhiteSpace(selectedTipoId) || Detalles.Count == 0)">Guardar</MudButton>
-            </MudStack>
-        </MudPaper>
+                        <MudStack Direction="Row" Spacing="2">
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="AgregarFila">Agregar fila</MudButton>
+                            <MudSpacer />
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GuardarMovimiento" Disabled="@(string.IsNullOrWhiteSpace(selectedTipoId) || Detalles.Count == 0)">Guardar</MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudCardContent>
+                <MudCardActions Class="d-flex justify-end">
+                    <MudButton Color="Color.Primary" 
+                               Variant="Variant.Filled" 
+                               ButtonType="ButtonType.Submit"
+                               Disabled="@IsGuardando">
+                        @if (IsGuardando)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Guardando...</MudText>
+                        }
+                        else
+                        {
+                            @(EsNuevo ? "Crear" : "Actualizar")
+                        }       
+                    </MudButton>
+                    <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="Cancel">Cancelar</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
     </DialogContent>
-    <DialogActions>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Guardar">Guardar</MudButton>
-        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="Cancelar">Cancelar</MudButton>
-    </DialogActions>
 </MudDialog>
 
 @code {
@@ -105,10 +149,9 @@
 
     private List<DocumentoTipoDto> Tipos = new();
     private string? selectedTipoId;
-    private int idBodegaOrigen;
-    private int idBodegaDestino;
     private DateTime? fecha = DateTime.Today;
     private string? descripcion;
+    private bool IsGuardando = false;
 
     private List<FilaDetalle> Detalles = new();
 
@@ -127,6 +170,7 @@
 
             await CargarTipos();
             await CargarBodegas();
+
             AgregarFila();
             if (!EsNuevo && Documento.Id > 0)
             {
@@ -185,24 +229,12 @@
         return listado.Where(e => ($"{e.Referencia} - {e.Nombre}").Contains(value, StringComparison.InvariantCultureIgnoreCase)).Take(8);
     }
 
-    private void OnElementoSeleccionado(FilaDetalle fila, ElementoDto? elemento)
-    {
-        if (elemento == null)
-        {
-            fila.IdElemento = 0;
-            fila.ElementoNombre = null;
-            fila.ItemElemento = null;
-        }
-        else
-        {
-            fila.IdElemento = elemento.Id;
-            fila.ElementoNombre = elemento.Nombre;
-            fila.ItemElemento = elemento;
-        }
-    }
 
-    private async Task Guardar()
+    private async Task GuardarMovimiento()
     {
+        IsGuardando = true;
+        StateHasChanged();
+
         try
         {
             if (string.IsNullOrWhiteSpace(Documento.IdDocumentoTipo))
@@ -234,6 +266,11 @@
         catch (Exception ex)
         {
             Snackbar.Add($"Error al guardar: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsGuardando = false;
+            StateHasChanged();
         }
     }
 
@@ -278,10 +315,7 @@
         }
     }
 
-    private void Cancelar()
-    {
-        MudDialog?.Cancel();
-    }
+    private void Cancel() => MudDialog.Cancel();
 
     private List<BodegaDto> Bodegas = new();
 
@@ -307,5 +341,10 @@
                 return claim.Value;
         }
         return null;
+    }
+
+    private void OnInvalidSubmit(EditContext editContext)
+    {
+        Snackbar.Add("Por favor, completa los campos requeridos antes de continuar.", Severity.Warning);
     }
 }
