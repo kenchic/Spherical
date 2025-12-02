@@ -37,7 +37,23 @@
                                     }
                                 </MudSelect>
                             </MudItem>
-                            <MudItem xs="12" sm="3" md="2">
+                            <MudItem xs="12" sm="2" md="2" Class="d-flex align-center">
+                                <MudChip T="string" Color="@OperacionColor" Variant="Variant.Filled">Operación: @OperacionTexto</MudChip>
+                            </MudItem>
+
+                            <!-- Espacio vacío -->
+                            <MudItem xs="12" sm="12" md="4">
+                                <!-- vacío a propósito -->
+                            </MudItem>
+                            
+                            <MudItem xs="12" sm="12" md="2">
+                                <MudTextField Label="Numero" 
+                                              Value="1"
+                                              Variant="Variant.Outlined"
+                                              Margin="Margin.Dense" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="3" md="4">
                                 <MudSelect T="int" @bind-Value="Documento.IdBodegaOrigen"
                                            Label="Bodega Origen"
                                            Variant="Variant.Outlined"
@@ -54,7 +70,8 @@
                                     }
                                 </MudSelect>
                             </MudItem>
-                            <MudItem xs="12" sm="3" md="2">
+
+                            <MudItem xs="12" sm="3" md="4">
                                 <MudSelect T="int" @bind-Value="Documento.IdBodegaDestino"
                                            Label="Bodega Destino"
                                            Variant="Variant.Outlined"
@@ -71,19 +88,22 @@
                                     }
                                 </MudSelect>
                             </MudItem>
-                            <MudItem xs="12" sm="4" md="2">
-                                <MudDatePicker Label="Fecha" @bind-Value="Documento.Fecha" Dense="true" />
+
+                            <MudItem xs="12" sm="4" md="4">
+                                <MudDatePicker Label="Fecha" 
+                                               @bind-Value="Documento.Fecha" 
+                                               Variant="Variant.Outlined"
+                                               Margin="Margin.Dense"  />
                             </MudItem>
-                            <MudItem xs="12" sm="8" md="4">
+
+                            <MudItem xs="12" sm="12" md="12">
                                 <MudTextField @bind-Value="Documento.Descripcion"
                                               Label="Observación"
                                               Variant="Variant.Outlined"
-                                              Lines="3"
+                                              Margin="Margin.Dense"
                                               Required="true" />
                             </MudItem>
-                            <MudItem xs="12" sm="4" md="2" Class="d-flex align-center">
-                                <MudChip T="string" Color="@OperacionColor" Variant="Variant.Filled">Operación: @OperacionTexto</MudChip>
-                            </MudItem>
+                            
                         </MudGrid>
 
                         <MudTable Items="Detalles" Dense="true" Hover="true" Class="mb-2">
@@ -119,7 +139,7 @@
                         </MudStack>
                     </MudPaper>
                 </MudCardContent>
-                <MudCardActions Class="d-flex justify-end">
+                <MudCardActions Class="d-flex justify-end" Style="gap: 12px;">
                     <MudButton Color="Color.Primary" 
                                Variant="Variant.Filled" 
                                ButtonType="ButtonType.Submit"
@@ -185,6 +205,7 @@
                 // Extraer name y locale desde los claims (con fallback)
                 var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "AYZCORP";
                 Documento.Empresa = locale;
+                Documento.IdBodegaDestino = 1;
             }
         }
     }
