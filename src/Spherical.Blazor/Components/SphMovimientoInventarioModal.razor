@@ -47,8 +47,8 @@
                             </MudItem>
                             
                             <MudItem xs="12" sm="12" md="2">
-                                <MudTextField Label="Numero" 
-                                              Value="1"
+                                <MudTextField Label="Numero"
+                                              Value="@ConsecutivoTexto"
                                               Variant="Variant.Outlined"
                                               Margin="Margin.Dense" />
                             </MudItem>
@@ -117,14 +117,20 @@
                                     <MudAutocomplete T="ElementoDto"
                                                      @bind-Value="rowContext.ItemElemento"
                                                      Dense="true"
+                                                     Margin="Margin.Dense"
                                                      Clearable="true"
+                                                     Variant="Variant.Outlined"
                                                      ResetValueOnEmptyText="true"
                                                      ToStringFunc="@(e => e == null ? string.Empty : $"{e.Referencia} - {e.Nombre}")"
                                                      SearchFunc="BuscarElementos"
                                                      MaxItems="8" />
                                 </MudTd>
                                 <MudTd>
-                                    <MudNumericField T="int" @bind-Value="rowContext.Cantidad" Min="0" Dense="true" />
+                                    <MudNumericField T="int" 
+                                                     @bind-Value="rowContext.Cantidad" 
+                                                     Min="0" 
+                                                     Variant="Variant.Outlined"
+                                                     Margin="Margin.Dense" />
                                 </MudTd>
                                 <MudTd>
                                     <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => QuitarFila(rowContext))" />
@@ -178,6 +184,30 @@
     // Estado de operación según tipo seleccionado
     private string OperacionTexto => Tipos.FirstOrDefault(t => t.Id == Documento.IdDocumentoTipo)?.Operacion == "-" ? "Salida (-)" : "Entrada (+)";
     private Color OperacionColor => Tipos.FirstOrDefault(t => t.Id == Documento.IdDocumentoTipo)?.Operacion == "-" ? Color.Error : Color.Success;
+    private long ConsecutivoTexto => Tipos.FirstOrDefault(t => t.Id == Documento.IdDocumentoTipo)?.Consecutivo ?? 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (EsNuevo)
+        {
+            Documento.Id = 0;
+            Documento.IdBodegaOrigen = 0;
+            Documento.IdBodegaDestino = 1;
+
+            // Obtener usuario y claims
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            // Extraer name y locale desde los claims (con fallback)
+            var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "AYZCORP";
+            Documento.Empresa = locale;
+
+            for (int i = 0; i < 10; i++)
+            {
+                Detalles.Add(new FilaDetalle());
+            }
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -191,21 +221,9 @@
             await CargarTipos();
             await CargarBodegas();
 
-            AgregarFila();
             if (!EsNuevo && Documento.Id > 0)
             {
                 await CargarDocumento(Documento.Id);
-            }
-            else
-            {
-                // Obtener usuario y claims
-                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-                var user = authState.User;
-
-                // Extraer name y locale desde los claims (con fallback)
-                var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "AYZCORP";
-                Documento.Empresa = locale;
-                Documento.IdBodegaDestino = 1;
             }
         }
     }
@@ -263,8 +281,8 @@
                 Snackbar.Add("Seleccione el tipo de documento", Severity.Warning);
                 return;
             }
-            var detallesValidos = Detalles.Where(d => d.IdElemento > 0 && d.Cantidad > 0)
-                                          .Select(d => new DocumentoDetalleDto { IdElemento = (short)d.IdElemento, Cantidad = d.Cantidad })
+            var detallesValidos = Detalles.Where(d => d.ItemElemento is not null && d.ItemElemento.Id > 0 && d.Cantidad > 0)
+                                          .Select(d => new DocumentoDetalleDto { IdElemento = (short)d.ItemElemento.Id, Cantidad = d.Cantidad })
                                           .ToList();
             if (detallesValidos.Count == 0)
             {

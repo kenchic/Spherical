@@ -55,7 +55,7 @@
                 </MudGrid>
 
 
-                <MudTable Items="FiltrarDocumentos()" Hover="true" Dense="true" Bordered="true" Striped="true">
+                <MudTable Items="FiltrarDocumentos()" Hover="true" Dense="true" >
                     <HeaderContent>
                         <MudTh>No.</MudTh>
                         <MudTh>Fecha</MudTh>
@@ -71,7 +71,10 @@
                         <MudTd>@context.Estado</MudTd>
                         <MudTd>@context.Descripcion</MudTd>
                         <MudTd Class="text-right">
-                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Info" OnClick="(() => AbrirMovimiento(context.Id, false))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                           Color="Color.Info" 
+                                           Size="Size.Small" 
+                                           OnClick="(() => AbrirMovimiento(context.Id, false))" />
                         </MudTd>
                     </RowTemplate>
                 </MudTable>
@@ -166,10 +169,11 @@
 
     private async Task AbrirMovimiento(int id, bool editable)
     {
+        DocumentoDto documentoDto = new DocumentoDto(){ Id = id };
         var parameters = new DialogParameters<SphMovimientoInventarioModal>
         {
             { x => x.EsNuevo, false },
-            { x => x.Documento.Id, id }
+            { x => x.Documento, documentoDto }
         };
         var options = new DialogOptions
         {
