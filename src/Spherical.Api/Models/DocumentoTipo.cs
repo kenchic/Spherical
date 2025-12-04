@@ -11,7 +11,7 @@ public partial class DocumentoTipo
 
     public string Nombre { get; set; } = null!;
 
-    public long Consecutivo { get; set; }
+    public int Consecutivo { get; set; }
 
     public string Operacion { get; set; } = null!;
 

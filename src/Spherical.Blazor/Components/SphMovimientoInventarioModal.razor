@@ -27,7 +27,8 @@
                                            For="@(() => Documento.IdDocumentoTipo)"
                                            HelperText="Seleccione el tipo de documento"
                                            Required="true"
-                                           RequiredError="Este campo es requerido">
+                                           RequiredError="Este campo es requerido"
+                                           Disabled=@(!EsNuevo)>
                                     @if (Tipos != null)
                                     {
                                         foreach (var t in Tipos)
@@ -47,10 +48,11 @@
                             </MudItem>
                             
                             <MudItem xs="12" sm="12" md="2">
-                                <MudTextField Label="Numero"
-                                              Value="@ConsecutivoTexto"
+                                <MudTextField T="string" Label="Numero"
+                                              Value="@ConsecutivoTexto.ToString()"
                                               Variant="Variant.Outlined"
-                                              Margin="Margin.Dense" />
+                                              Margin="Margin.Dense" ReadOnly="true"
+                                              Disabled ="true"/>
                             </MudItem>
 
                             <MudItem xs="12" sm="3" md="4">
@@ -65,7 +67,7 @@
                                     {
                                         foreach (var b in Bodegas)
                                         {
-                                            <MudSelectItem Value="@b.Id">@b.Nombre</MudSelectItem>
+                                            <MudSelectItem Value="@b.Id">@(b.Nombre ?? b.Codigo)</MudSelectItem>
                                         }
                                     }
                                 </MudSelect>
@@ -83,15 +85,16 @@
                                     {
                                         foreach (var b in Bodegas)
                                         {
-                                            <MudSelectItem Value="@b.Id">@b.Nombre</MudSelectItem>
+                                            <MudSelectItem Value="@b.Id">@(b.Nombre ?? b.Codigo)</MudSelectItem>
                                         }
                                     }
                                 </MudSelect>
                             </MudItem>
 
                             <MudItem xs="12" sm="4" md="4">
-                                <MudDatePicker Label="Fecha" 
-                                               @bind-Value="Documento.Fecha" 
+                                <MudDatePicker
+                                               Label="Fecha" 
+                                               @bind-Date="fecha" 
                                                Variant="Variant.Outlined"
                                                Margin="Margin.Dense"  />
                             </MudItem>
@@ -138,7 +141,7 @@
                             </RowTemplate>
                         </MudTable>
 
-                        <MudStack Direction="Row" Spacing="2">
+                        <MudStack Spacing="2">
                             <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="AgregarFila">Agregar fila</MudButton>
                             <MudSpacer />
                             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GuardarMovimiento" Disabled="@(string.IsNullOrWhiteSpace(selectedTipoId) || Detalles.Count == 0)">Guardar</MudButton>
@@ -184,30 +187,7 @@
     // Estado de operación según tipo seleccionado
     private string OperacionTexto => Tipos.FirstOrDefault(t => t.Id == Documento.IdDocumentoTipo)?.Operacion == "-" ? "Salida (-)" : "Entrada (+)";
     private Color OperacionColor => Tipos.FirstOrDefault(t => t.Id == Documento.IdDocumentoTipo)?.Operacion == "-" ? Color.Error : Color.Success;
-    private long ConsecutivoTexto => Tipos.FirstOrDefault(t => t.Id == Documento.IdDocumentoTipo)?.Consecutivo ?? 0;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (EsNuevo)
-        {
-            Documento.Id = 0;
-            Documento.IdBodegaOrigen = 0;
-            Documento.IdBodegaDestino = 1;
-
-            // Obtener usuario y claims
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
-
-            // Extraer name y locale desde los claims (con fallback)
-            var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "AYZCORP";
-            Documento.Empresa = locale;
-
-            for (int i = 0; i < 10; i++)
-            {
-                Detalles.Add(new FilaDetalle());
-            }
-        }
-    }
+    private int ConsecutivoTexto => EsNuevo ? Tipos.FirstOrDefault(t => t.Id == Documento.IdDocumentoTipo)?.Consecutivo ?? 0 : Documento.Numero;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -225,6 +205,25 @@
             {
                 await CargarDocumento(Documento.Id);
             }
+            else
+            {
+                Documento.Id = 0;
+                Documento.IdBodegaOrigen = 0;
+                Documento.IdBodegaDestino = 1;
+
+                // Obtener usuario y claims
+                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+
+                // Extraer name y locale desde los claims (con fallback)
+                var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "AYZCORP";
+                Documento.Empresa = locale;
+
+                for (int i = 0; i < 10; i++)
+                {
+                    Detalles.Add(new FilaDetalle());
+                }
+            }
         }
     }
 
@@ -241,8 +240,10 @@
         }
     }
 
-    private void OnTipoChanged()
+    private void OnTipoChanged(string value)
     {
+        selectedTipoId = value;
+        
         StateHasChanged();
     }
 
@@ -290,6 +291,9 @@
                 return;
             }
 
+            // Sincronizar la fecha del documento desde el campo local nullable
+            Documento.Fecha = fecha ?? DateTime.Today;
+            Documento.Numero = ConsecutivoTexto;
             Documento.Detalles = detallesValidos;
             var resp = await DocumentoService.CrearDocumentoAsync(Documento);
             if (resp.Success)
@@ -325,21 +329,43 @@
     {
         try
         {
+
+
             var resp = await DocumentoService.GetDocumentoAsync(id);
             if (resp.Success && resp.Data != null)
             {
                 Documento.Id = id;
                 Documento.IdDocumentoTipo = resp.Data.IdDocumentoTipo;
+                selectedTipoId = resp.Data.IdDocumentoTipo;
                 Documento.IdBodegaOrigen = resp.Data.IdBodegaOrigen;
                 Documento.IdBodegaDestino = resp.Data.IdBodegaDestino;
                 Documento.Fecha = resp.Data.Fecha;
+                fecha = resp.Data.Fecha; // Reflejar en el picker local
                 Documento.Descripcion = resp.Data.Descripcion;
                 Documento.Empresa = resp.Data.Empresa;
-                Detalles = resp.Data.Detalles.Select(d => new FilaDetalle
+                Documento.Numero = resp.Data.Numero;
+
+                var elementosResp = await ElementoService.GetElementosAsync();
+                var elementos = elementosResp.Success && elementosResp.Data != null ? elementosResp.Data.ToList() : new List<ElementoDto>();
+
+                Detalles = resp.Data.Detalles.Select(d =>
                 {
-                    IdElemento = d.IdElemento,
-                    ElementoNombre = d.ElementoNombre,
-                    Cantidad = d.Cantidad
+                    var item = elementos.FirstOrDefault(e => e.Id == d.IdElemento);
+                    return new FilaDetalle
+                    {
+                        IdElemento = d.IdElemento,
+                        ElementoNombre = d.ElementoNombre,
+                        Cantidad = d.Cantidad,
+                        ItemElemento = item ?? new ElementoDto
+                        {
+                            Id = (short)d.IdElemento,
+                            Nombre = d.ElementoNombre ?? string.Empty,
+                            Referencia = d.ElementoNombre ?? string.Empty,
+                            Empresa = resp.Data.Empresa,
+                            IdGrupoElemento = "-",
+                            IdUnidadMedida = "-"
+                        }
+                    };
                 }).ToList();
                 StateHasChanged();
             }

@@ -162,7 +162,7 @@ namespace Spherical.Api.Controllers.Lineup
                 }
 
                 // Asignar número y fecha
-                var numero = (int)(tipo.Consecutivo + 1);
+                var numero = tipo.Consecutivo;
                 var documento = new Documento
                 {
                     IdDocumentoTipo = dto.IdDocumentoTipo,
