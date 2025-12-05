@@ -23,6 +23,7 @@ namespace Spherical.Client.DTO.Inventory
         [Required(AllowEmptyStrings = false, ErrorMessage = Constants.RequiredFieldMsg)]
         public string? Descripcion { get; set; }
         public string Estado { get; set; } = "ABIERTO";
+        public bool Anulado { get; set; } = false;
         public List<DocumentoDetalleDto> Detalles { get; set; } = new();
     }
 }

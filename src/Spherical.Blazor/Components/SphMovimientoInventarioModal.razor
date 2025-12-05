@@ -3,6 +3,7 @@
 @using Spherical.Client.DTO.Lineup
 @using System.Security.Claims
 @using MudBlazor
+@using Spherical.Client.DTO.Spherical
 
 @inject IDocumentoService DocumentoService
 @inject IElementoService ElementoService
@@ -46,13 +47,13 @@
                             <MudItem xs="12" sm="12" md="4">
                                 <!-- vacío a propósito -->
                             </MudItem>
-                            
+
                             <MudItem xs="12" sm="12" md="2">
                                 <MudTextField T="string" Label="Numero"
                                               Value="@ConsecutivoTexto.ToString()"
                                               Variant="Variant.Outlined"
                                               Margin="Margin.Dense" ReadOnly="true"
-                                              Disabled ="true"/>
+                                              Disabled="true" />
                             </MudItem>
 
                             <MudItem xs="12" sm="3" md="4">
@@ -92,11 +93,10 @@
                             </MudItem>
 
                             <MudItem xs="12" sm="4" md="4">
-                                <MudDatePicker
-                                               Label="Fecha" 
-                                               @bind-Date="fecha" 
+                                <MudDatePicker Label="Fecha"
+                                               @bind-Date="fecha"
                                                Variant="Variant.Outlined"
-                                               Margin="Margin.Dense"  />
+                                               Margin="Margin.Dense" />
                             </MudItem>
 
                             <MudItem xs="12" sm="12" md="12">
@@ -106,7 +106,7 @@
                                               Margin="Margin.Dense"
                                               Required="true" />
                             </MudItem>
-                            
+
                         </MudGrid>
 
                         <MudTable Items="Detalles" Dense="true" Hover="true" Class="mb-2">
@@ -129,9 +129,9 @@
                                                      MaxItems="8" />
                                 </MudTd>
                                 <MudTd>
-                                    <MudNumericField T="int" 
-                                                     @bind-Value="rowContext.Cantidad" 
-                                                     Min="0" 
+                                    <MudNumericField T="int"
+                                                     @bind-Value="rowContext.Cantidad"
+                                                     Min="0"
                                                      Variant="Variant.Outlined"
                                                      Margin="Margin.Dense" />
                                 </MudTd>
@@ -149,8 +149,8 @@
                     </MudPaper>
                 </MudCardContent>
                 <MudCardActions Class="d-flex justify-end" Style="gap: 12px;">
-                    <MudButton Color="Color.Primary" 
-                               Variant="Variant.Filled" 
+                    <MudButton Color="Color.Primary"
+                               Variant="Variant.Filled"
                                ButtonType="ButtonType.Submit"
                                Disabled="@IsGuardando">
                         @if (IsGuardando)
@@ -161,7 +161,7 @@
                         else
                         {
                             @(EsNuevo ? "Crear" : "Actualizar")
-                        }       
+                        }
                     </MudButton>
                     <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="Cancel">Cancelar</MudButton>
                 </MudCardActions>
@@ -243,7 +243,7 @@
     private void OnTipoChanged(string value)
     {
         selectedTipoId = value;
-        
+
         StateHasChanged();
     }
 
@@ -295,16 +295,31 @@
             Documento.Fecha = fecha ?? DateTime.Today;
             Documento.Numero = ConsecutivoTexto;
             Documento.Detalles = detallesValidos;
-            var resp = await DocumentoService.CrearDocumentoAsync(Documento);
-            if (resp.Success)
+
+            ApiResponse<bool> resp;
+                    
+            if (EsNuevo)
             {
-                Snackbar.Add($"Documento creado Nº {resp.Data?.Numero}", Severity.Success);
-                MudDialog?.Close(DialogResult.Ok(true));
+                resp = await DocumentoService.CrearDocumentoAsync(Documento);
+                if (resp.Success)
+                {
+                    Snackbar.Add($"Documento creado Nº {ConsecutivoTexto}", Severity.Success);
+                    MudDialog?.Close(DialogResult.Ok(true));
+                }
             }
             else
             {
-                Snackbar.Add(resp.ErrorMessage ?? "No fue posible guardar el documento", Severity.Error);
+                resp = await DocumentoService.ActualizarDocumentoAsync(Documento.Id, Documento);
+                if (resp.Success)
+                {
+                    Snackbar.Add($"Documento actualizado Nº {ConsecutivoTexto}", Severity.Success);
+                    MudDialog?.Close(DialogResult.Ok(true));
+                }
             }
+
+            if (!resp.Success)
+                Snackbar.Add(resp.ErrorMessage ?? "No fue posible guardar el documento", Severity.Error);
+
         }
         catch (Exception ex)
         {

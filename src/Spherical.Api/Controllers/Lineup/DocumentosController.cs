@@ -5,6 +5,7 @@ using Spherical.Api.Models;
 using Spherical.Client.DTO.Inventory;
 using Spherical.Client.DTO.Spherical;
 using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace Spherical.Api.Controllers.Lineup
 {
@@ -14,10 +15,12 @@ namespace Spherical.Api.Controllers.Lineup
     public class DocumentosController : ControllerBase
     {
         private readonly SphericalContext _context;
+        private readonly ILogger<DocumentosController> _logger;
 
-        public DocumentosController(SphericalContext context)
+        public DocumentosController(SphericalContext context, ILogger<DocumentosController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/v1/documentos/tipos
@@ -51,6 +54,7 @@ namespace Spherical.Api.Controllers.Lineup
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al obtener tipos de documentos");
                 var response = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
                 return BadRequest(response);
             }
@@ -75,7 +79,8 @@ namespace Spherical.Api.Controllers.Lineup
                         Fecha = d.Fecha,
                         Descripcion = d.Descripcion,
                         Estado = d.Estado,
-                        Detalles = new List<DocumentoDetalleDto>()
+                        Detalles = new List<DocumentoDetalleDto>(),
+                        Anulado = d.Estado == "ANULADO"
                     })
                     .ToListAsync();
 
@@ -88,6 +93,7 @@ namespace Spherical.Api.Controllers.Lineup
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al obtener documentos");
                 var response = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
                 return BadRequest(response);
             }
@@ -129,7 +135,8 @@ namespace Spherical.Api.Controllers.Lineup
                     Fecha = d.Fecha,
                     Descripcion = d.Descripcion,
                     Estado = d.Estado,
-                    Detalles = detalles
+                    Detalles = detalles,
+                    Anulado = d.Estado == "ANULADO"
                 };
 
                 var response = new ApiResponse<DocumentoDto>
@@ -141,6 +148,7 @@ namespace Spherical.Api.Controllers.Lineup
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al obtener documento {DocumentoId}", id);
                 var response = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
                 return BadRequest(response);
             }
@@ -148,7 +156,7 @@ namespace Spherical.Api.Controllers.Lineup
 
         // POST: api/v1/documentos
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<DocumentoDto>>> CrearDocumento([FromBody] DocumentoDto dto)
+        public async Task<ActionResult<ApiResponse<bool>>> CrearDocumento([FromBody] DocumentoDto dto)
         {
             using var tx = await _context.Database.BeginTransactionAsync();
             try
@@ -201,24 +209,9 @@ namespace Spherical.Api.Controllers.Lineup
 
                 await tx.CommitAsync();
 
-                // Respuesta con documento creado
-                var creado = new DocumentoDto
+                var response = new ApiResponse<bool>
                 {
-                    Id = documento.Id,
-                    IdDocumentoTipo = documento.IdDocumentoTipo,
-                    IdBodegaOrigen = documento.IdBodegaOrigen,
-                    IdBodegaDestino = documento.IdBodegaDestino,
-                    Empresa = documento.Empresa,
-                    Numero = documento.Numero,
-                    Fecha = documento.Fecha,
-                    Descripcion = documento.Descripcion,
-                    Estado = documento.Estado,
-                    Detalles = dto.Detalles ?? new List<DocumentoDetalleDto>()
-                };
-
-                var response = new ApiResponse<DocumentoDto>
-                {
-                    Data = creado,
+                    Data = true,
                     Success = true
                 };
                 return Ok(response);
@@ -226,6 +219,118 @@ namespace Spherical.Api.Controllers.Lineup
             catch (Exception ex)
             {
                 await tx.RollbackAsync();
+                _logger.LogError(ex, "Error al crear documento");
+                var response = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
+                return BadRequest(response);
+            }
+        }
+
+
+        // PUT: api/v1/documentos/{id}/anular
+        [HttpPut("{id}/anular")]
+        public async Task<ActionResult<ApiResponse<bool>>> AnularDocumento(int id)
+        {
+            using var tx = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var documento = await _context.Documentos.FirstOrDefaultAsync(x => x.Id == id);
+                if (documento == null)
+                {
+                    var notFound = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty, "Documento no encontrado");
+                    return NotFound(notFound);
+                }
+
+                if (string.Equals(documento.Estado, "ANULADO", StringComparison.OrdinalIgnoreCase))
+                {
+                    var bad = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, "El documento ya está anulado");
+                    return BadRequest(bad);
+                }
+
+                documento.Estado = "ANULADO";
+                _context.Documentos.Update(documento);
+                await _context.SaveChangesAsync();
+
+                await tx.CommitAsync();
+                var response = new ApiResponse<bool>
+                {
+                    Data = true,
+                    Success = true
+                };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                await tx.RollbackAsync();
+                _logger.LogError(ex, "Error al anular documento {DocumentoId}", id);
+                var response = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
+                return BadRequest(response);
+            }
+        }
+
+        // PUT: api/v1/documentos/{id}
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ApiResponse<bool>>> ActualizarDocumento(int id, [FromBody] DocumentoDto dto)
+        {
+            if (dto == null)
+            {
+                var bad = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, "Solicitud inválida: cuerpo vacío");
+                return BadRequest(bad);
+            }
+
+            using var tx = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var documento = await _context.Documentos.FirstOrDefaultAsync(x => x.Id == id);
+                if (documento == null)
+                {
+                    var notFound = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty, "Documento no encontrado");
+                    return NotFound(notFound);
+                }
+
+                var detallesPreviosCount = await _context.DocumentoDetalles.CountAsync(dd => dd.IdDocumento == id);
+
+                documento.IdBodegaOrigen = dto.IdBodegaOrigen;
+                documento.IdBodegaDestino = dto.IdBodegaDestino;
+                documento.Fecha = dto.Fecha;
+                documento.Descripcion = dto.Descripcion;
+                documento.Estado = dto.Estado;
+
+                _context.Documentos.Update(documento);
+
+                await _context.DocumentoDetalles
+                    .Where(dd => dd.IdDocumento == id)
+                    .ExecuteDeleteAsync();
+
+                if (dto.Detalles != null && dto.Detalles.Count > 0)
+                {
+                    var nuevos = dto.Detalles.Select(d => new DocumentoDetalle
+                    {
+                        IdElemento = d.IdElemento,
+                        Cantidad = d.Cantidad,
+                        IdDocumento = id
+                    }).ToList();
+                    _context.DocumentoDetalles.AddRange(nuevos);
+                }
+
+                await _context.SaveChangesAsync();
+                await tx.CommitAsync();
+
+                var nuevosCount = await _context.DocumentoDetalles.CountAsync(dd => dd.IdDocumento == id);
+                _logger.LogInformation(
+                    "Documento {DocumentoId} actualizado. Detalles previos: {Previos}, nuevos: {Nuevos}",
+                    id, detallesPreviosCount, nuevosCount);
+
+                var ok = new ApiResponse<bool>
+                {
+                    Data = true,
+                    Success = true
+                };
+                return Ok(ok);
+            }
+            catch (Exception ex)
+            {
+                await tx.RollbackAsync();
+                _logger.LogError(ex, "Error al actualizar documento {DocumentoId}", id);
                 var response = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, ex.Message);
                 return BadRequest(response);
             }

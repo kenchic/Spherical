@@ -1,3 +1,4 @@
+@using Microsoft.Extensions.Logging
 @using Spherical.Client.DTO.Inventory
 @using System.Security.Claims
 @using System.IdentityModel.Tokens.Jwt
@@ -7,6 +8,7 @@
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject AuthenticationStateProvider AuthStateProvider
+@inject ILogger<SphGestionMovimientoInventario> Logger
 
 @* Opción de pantalla = OInventario *@
 @* Opción de pantalla = OMvtoInterno *@
@@ -76,12 +78,12 @@
 
                     <MudTable Items="FiltrarDocumentos()" Hover="true" Dense="true">
                         <HeaderContent>
+                            <MudTh></MudTh>
                             <MudTh>No.</MudTh>
                             <MudTh>Fecha</MudTh>
                             <MudTh>Tipo</MudTh>
                             <MudTh>Estado</MudTh>
                             <MudTh>Descripción</MudTh>
-                            <MudTh class="text-right">Acciones</MudTh>
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd>
@@ -102,6 +104,7 @@
                                         <MudMenuItem Label="Anular"
                                                      IconColor="Color.Error"
                                                      Icon="@Icons.Material.Filled.Delete"
+                                                     Disabled="@context.Anulado"
                                                      OnClick="@(() => AnularMovimiento(context.Id, false))" />
                                     }
                                 </MudMenu>
@@ -122,8 +125,6 @@
         </MudCardContent>
     </MudCard>
 </MudContainer>
-
-
 
 @code {
     private List<DocumentoDto> Documentos = new();
@@ -286,6 +287,41 @@
 
     private async Task AnularMovimiento(int id, bool editable)
     {
+        try
+        {
+            var confirm = await DialogService.ShowMessageBox(
+                title: "Confirmación",
+                message: "¿Está seguro que desea anular este documento?",
+                yesText: "Confirmar",
+                cancelText: "Cancelar");
 
+            if (confirm != true)
+                return;
+
+            IsLoading = true;
+            StateHasChanged();
+
+            var resp = await DocumentoService.AnularDocumentoAsync(id);
+            if (resp.Success)
+            {
+                Snackbar.Add("Documento anulado exitosamente", Severity.Success);
+                await CargarDocumentos();
+            }
+            else
+            {
+                var msg = resp.ErrorMessage ?? "No fue posible anular el documento";
+                Snackbar.Add(msg, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error al anular documento {DocumentoId}", id);
+            Snackbar.Add($"Error al anular documento: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
     }
 }

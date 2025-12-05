@@ -10,7 +10,9 @@ namespace Spherical.Client.Services
         Task<ApiResponse<IEnumerable<DocumentoTipoDto>>> GetTiposAsync();
         Task<ApiResponse<IEnumerable<DocumentoDto>>> GetDocumentosAsync();
         Task<ApiResponse<DocumentoDto>> GetDocumentoAsync(int id);
-        Task<ApiResponse<DocumentoDto>> CrearDocumentoAsync(DocumentoDto documento);
+        Task<ApiResponse<bool>> CrearDocumentoAsync(DocumentoDto documento);
+        Task<ApiResponse<bool>> ActualizarDocumentoAsync(long id, DocumentoDto documento);
+        Task<ApiResponse<bool>> AnularDocumentoAsync(int id);
         void SetAuth(string token);
     }
 
@@ -110,7 +112,7 @@ namespace Spherical.Client.Services
             }
         }
 
-        public async Task<ApiResponse<DocumentoDto>> CrearDocumentoAsync(DocumentoDto documento)
+        public async Task<ApiResponse<bool>> CrearDocumentoAsync(DocumentoDto documento)
         {
             try
             {
@@ -118,12 +120,12 @@ namespace Spherical.Client.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<ApiResponse<DocumentoDto>>(content, _jsonOptions);
-                    return result ?? new ApiResponse<DocumentoDto>();
+                    var result = JsonSerializer.Deserialize<ApiResponse<bool>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<bool>();
                 }
                 else
                 {
-                    return new ApiResponse<DocumentoDto>
+                    return new ApiResponse<bool>
                     {
                         Success = false,
                         ErrorMessage = $"Error al crear documento: {response.StatusCode}"
@@ -132,7 +134,69 @@ namespace Spherical.Client.Services
             }
             catch (Exception ex)
             {
-                return new ApiResponse<DocumentoDto>
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    ErrorMessage = $"Error de conexión: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<ApiResponse<bool>> ActualizarDocumentoAsync(long id, DocumentoDto documento)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"api/v1/documentos/{id}", documento);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<ApiResponse<bool>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<bool>();
+                }
+                else
+                {
+                    return new ApiResponse<bool>
+                    {
+                        Success = false,
+                        ErrorMessage = $"Error al crear documento: {response.StatusCode}"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    ErrorMessage = $"Error de conexión: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<ApiResponse<bool>> AnularDocumentoAsync(int id)
+        {
+            try
+            {
+                EnsureToken();
+                var request = new HttpRequestMessage(HttpMethod.Put, $"api/v1/documentos/{id}/anular");
+                var response = await _httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<ApiResponse<bool>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<bool>();
+                }
+                else
+                {
+                    return new ApiResponse<bool>
+                    {
+                        Success = false,
+                        ErrorMessage = $"Error al anular documento: {response.StatusCode}"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<bool>
                 {
                     Success = false,
                     ErrorMessage = $"Error de conexión: {ex.Message}"
