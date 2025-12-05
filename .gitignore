@@ -329,3 +329,6 @@ src/Spherical.Core/bin/Release/net10.0/Spherical.Core.pdb
 src/Spherical.Client/bin/Release/net10.0/Spherical.Client.deps.json
 src/Spherical.Api/bin/Release/net10.0/appsettings.json
 src/Spherical.Api/bin/Release/net10.0/appsettings.Development.json
+src/Spherical.Api/Controllers/Lineup/DocumentosController.cs
+/src/Spherical.Api.Tests/bin/Debug/net10.0
+/src/Spherical.Api.Tests/obj
