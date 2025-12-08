@@ -5,7 +5,6 @@ using Spherical.Api.Models;
 using Spherical.Client.DTO.Inventory;
 using Spherical.Client.DTO.Spherical;
 using System.Net;
-using Microsoft.Extensions.Logging;
 
 namespace Spherical.Api.Controllers.Lineup
 {

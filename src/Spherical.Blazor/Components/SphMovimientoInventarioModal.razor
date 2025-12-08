@@ -4,12 +4,18 @@
 @using System.Security.Claims
 @using MudBlazor
 @using Spherical.Client.DTO.Spherical
+@using Microsoft.JSInterop
+@using System.Xml.Linq
+@using Spherical.Core.Creative
 
 @inject IDocumentoService DocumentoService
 @inject IElementoService ElementoService
 @inject ISnackbar Snackbar
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IBodegaService BodegaService
+@inject IJSRuntime JS
+@inject HttpClient Http
+@inject NavigationManager Nav
 
 <MudDialog>
     <DialogContent>
@@ -149,6 +155,26 @@
                     </MudPaper>
                 </MudCardContent>
                 <MudCardActions Class="d-flex justify-end" Style="gap: 12px;">
+                    <MudTextField T="string" Label="Nombre archivo"
+                                  @bind-Value="NombreArchivoExcel"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Style="max-width: 280px" />
+                    <MudButton Color="Color.Info"
+                               Variant="Variant.Outlined"
+                               Disabled="@IsExportando"
+                               OnClick="ExportarExcel">
+                        @if (IsExportando)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Imprimiendo...</MudText>
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Print" />
+                            <MudText Class="ms-2">Imprimir</MudText>
+                        }
+                    </MudButton>
                     <MudButton Color="Color.Primary"
                                Variant="Variant.Filled"
                                ButtonType="ButtonType.Submit"
@@ -181,6 +207,8 @@
     private DateTime? fecha = DateTime.Today;
     private string? descripcion;
     private bool IsGuardando = false;
+    private bool IsExportando = false;
+    private string NombreArchivoExcel = string.Empty;
 
     private List<FilaDetalle> Detalles = new();
 
@@ -204,6 +232,7 @@
             if (!EsNuevo && Documento.Id > 0)
             {
                 await CargarDocumento(Documento.Id);
+                NombreArchivoExcel = $"MovimientoInventario_{ConsecutivoTexto}.xlsx";
             }
             else
             {
@@ -223,6 +252,7 @@
                 {
                     Detalles.Add(new FilaDetalle());
                 }
+                NombreArchivoExcel = $"MovimientoInventario_{ConsecutivoTexto}.xlsx";
             }
         }
     }
@@ -238,13 +268,6 @@
         {
             Snackbar.Add(resp.ErrorMessage ?? "No fue posible cargar los tipos de documento", Severity.Error);
         }
-    }
-
-    private void OnTipoChanged(string value)
-    {
-        selectedTipoId = value;
-
-        StateHasChanged();
     }
 
     private void AgregarFila()
@@ -331,6 +354,92 @@
             StateHasChanged();
         }
     }
+
+    private async Task ExportarExcel()
+    {
+        IsExportando = true;
+        StateHasChanged();
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(NombreArchivoExcel))
+            {
+                Snackbar.Add("Ingrese un nombre de archivo", Severity.Warning);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Documento.IdDocumentoTipo))
+            {
+                Snackbar.Add("Seleccione el tipo de documento", Severity.Warning);
+                return;
+            }
+
+            var detallesValidos = Detalles.Where(d => d.ItemElemento is not null && d.ItemElemento.Id > 0 && d.Cantidad > 0).ToList();
+            if (detallesValidos.Count == 0)
+            {
+                Snackbar.Add("Agregue al menos un elemento con cantidad", Severity.Warning);
+                return;
+            }
+
+            Documento.Fecha = fecha ?? DateTime.Today;
+            Documento.Numero = ConsecutivoTexto;
+
+            byte[]? plantilla = await TryCargarPlantillaAsync("plantillas/MovimientoInventario.xlsx");
+            if (plantilla is null || plantilla.Length == 0)
+            {
+                Snackbar.Add("La plantilla no se encontró o está vacía", Severity.Error);
+                return;
+            }
+
+            var exporter = new ExcelPlantillaExporter();
+            var detallesExcel = detallesValidos.Select(d => new ExcelPlantillaExporter.ModeloMovimientoDetalle(
+                $"{d.ItemElemento.Referencia} - {d.ItemElemento.Nombre}",
+                d.Cantidad
+            ));
+
+            byte[] archivo;
+            try
+            {
+                archivo = exporter.Export(plantilla, Documento, detallesExcel);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error al preparar XLSX: {ex.Message}", Severity.Error);
+                return;
+            }
+
+            var nombre = NombreArchivoExcel.EndsWith(".xlsx", StringComparison.InvariantCultureIgnoreCase) ? NombreArchivoExcel : NombreArchivoExcel + ".xlsx";
+            await JS.InvokeVoidAsync("downloadFile", nombre, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", archivo);
+            
+            Snackbar.Add($"Descarga iniciada: {nombre}", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No fue posible exportar: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsExportando = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task<byte[]?> TryCargarPlantillaAsync(string ruta)
+    {
+        try
+        {
+            var abs = Nav.ToAbsoluteUri(ruta.StartsWith("/") ? ruta : "/" + ruta);
+            var resp = await Http.GetAsync(abs);
+            if (resp.IsSuccessStatusCode)
+            {
+                return await resp.Content.ReadAsByteArrayAsync();
+            }
+            return null;
+        }
+        catch { return null; }
+    }
+
+    
+
 
     private class FilaDetalle
     {
