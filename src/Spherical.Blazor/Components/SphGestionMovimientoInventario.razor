@@ -245,7 +245,8 @@
     {
         var parameters = new DialogParameters<SphMovimientoInventarioModal>
         {
-            { x => x.EsNuevo, true }
+            { x => x.EsNuevo, true },
+            { x => x.SoloLectura, Permisos.Crear }
         };
         var options = new DialogOptions
         {
@@ -268,7 +269,8 @@
         var parameters = new DialogParameters<SphMovimientoInventarioModal>
         {
             { x => x.EsNuevo, false },
-            { x => x.Documento, documentoDto }
+            { x => x.Documento, documentoDto },
+            { x => x.SoloLectura, Permisos.Editar }
         };
         var options = new DialogOptions
         {

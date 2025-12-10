@@ -24,7 +24,7 @@ namespace Spherical.Core.Creative
         /// <exception cref="FileNotFoundException">Si la plantilla es nula o vacía.</exception>
         /// <exception cref="InvalidDataException">Si la plantilla no tiene hojas válidas.</exception>
         /// <exception cref="InvalidOperationException">Si ocurre un error de formato durante la exportación.</exception>
-        public byte[] Export(byte[] templateBytes, Dictionary<string, string> documento, IEnumerable<ModeloMovimientoDetalle> detalles)
+        public byte[] Export(byte[] templateBytes, IDictionary<string, object> documento, IEnumerable<ModeloMovimientoDetalle> detalles, string? worksheetName = null, int startRow = 7, int colElemento = 3, int colCantidad = 2)
         {
             if (templateBytes == null || templateBytes.Length == 0)
                 throw new FileNotFoundException("La plantilla no existe o está vacía.");
@@ -34,24 +34,36 @@ namespace Spherical.Core.Creative
                 using var msIn = new MemoryStream(templateBytes);
                 using var wb = new XLWorkbook(msIn);
 
-                var ws = wb.Worksheets.Count > 0 ? wb.Worksheet(1) : null;
+                var ws = !string.IsNullOrWhiteSpace(worksheetName) ? wb.Worksheet(worksheetName) : (wb.Worksheets.Count > 0 ? wb.Worksheet(1) : null);
                 if (ws == null)
                     throw new InvalidDataException("La plantilla no contiene hojas de cálculo.");
 
-                // Escribir encabezados en celdas específicas
-                ws.Cell("K2").SetValue(numeroDocumento);
-                ws.Cell("K2").SetValue(numeroDocumento);
-                ws.Cell("B28").SetValue(observacion ?? string.Empty);
+                foreach (var kv in documento)
+                {
+                    var key = kv.Key;
+                    var value = kv.Value ?? string.Empty;
 
-                // Escribir detalles desde la fila 11, columnas A y B
-                var startRow = 11;
+                    var isCellRef = System.Text.RegularExpressions.Regex.IsMatch(key, "^[A-Za-z]+[0-9]+$");
+                    if (isCellRef)
+                    {
+                        ws.Cell(key).SetValue(value.ToString());
+                        continue;
+                    }
+
+                    var nr = wb.NamedRanges.NamedRange(key);
+                    if (nr != null)
+                    {
+                        var cell = nr.Ranges.FirstOrDefault()?.FirstCell();
+                        if (cell != null)
+                            cell.SetValue(value.ToString());
+                    }
+                }
 
                 var currentRow = startRow;
                 foreach (var d in detalles)
                 {
-                    // Copiar estilo de la fila plantilla para mantener formato
-                    ws.Cell(currentRow, 1).SetValue(d.Elemento ?? string.Empty);
-                    ws.Cell(currentRow, 2).SetValue(d.Cantidad);
+                    ws.Cell(currentRow, colElemento).SetValue(d.Elemento ?? string.Empty);
+                    ws.Cell(currentRow, colCantidad).SetValue(d.Cantidad);
                     currentRow++;
                 }
 
@@ -84,17 +96,14 @@ namespace Spherical.Core.Creative
                 if (ws == null)
                     throw new InvalidDataException("La plantilla no contiene hojas de cálculo.");
 
-                // Escribir encabezados en celdas específicas
                 ws.Cell("E1").SetValue(numeroDocumento);
                 ws.Cell("A6").SetValue(observacion ?? string.Empty);
 
-                // Escribir detalles desde la fila 11, columnas A y B
                 var startRow = 11;
 
                 var currentRow = startRow;
                 foreach (var d in detalles)
                 {
-                    // Copiar estilo de la fila plantilla para mantener formato
                     ws.Cell(currentRow, 1).SetValue(d.Elemento ?? string.Empty);
                     ws.Cell(currentRow, 2).SetValue(d.Cantidad);
                     currentRow++;
@@ -113,6 +122,11 @@ namespace Spherical.Core.Creative
                 throw new InvalidOperationException($"Error al exportar XLSX: {ex.Message}", ex);
             }
         }
+
+        public byte[] ExportFromJson(byte[] templateBytes, string encabezadosJson, IEnumerable<ModeloMovimientoDetalle> detalles, string? worksheetName = null, int startRow = 11, int colElemento = 1, int colCantidad = 2)
+        {
+            var dict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(encabezadosJson) ?? new Dictionary<string, object>();
+            return Export(templateBytes, dict, detalles, worksheetName, startRow, colElemento, colCantidad);
+        }
     }
 }
-

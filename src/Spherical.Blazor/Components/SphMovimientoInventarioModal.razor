@@ -7,6 +7,7 @@
 @using Microsoft.JSInterop
 @using System.Xml.Linq
 @using Spherical.Core.Creative
+@using System.Collections.Generic
 
 @inject IDocumentoService DocumentoService
 @inject IElementoService ElementoService
@@ -175,20 +176,23 @@
                             <MudText Class="ms-2">Imprimir</MudText>
                         }
                     </MudButton>
-                    <MudButton Color="Color.Primary"
-                               Variant="Variant.Filled"
-                               ButtonType="ButtonType.Submit"
-                               Disabled="@IsGuardando">
-                        @if (IsGuardando)
-                        {
-                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                            <MudText Class="ms-2">Guardando...</MudText>
-                        }
-                        else
-                        {
-                            @(EsNuevo ? "Crear" : "Actualizar")
-                        }
-                    </MudButton>
+                    @if (!SoloLectura)
+                    {
+                        <MudButton Color="Color.Primary"
+                        Variant="Variant.Filled"
+                        ButtonType="ButtonType.Submit"
+                        Disabled="@IsGuardando">
+                            @if (IsGuardando)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Guardando...</MudText>
+                            }
+                            else
+                            {
+                                @(EsNuevo ? "Crear" : "Actualizar")
+                            }
+                        </MudButton>
+                    }
                     <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="Cancel">Cancelar</MudButton>
                 </MudCardActions>
             </MudCard>
@@ -201,6 +205,7 @@
 
     [Parameter] public bool EsNuevo { get; set; } = true;
     [Parameter] public DocumentoDto Documento { get; set; } = new() { Fecha = DateTime.Today };
+    [Parameter] public bool SoloLectura { get; set; } = true;
 
     private List<DocumentoTipoDto> Tipos = new();
     private string? selectedTipoId;
@@ -291,7 +296,6 @@
         var listado = result.Success && result.Data != null ? result.Data : Enumerable.Empty<ElementoDto>();
         return listado.Where(e => ($"{e.Referencia} - {e.Nombre}").Contains(value, StringComparison.InvariantCultureIgnoreCase)).Take(8);
     }
-
 
     private async Task GuardarMovimiento()
     {
@@ -399,7 +403,14 @@
             byte[] archivo;
             try
             {
-                archivo = exporter.Export(plantilla, Documento, detallesExcel);
+                var encabezados = new Dictionary<string, object>
+                {
+                    ["K2"] = Documento.Numero,
+                    ["D4"] = OperacionTexto ?? string.Empty,
+                    ["K4"] = Documento.Fecha.ToShortDateString(),
+                    ["B28"] = Documento.Descripcion ?? string.Empty
+                };
+                archivo = exporter.Export(plantilla, encabezados, detallesExcel);
             }
             catch (Exception ex)
             {
@@ -437,9 +448,6 @@
         }
         catch { return null; }
     }
-
-    
-
 
     private class FilaDetalle
     {
