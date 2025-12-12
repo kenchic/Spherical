@@ -20,8 +20,7 @@
 
 <MudDialog>
     <DialogContent>
-
-        <EditForm Model="@Documento" OnValidSubmit="GuardarMovimiento" OnInvalidSubmit="OnInvalidSubmit">
+        <EditForm Model="@Documento" OnValidSubmit="GuardarMovimiento" OnInvalidSubmit="OnInvalidSubmit" @ref="_formRef">
             <DataAnnotationsValidator />
             <MudCard>
                 <MudCardContent>
@@ -222,6 +221,11 @@
     private Color OperacionColor => Tipos.FirstOrDefault(t => t.Id == Documento.IdDocumentoTipo)?.Operacion == "-" ? Color.Error : Color.Success;
     private int ConsecutivoTexto => EsNuevo ? Tipos.FirstOrDefault(t => t.Id == Documento.IdDocumentoTipo)?.Consecutivo ?? 0 : Documento.Numero;
 
+    private void Cancel() => MudDialog.Cancel();
+    private List<BodegaDto> Bodegas = new();
+    private EditForm _formRef;
+    private IJSObjectReference? _preventEnterModule;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -258,6 +262,19 @@
                     Detalles.Add(new FilaDetalle());
                 }
                 NombreArchivoExcel = $"MovimientoInventario_{ConsecutivoTexto}.xlsx";
+            }
+
+            try
+            {
+                _preventEnterModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Spherical.Blazor/js/preventEnterSubmit.js");
+                await _preventEnterModule.InvokeVoidAsync("attachPreventEnterSubmit", _formRef, new
+                {
+                    allowSelectors = new[] { "textarea", ".allow-enter" }
+                });
+            }
+            catch
+            {
+                // Si el módulo no puede cargarse, el formulario seguirá funcionando normalmente sin la prevención condicional.
             }
         }
     }
@@ -511,10 +528,6 @@
             Snackbar.Add($"Error al cargar documento: {ex.Message}", Severity.Error);
         }
     }
-
-    private void Cancel() => MudDialog.Cancel();
-
-    private List<BodegaDto> Bodegas = new();
 
     private async Task CargarBodegas()
     {
