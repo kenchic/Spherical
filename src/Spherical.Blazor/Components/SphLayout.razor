@@ -1,4 +1,7 @@
-﻿<MudLayout>
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JS
+
+<MudLayout>
     <MudAppBar Elevation="1" Style="@($"background:{Colors.Yellow.Darken4};")">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" Color="Color.Inherit" OnClick="@ToggleDrawer" />
         <MudSpacer />
@@ -23,6 +26,8 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    private IJSObjectReference? _preventEnterModule;
+
     string RetornoUrl = "";
 
     bool open = true;
@@ -38,5 +43,16 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
+
+        try
+        {
+            _preventEnterModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Spherical.Blazor/js/preventEnterSubmit.js");
+            await _preventEnterModule.InvokeVoidAsync("attachPreventEnterSubmit");
+        }
+        catch
+        {
+            // Si el módulo no puede cargarse, el formulario seguirá funcionando normalmente sin la prevención condicional.
+        }
+
     }
 }

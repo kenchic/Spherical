@@ -1,4 +1,5 @@
 using ClosedXML.Excel;
+using Spherical.Api.Models;
 using Spherical.Core.Creative;
 using System;
 using System.Collections.Generic;
@@ -54,7 +55,15 @@ namespace Spherical.Api.Tests
                 new("REF-002 - Elemento B", 5)
             };
 
-            byte[] result = exporter.Export(templateBytes, 12345, "Observación de prueba", detalles);
+            var encabezados = new Dictionary<string, object>
+            {
+                ["K2"] = 12345,
+                ["D4"] = string.Empty,
+                ["K4"] = DateTime.Now.ToShortDateString(),
+                ["B28"] = "Observación de prueba"
+            };
+
+            byte[] result = exporter.Export(templateBytes, encabezados, detalles);
 
             using var ms = new MemoryStream(result);
             using var wb = new XLWorkbook(ms);
@@ -88,8 +97,9 @@ namespace Spherical.Api.Tests
         {
             var exporter = new ExcelPlantillaExporter();
             var detalles = new List<ExcelPlantillaExporter.ModeloMovimientoDetalle>();
+            var encabezados = new Dictionary<string, object>();
 
-            Assert.ThrowsAny<Exception>(() => exporter.Export(new byte[] { 1, 2, 3 }, 1, "x", detalles));
+            Assert.ThrowsAny<Exception>(() => exporter.Export(new byte[] { 1, 2, 3 }, encabezados, detalles));
         }
     }
 }
