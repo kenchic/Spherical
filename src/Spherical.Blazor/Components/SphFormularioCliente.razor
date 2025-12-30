@@ -1,0 +1,100 @@
+@using MudBlazor
+@using Creative.Modelos.Lineup
+@using Spherical.Client.Services
+@using Spherical.Client.DTO.Common
+@namespace Spherical.Blazor.Components
+
+<MudPaper Class="pa-4">
+    <MudForm @ref="_form" Model="Cliente" OnValidSubmit="OnSubmitValid">
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="Cliente.Identificacion" Label="Nit/Cédula" Required="true" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="Cliente.Correo" Label="Email" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="Cliente.Nombre1" Label="Nombre" Required="true" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="Cliente.Apellido1" Label="Apellido" Required="true" />
+            </MudItem>
+
+            <MudItem xs="12" sm="8">
+                <MudTextField @bind-Value="Cliente.Direccion" Label="Dirección" Required="true" />
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <SphCiudad IdCatalogo="CIUDAD" @bind-SelectedId="Cliente.idCiudad" OnCreated="OnCityCreated" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="Cliente.Telefono" Label="Tel./Fax" Required="true" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="Cliente.Celular" Label="Celular" />
+            </MudItem>
+        </MudGrid>
+
+        <MudStack Row Class="mt-2" Spacing="2">
+            <MudSwitch @bind-Value="Cliente.Activo" Color="Color.Primary" Label="Activo" />
+            <MudSpacer />
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Type="Button" OnClick="Submit" Disabled="Loading" Loading="Loading">Guardar cliente</MudButton>
+        </MudStack>
+        @if (!string.IsNullOrEmpty(Error))
+        {
+            <MudAlert Severity="Severity.Error" Dense="true" Class="mt-2">@Error</MudAlert>
+        }
+        @if (!string.IsNullOrEmpty(Success))
+        {
+            <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">@Success</MudAlert>
+        }        
+    </MudForm>
+</MudPaper>
+
+@code {
+    [Parameter] public ClienteModeloDto Cliente { get; set; } = new();
+    [Parameter] public EventCallback<ClienteModeloDto> OnSaved { get; set; }
+
+    [Inject] public IClientService ClientService { get; set; } = default!;
+
+    private MudForm _form = default!;
+    private bool Loading;
+    private string Error = string.Empty;
+    private string Success = string.Empty;
+
+    private async Task OnSubmitValid() => await Save();
+
+    private async Task Save()
+    {
+        Loading = true;
+        Error = string.Empty;
+        Success = string.Empty;
+        await _form.Validate();
+        if (!_form.IsValid)
+        {
+            Loading = false;
+            Error = "Revise los campos obligatorios";
+            return;
+        }
+        var resp = await ClientService.CreateClienteAsync(Cliente);
+        Loading = false;
+        if (resp.Success && resp.Data != null)
+        {
+            Cliente.Id = resp.Data.Id;
+            Success = "Cliente creado";
+            await OnSaved.InvokeAsync(Cliente);
+        }
+        else
+        {
+            Error = resp.ErrorMessage ?? "Error al crear cliente";
+        }
+    }
+
+    private async Task Submit() => await OnSubmitValid();
+
+    private void OnCityCreated(CatalogoDetalleModelo detalle)
+    {
+        Cliente.idCiudad = detalle.Id;
+    }
+}

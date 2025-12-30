@@ -1,0 +1,138 @@
+@using MudBlazor
+@using Creative.Modelos.Lineup
+@using Spherical.Client.Services
+@using Spherical.Client.DTO.Common
+@namespace Spherical.Blazor.Components
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">   
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h6">Datos del Cliente</MudText>
+                <MudDivider Class="mb-3" />
+                <MudSelect T="int" Label="Cliente" @bind-Value="SelectedClienteId">
+                    @if (Clientes != null)
+                    {
+                        foreach (var c in Clientes)
+                        {
+                            <MudSelectItem Value="@c.Id">@c.Nombre (@c.Identificacion)</MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-2">O cree un nuevo cliente:</MudAlert>
+                <SphFormularioCliente Cliente="NuevoCliente" OnSaved="OnClienteCreado" />
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h6">Nuevo Proyecto</MudText>
+                <MudDivider Class="mb-3" />
+                <MudForm @ref="_projectForm" Model="Proyecto" OnValidSubmit="OnSubmitProyecto">
+                    <MudTextField @bind-Value="Proyecto.Nombre" Label="Nombre del Proyecto" Required="true" />
+                    <MudTextField @bind-Value="Proyecto.Tipo" Label="Tipo de Proyecto" Required="true" />
+                    <SphCiudad IdCatalogo="CIUDAD" @bind-SelectedId="Proyecto.idCiudad" />
+                    <MudTextField @bind-Value="Proyecto.Direccion" Label="Dirección" />
+                    <MudTextField @bind-Value="Proyecto.Telefono" Label="Teléfono" />
+                    <MudSelect T="string" Label="Forma de Solicitud" @bind-Value="Proyecto.FormaContacto" For="@(() => Proyecto.FormaContacto)">
+                        <MudSelectItem Value="@("TEL")">Teléfono</MudSelectItem>
+                        <MudSelectItem Value="@("CEL")">Celular</MudSelectItem>
+                        <MudSelectItem Value="@("COR")">Correo</MudSelectItem>
+                        <MudSelectItem Value="@("WEB")">Web</MudSelectItem>
+                        <MudSelectItem Value="@("PER")">Personal</MudSelectItem>
+                    </MudSelect>
+                    <SphUnidadMedida IdCatalogo="UN_ELEMENTO" @bind-SelectedId="Proyecto.SistemaMedida" />
+                    <MudTextField @bind-Value="Proyecto.Observacion" Label="Observaciones" Lines="3" />
+                    <MudStack Row Class="mt-2" Spacing="2">
+                        <MudSwitch @bind-Value="Proyecto.Activo" Color="Color.Primary" Label="Activo" />
+                        <MudSpacer />
+                        <MudButton Color="Color.Primary" Variant="Variant.Filled" Type="Button" OnClick="SubmitProyecto" Disabled="LoadingProyecto" Loading="LoadingProyecto">Guardar Proyecto</MudButton>
+                    </MudStack>
+                    @if(!string.IsNullOrEmpty(ProjectError))
+                    {
+                        <MudAlert Severity="Severity.Error" Dense="true" Class="mt-2">@ProjectError</MudAlert>
+                    }
+                    @if(!string.IsNullOrEmpty(ProjectSuccess))
+                    {
+                        <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">@ProjectSuccess</MudAlert>
+                    }
+                </MudForm>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Inject] public IClientService ClientService { get; set; } = default!;
+    [Inject] public IProjectService ProjectService { get; set; } = default!;
+
+    private IEnumerable<VClienteModeloDto>? Clientes;
+    private int SelectedClienteId;
+    private ClienteModeloDto NuevoCliente = new() { Activo = true };
+
+    private ProyectoModeloDto Proyecto = new()
+    {
+        Activo = true,
+        Fecha = DateTime.Today
+    };
+
+    private MudForm _projectForm = default!;
+    private bool LoadingProyecto;
+    private string ProjectError = string.Empty;
+    private string ProjectSuccess = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resp = await ClientService.GetClientesAsync();
+        Clientes = resp.Data ?? Enumerable.Empty<VClienteModeloDto>();
+        if (Clientes.Any()) SelectedClienteId = Clientes.First().Id;
+    }
+
+    private async Task OnClienteCreado(ClienteModeloDto cliente)
+    {
+        var v = new VClienteModeloDto
+        {
+            Id = cliente.Id,
+            idCiudad = cliente.idCiudad,
+            CiudadNombre = cliente.idCiudad,
+            Identificacion = cliente.Identificacion,
+            Nombre1 = cliente.Nombre1,
+            Apellido1 = cliente.Apellido1,
+            Nombre = cliente.Nombre1 + " " + cliente.Apellido1,
+            Direccion = cliente.Direccion,
+            Telefono = cliente.Telefono,
+            Celular = cliente.Celular ?? string.Empty,
+            Correo = cliente.Correo ?? string.Empty,
+            Activo = cliente.Activo
+        };
+        Clientes = (Clientes ?? Enumerable.Empty<VClienteModeloDto>()).Concat(new[] { v });
+        SelectedClienteId = cliente.Id;
+    }
+
+    private async Task OnSubmitProyecto()
+    {
+        LoadingProyecto = true;
+        ProjectError = string.Empty;
+        ProjectSuccess = string.Empty;
+        await _projectForm.Validate();
+        if (!_projectForm.IsValid)
+        {
+            LoadingProyecto = false;
+            ProjectError = "Revise los campos del proyecto";
+            return;
+        }
+        Proyecto.idCliente = SelectedClienteId;
+        var resp = await ProjectService.CreateProyectoAsync(Proyecto);
+        LoadingProyecto = false;
+        if (resp.Success && resp.Data != null)
+        {
+            ProjectSuccess = $"Proyecto #{resp.Data.Id} creado";
+        }
+        else
+        {
+            ProjectError = resp.ErrorMessage ?? "Error al crear proyecto";
+        }
+    }
+
+    private Task SubmitProyecto() => OnSubmitProyecto();
+}

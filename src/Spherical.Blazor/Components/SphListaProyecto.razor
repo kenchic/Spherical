@@ -1,0 +1,87 @@
+﻿<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4" Gutters="false">
+    <MudCard Elevation="4">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-3" />
+                    <MudText Typo="Typo.h5">Gestión de Proyectos</MudText>
+                </div>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Administra los proyectos de tu empresa, incluyendo información básica
+                </MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudButtonGroup Variant="Variant.Filled" Size="Size.Small" OverrideStyles="false">
+                    @if (Permisos.Crear)
+                    {
+                        <MudIconButton Color="Color.Primary"
+                                       Title="Nuevo"
+                                       Icon="@Icons.Material.Filled.Add"
+                                       OnClick="AbrirModalCrear">
+                        </MudIconButton>
+                        <MudIconButton Color="Color.Primary"
+                                       Title="Cargue masivo"
+                                       Icon="@Icons.Material.Filled.Upload">
+                        </MudIconButton>
+                    }
+                    @if (Permisos.Consultar)
+                    {
+                        <MudIconButton Color="Color.Secondary"
+                                       Title="Actualizar"
+                                       Icon="@Icons.Material.Filled.Refresh">
+                        </MudIconButton>
+                        <MudIconButton Color="Color.Info"
+                                       Title="Exportar a Excel"
+                                       Icon="@Icons.Material.Filled.Download">
+                        </MudIconButton>
+                    }
+                </MudButtonGroup>
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (_isLoading)
+            {
+                <div class="d-flex justify-center align-center" style="height: 200px;">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                @if (!Permisos.Consultar)
+                {
+                    <MudAlert Severity="Severity.Warning" Elevation="0">
+                        No tiene permiso para consultar esta opción.
+                    </MudAlert>
+                }
+                else
+                {
+                   
+                }
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+<MudDialog @bind-Visible="_visible" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Crear
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <SphFormularioProyecto />
+    </DialogContent>
+</MudDialog>
+
+
+@code {
+    private PermisoUsuarioDto Permisos = new() { Activar = true, Consultar = true, Crear = true, Eliminar = true, Editar = true };
+    private bool _isLoading = false;
+    private bool _visible = false;
+    private readonly DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = true };
+
+    private async Task AbrirModalCrear()
+    {
+        _visible = true; 
+    }
+}

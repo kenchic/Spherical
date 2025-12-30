@@ -26,7 +26,6 @@
     <Compile Remove="DTO\Defender\UsuarioMenuDTO.cs" />
     <Compile Remove="DTO\Lineup\AgenteModelo.cs" />
     <Compile Remove="DTO\Lineup\BodegaModelo.cs" />
-    <Compile Remove="DTO\Lineup\ClienteModelo.cs" />
     <Compile Remove="DTO\Lineup\ConductorModelo.cs" />
     <Compile Remove="DTO\Lineup\DocumentoDetalleModelo.cs" />
     <Compile Remove="DTO\Lineup\DocumentoModelo.cs" />
@@ -35,11 +34,9 @@
     <Compile Remove="DTO\Lineup\MDDocumentoDetallesModelo.cs" />
     <Compile Remove="DTO\Lineup\MDListaPrecioDetallesModelo.cs" />
     <Compile Remove="DTO\Lineup\ProveedorModelo.cs" />
-    <Compile Remove="DTO\Lineup\ProyectoModelo.cs" />
     <Compile Remove="DTO\Lineup\TipoMantenimientoModelo.cs" />
     <Compile Remove="DTO\Lineup\UnidadMedidaModelo.cs" />
     <Compile Remove="DTO\Lineup\VBodegaModelo.cs" />
-    <Compile Remove="DTO\Lineup\VClienteModelo.cs" />
     <Compile Remove="DTO\Lineup\VDocumentoDetalleModelo.cs" />
     <Compile Remove="DTO\Lineup\VDocumentoModelo.cs" />
     <Compile Remove="DTO\Lineup\VElementoModelo.cs" />

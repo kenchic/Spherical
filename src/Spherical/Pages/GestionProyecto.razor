@@ -1,0 +1,19 @@
+@page "/proyecto/consultar"
+@using Spherical.Blazor.Components
+@attribute [Authorize]
+
+<PageTitle>Nuevo Proyecto</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
+    <MudBreadcrumbs Items="_breadcrumbItems" Class="mb-4"></MudBreadcrumbs>
+    <SphListaProyecto />
+</MudContainer>
+
+@code {
+    private List<BreadcrumbItem> _breadcrumbItems = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Inicio", href: "/", icon: Icons.Material.Filled.Home),
+        new BreadcrumbItem("Proyecto", href: null, disabled: true),
+        new BreadcrumbItem("Consultar", href: "/proyecto/consultar", disabled: true)
+    };
+}
