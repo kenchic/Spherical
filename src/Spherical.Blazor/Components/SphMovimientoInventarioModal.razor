@@ -143,7 +143,7 @@
                                                      Margin="Margin.Dense" />
                                 </MudTd>
                                 <MudTd>
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="(() => QuitarFila(rowContext))" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.CleaningServices" Color="Color.Error" OnClick="(() => QuitarFila(rowContext))" />
                                 </MudTd>
                             </RowTemplate>
                         </MudTable>
@@ -156,7 +156,7 @@
                     </MudPaper>
                 </MudCardContent>
                 <MudCardActions Class="d-flex justify-end" Style="gap: 12px;">
-                    <MudTextField T="string" Label="Nombre archivo"
+                    <MudTextField T="string" Label="Nombre archivo a imprimir"
                                   @bind-Value="NombreArchivoExcel"
                                   Variant="Variant.Outlined"
                                   Margin="Margin.Dense"
@@ -287,7 +287,12 @@
 
     private void QuitarFila(FilaDetalle fila)
     {
-        Detalles.Remove(fila);
+        if (fila is null) return;
+        fila.ItemElemento = null;
+        fila.IdElemento = 0;
+        fila.ElementoNombre = null;
+        fila.Cantidad = 0;
+        StateHasChanged();
     }
 
     private async Task<IEnumerable<ElementoDto>> BuscarElementos(string value, CancellationToken token)
