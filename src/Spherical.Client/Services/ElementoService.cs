@@ -16,26 +16,18 @@ namespace Spherical.Client.Services
         Task<ApiResponse<IEnumerable<ListaPrecioDetalleDto>>> GetElementoPreciosAsync(int id);
         // Nuevo: obtener detalles de catálogo por idCatalogo
         Task<ApiResponse<IEnumerable<CatalogoDetalleModelo>>> GetCatalogoDetallesAsync(string idCatalogo);
+        void SetAuth(string token);
     }
 
-    public class ElementoService : IElementoService
+    public class ElementoService : ApiServiceBase, IElementoService
     {
-        private readonly HttpClient _httpClient;
-        private readonly JsonSerializerOptions _jsonOptions;
-
-        public ElementoService(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-            _jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-        }
+        public ElementoService(HttpClient httpClient) : base(httpClient) { }
 
         public async Task<ApiResponse<IEnumerable<ElementoDto>>> GetElementosAsync()
         {
             try
             {
+                EnsureToken();
                 var response = await _httpClient.GetAsync("api/v1/elementos");
                 
                 if (response.IsSuccessStatusCode)

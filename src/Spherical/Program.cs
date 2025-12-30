@@ -18,9 +18,48 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 // Configurar HttpClient para servicios
+builder.Services.AddHttpClient<ISecurityService, SecurityService>(client =>
+{
+    var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
+    if (!apiUrl.EndsWith("/")) apiUrl += "/";
+    client.BaseAddress = new Uri(apiUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+builder.Services.AddHttpClient<IMenuService, MenuService>(client =>
+{
+    var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
+    if (!apiUrl.EndsWith("/")) apiUrl += "/";
+    client.BaseAddress = new Uri(apiUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 builder.Services.AddHttpClient<IElementoService, ElementoService>(client =>
 {
-    // Asegura que la BaseAddress esté configurada para que las URIs relativas funcionen
+    var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
+    if (!apiUrl.EndsWith("/")) apiUrl += "/";
+    client.BaseAddress = new Uri(apiUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+builder.Services.AddHttpClient<IBodegaService, BodegaService>(client =>
+{
+    var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
+    if (!apiUrl.EndsWith("/")) apiUrl += "/";
+    client.BaseAddress = new Uri(apiUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+builder.Services.AddHttpClient<IDocumentoService, DocumentoService>(client =>
+{
+    var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
+    if (!apiUrl.EndsWith("/")) apiUrl += "/";
+    client.BaseAddress = new Uri(apiUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+builder.Services.AddHttpClient<IPermisoService, PermisoService>(client =>
+{
     var apiUrl = builder.Configuration.GetValue<string>("AppSettings:ApiUrl") ?? "https://localhost:7079/";
     if (!apiUrl.EndsWith("/")) apiUrl += "/";
     client.BaseAddress = new Uri(apiUrl);

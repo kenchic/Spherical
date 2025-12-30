@@ -46,6 +46,7 @@
     <Compile Remove="DTO\Lineup\VListaPrecioDetalleModelo.cs" />
     <Compile Remove="DTO\Lineup\VProyectoModelo.cs" />
     <Compile Remove="DTO\MensajeModelo.cs" />
+    <Compile Remove="Services\UserService.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +56,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Spherical.Core\Spherical.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTO\Inventory\" />
   </ItemGroup>
 
 </Project>

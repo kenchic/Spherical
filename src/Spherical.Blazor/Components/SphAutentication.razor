@@ -1,16 +1,14 @@
-﻿
-@using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Components.Forms
+﻿@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.Extensions.Options
 @using Spherical.Client.DTO.Defender
-@using Spherical.Client.Services
 @using System.Security.Claims
-@using Spherical.Authentication
 @using Spherical.Core.Creative
 @using Spherical.Core.Creative.Models
+
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 @inject IOptions<AppSettings> AppSettings
+@inject ISecurityService SecurityService
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="d-flex justify-center align-center min-height-100">
     <MudCard Class="pa-4" Style="width: 400px; text-align: center;">
@@ -65,7 +63,6 @@
 @code {
     private bool _isLoading = false;
     private bool _hasStateChanged = true;
-    private CustomAuthStateProvider? _customAuthProvider;
 
     private bool IsLoading
     {
@@ -79,16 +76,7 @@
             }
         }
     }
-
-    private CustomAuthStateProvider CustomAuthProvider
-    {
-        get
-        {
-            _customAuthProvider ??= (CustomAuthStateProvider)AuthStateProvider;
-            return _customAuthProvider;
-        }
-    }
-
+   
     private LoginDTO UserCredential = new LoginDTO
         {
             Empresa = "AYZCORP" // Valor por defecto
@@ -103,8 +91,12 @@
             IsLoading = true;
             StateHasChanged(); // Forzar renderizado para mostrar loading
 
-            string token = await new SecurityService(AppSettings.Value.ApiUrl).LoginAsync(UserCredential);
-            await CustomAuthProvider.SetToken(token);            
+            var token = "";
+            var resp = await SecurityService.LoginAsync(UserCredential);
+            if (resp.Success && resp.Data != null)
+                token = resp.Data;
+
+            await (AuthStateProvider as CustomAuthStateProvider)?.SetToken(token);
             NavigationManager.NavigateTo("/");
         }
         catch (Exception ex)

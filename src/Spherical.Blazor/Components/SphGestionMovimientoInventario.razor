@@ -1,0 +1,329 @@
+@using Microsoft.Extensions.Logging
+@using Spherical.Client.DTO.Inventory
+@using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
+
+@inject IDocumentoService DocumentoService
+@inject IPermisoService PermisoService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILogger<SphGestionMovimientoInventario> Logger
+
+@* Opción de pantalla = OInventario *@
+@* Opción de pantalla = OMvtoInterno *@
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4" Gutters="false">
+    <MudCard Elevation="4">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-3" />
+                    <MudText Typo="Typo.h5">Movimiento de Inventario</MudText>
+                </div>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Administra entrada y salida de movimiento de inventario de tu empresa
+                </MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudButtonGroup Variant="Variant.Filled" Size="Size.Small" OverrideStyles="false">
+                    @if (Permisos.Crear)
+                    {
+                        <MudIconButton Color="Color.Primary"
+                                       Title="Nuevo"
+                                       OnClick="NuevoMovimiento"
+                                       Icon="@Icons.Material.Filled.Add">
+                        </MudIconButton>
+                    }
+                    @if (Permisos.Consultar)
+                    {
+                        <MudIconButton Color="Color.Secondary"
+                                       Title="Actualizar"
+                                       OnClick="CargarDocumentos"
+                                       Icon="@Icons.Material.Filled.Refresh">
+                        </MudIconButton>
+                    }
+                </MudButtonGroup>
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            @if (IsLoading)
+            {
+                <div class="d-flex justify-center align-center" style="height: 200px;">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                </div>
+            }
+            else
+            {
+                @if (!Permisos.Consultar)
+                {
+                    <MudAlert Severity="Severity.Warning" Elevation="0">
+                        No tiene permiso para consultar esta opción.
+                    </MudAlert>
+                }
+                else
+                {
+                    <MudGrid Class="mb-4">
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudTextField @bind-Value="searchString"
+                                          Placeholder="Buscar..."
+                                          Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search"
+                                          Immediate="true"
+                                          DebounceInterval="300"
+                                          Clearable="true"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudTable Items="FiltrarDocumentos()" Hover="true" Dense="true">
+                        <HeaderContent>
+                            <MudTh></MudTh>
+                            <MudTh>No.</MudTh>
+                            <MudTh>Fecha</MudTh>
+                            <MudTh>Tipo</MudTh>
+                            <MudTh>Estado</MudTh>
+                            <MudTh>Descripción</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>
+                                <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" AriaLabel="Acciones" Dense>
+                                    <MudMenuItem Label="Consultar"
+                                                 IconColor="Color.Info"
+                                                 Icon="@Icons.Material.Filled.Visibility"
+                                                 OnClick="(() => AbrirMovimiento(context.Id, false))" />
+                                    @if (Permisos.Editar)
+                                    {
+                                        <MudMenuItem Label="Editar"
+                                                     IconColor="Color.Primary"
+                                                     Icon="@Icons.Material.Filled.Edit"
+                                                     OnClick="(() => AbrirMovimiento(context.Id, false))" />
+                                    }
+                                    @if (Permisos.Anular)
+                                    {
+                                        <MudMenuItem Label="Anular"
+                                                     IconColor="Color.Error"
+                                                     Icon="@Icons.Material.Filled.Delete"
+                                                     Disabled="@context.Anulado"
+                                                     OnClick="@(() => AnularMovimiento(context.Id, false))" />
+                                    }
+                                </MudMenu>
+                            </MudTd>
+
+                            <MudTd>@context.Numero</MudTd>
+                            <MudTd>@context.Fecha.ToString("yyyy-MM-dd")</MudTd>
+                            <MudTd>@context.IdDocumentoTipo</MudTd>
+                            <MudTd>@context.Estado</MudTd>
+                            <MudTd>@context.Descripcion</MudTd>
+                            <MudTd Class="text-right">
+
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private List<DocumentoDto> Documentos = new();
+    private string? searchString;
+    private bool IsLoading = true;
+
+    private PermisoUsuarioDto Permisos = new();
+    private string tokenApp = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            tokenApp = (AuthStateProvider as CustomAuthStateProvider)?.GetToken();
+            DocumentoService.SetAuth(tokenApp);
+            PermisoService.SetAuth(tokenApp);
+
+            await CargarPermisos();
+            await CargarDocumentos();
+        }
+    }
+
+    private async Task CargarPermisos()
+    {
+        try
+        {
+            var usuario = await ObtenerUsuarioDesdeJwtAsync();
+            if (string.IsNullOrWhiteSpace(usuario))
+            {
+                Permisos = new PermisoUsuarioDto();
+                return;
+            }
+            var resp = await PermisoService.GetPermisosAsync("OMvtoInterno", usuario);
+            if (resp.Success && resp.Data != null)
+                Permisos = resp.Data;
+            else
+                Permisos = new PermisoUsuarioDto();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar permisos: {ex.Message}", Severity.Error);
+            Permisos = new PermisoUsuarioDto();
+        }
+    }
+
+    private async Task<string> ObtenerUsuarioDesdeJwtAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(tokenApp))
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(tokenApp);
+                var claim = jwt.Claims.FirstOrDefault(c => EsClaimUsuario(c.Type));
+                return claim?.Value ?? string.Empty;
+            }
+
+            var state = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = state.User;
+            var fromName = user?.Identity?.Name;
+            if (!string.IsNullOrWhiteSpace(fromName)) return fromName;
+            var alt = user?.Claims.FirstOrDefault(c => EsClaimUsuario(c.Type))?.Value;
+            return alt ?? string.Empty;
+        }
+        catch { return string.Empty; }
+    }
+
+    private bool EsClaimUsuario(string type)
+        => type == ClaimTypes.Name || type == "name" || type == "unique_name" || type == "preferred_username" || type == "email" || type == "sub" || type == "Usuario";
+
+
+    private async Task CargarDocumentos()
+    {
+        IsLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var resp = await DocumentoService.GetDocumentosAsync();
+            if (resp.Success && resp.Data != null)
+            {
+                Documentos = resp.Data.ToList();
+                StateHasChanged();
+            }
+            else if (!string.IsNullOrWhiteSpace(resp.ErrorMessage))
+            {
+                Snackbar.Add(resp.ErrorMessage!, Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar documentos: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private IEnumerable<DocumentoDto> FiltrarDocumentos()
+    {
+        var listado = Documentos.AsEnumerable();
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            var t = searchString.ToLowerInvariant();
+            listado = listado.Where(d =>
+                d.Numero.ToString().Contains(t) ||
+                d.IdDocumentoTipo.ToLowerInvariant().Contains(t) ||
+                (d.Descripcion?.ToLowerInvariant().Contains(t) ?? false) ||
+                d.Estado.ToLowerInvariant().Contains(t)
+            );
+        }
+        return listado.OrderByDescending(d => d.Fecha).ToList();
+    }
+
+    private async Task NuevoMovimiento()
+    {
+        var parameters = new DialogParameters<SphMovimientoInventarioModal>
+        {
+            { x => x.EsNuevo, true },
+            { x => x.SoloLectura, !Permisos.Crear }
+        };
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+        var dialog = await DialogService.ShowAsync<SphMovimientoInventarioModal>("Nuevo Movimiento", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await CargarDocumentos();
+        }
+    }
+
+    private async Task AbrirMovimiento(int id, bool editable)
+    {
+        DocumentoDto documentoDto = new DocumentoDto() { Id = id };
+        var parameters = new DialogParameters<SphMovimientoInventarioModal>
+        {
+            { x => x.EsNuevo, false },
+            { x => x.Documento, documentoDto },
+            { x => x.SoloLectura, !Permisos.Editar }
+        };
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+        var dialog = await DialogService.ShowAsync<SphMovimientoInventarioModal>("Movimiento", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await CargarDocumentos();
+        }
+    }
+
+    private async Task AnularMovimiento(int id, bool editable)
+    {
+        try
+        {
+            var confirm = await DialogService.ShowMessageBox(
+                title: "Confirmación",
+                message: "¿Está seguro que desea anular este documento?",
+                yesText: "Confirmar",
+                cancelText: "Cancelar");
+
+            if (confirm != true)
+                return;
+
+            IsLoading = true;
+            StateHasChanged();
+
+            var resp = await DocumentoService.AnularDocumentoAsync(id);
+            if (resp.Success)
+            {
+                Snackbar.Add("Documento anulado exitosamente", Severity.Success);
+                await CargarDocumentos();
+            }
+            else
+            {
+                var msg = resp.ErrorMessage ?? "No fue posible anular el documento";
+                Snackbar.Add(msg, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error al anular documento {DocumentoId}", id);
+            Snackbar.Add($"Error al anular documento: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+}

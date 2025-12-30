@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Spherical.Api.Models;
@@ -7,6 +8,7 @@ using System.Net;
 
 namespace Spherical.Api.Controllers.Lineup
 {
+    [Authorize]
     [Route("api/v1/elementos")]
     [ApiController]
     public class ElementosController : ControllerBase

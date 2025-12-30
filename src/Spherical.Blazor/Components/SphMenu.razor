@@ -1,23 +1,22 @@
-@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.Extensions.Options
 @using Spherical.Client.DTO.Defender
-@using Spherical.Client.Services
 @using Spherical.Core.Creative.Models
-@using Spherical.Authentication
 @using System.Security.Claims
+
 @inject IOptions<AppSettings> AppSettings
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IMenuService MenuService
 
-@if (menu == null)
+@if (Menu == null)
 {
     <MudSkeleton />
 }
 else
 {
     <MudNavMenu>
-        @foreach (var item in menu.Where(m => string.IsNullOrEmpty(m.Padre)).OrderBy(m => m.Orden).ToList())
+        @foreach (var item in Menu.Where(m => string.IsNullOrEmpty(m.Padre)).OrderBy(m => m.Orden).ToList())
         {
-            List<UserMenuDTO>? menuChild = menu.Where(m => m.Padre == item.Id).OrderBy(m => m.Orden).ToList();
+            List<UserMenuDTO>? menuChild = Menu.Where(m => m.Padre == item.Id).OrderBy(m => m.Orden).ToList();
             @if (menuChild.Count > 0)
             {
                 <MudNavGroup Title="@item.Nombre" Icon="@item.Icono" Expanded=false>
@@ -35,21 +34,20 @@ else
     </MudNavMenu>
 }
 @code {
-    private List<UserMenuDTO>? menu;
-
-    private CustomAuthStateProvider CustomAuthProvider => (CustomAuthStateProvider)AuthStateProvider;
+    private List<UserMenuDTO> Menu = new();
 
     /// <summary>
     /// Evento asíncrono después de renderizado
     /// </summary>
     /// <param name="firstRender">Define si es la primera vez que se renderiza</param>
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        //await base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync(firstRender);
 
-        //if (firstRender)
+        if (firstRender)
         {
-            var token = (CustomAuthProvider as CustomAuthStateProvider)?.GetToken();
+            var token = (AuthStateProvider as CustomAuthStateProvider)?.GetToken();
+            MenuService.SetAuth(token);
 
             // Obtener usuario y claims
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
@@ -59,7 +57,11 @@ else
             var name = GetClaim(user, ClaimTypes.Name, "name", "preferred_username", "unique_name") ?? "uplus";
             var locale = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "ayzcorp";
 
-            menu = await new MenuService(AppSettings.Value.ApiUrl, token).GetAsync(name, locale);
+            var resp = await MenuService.GetAsync(name, locale);
+            if (resp.Success && resp.Data != null)
+                Menu = resp.Data;
+            else
+                Menu = new List<UserMenuDTO>();
 
             StateHasChanged();
         }
@@ -79,15 +81,6 @@ else
     private List<UserMenuDTO> BuildMenuHierarchy(List<UserMenuDTO> flatMenu)
     {
         var lookup = flatMenu.ToDictionary(m => m.Id);
-
-        //foreach (var item in flatMenu)
-        //{
-        //    if (!string.IsNullOrEmpty(item.Padre) && lookup.ContainsKey(item.Padre))
-        //    {
-        //        lookup[item.Padre].SubMenus.Add(item);
-        //    }
-        //}
-
         return flatMenu.Where(m => string.IsNullOrEmpty(m.Padre)).OrderBy(m => m.Orden).ToList();
     }
 }

@@ -1,62 +1,49 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RestSharp;
-using Spherical.Client.DTO.Defender;
+﻿using Spherical.Client.DTO.Defender;
 using Spherical.Client.DTO.Spherical;
-using Spherical.Core.Creative;
-using System.Net;
+using System.Text.Json;
 
 namespace Spherical.Client.Services
 {
-    public class MenuService
+    public interface IMenuService
     {
-        private string _urlApi = string.Empty;
-        
-        private string _token= string.Empty;
+        Task<ApiResponse<List<UserMenuDTO>>> GetAsync(string user, string company);
+        void SetAuth(string token);
+    }
 
+    public class MenuService : ApiServiceBase, IMenuService
+    {
+        public MenuService(HttpClient httpClient) : base(httpClient) { }
 
-        public MenuService(string urlApi, string token)
-        {
-            _urlApi = urlApi;
-            _token = token;
-        }
-
-        public async Task<List<UserMenuDTO>> GetAsync(string user, string company)
+        public async Task<ApiResponse<List<UserMenuDTO>>> GetAsync(string user, string company)
         {
             try
             {
-                // Crear client y definir la URL base
-                var client = new RestClient($"{_urlApi}/api/v1/menu/{user}/{company}");                
-                client.AddDefaultHeader("Authorization", $"Bearer {_token}");
-                // Crear la solicitud con el endpoint y el método
-                var request = new RestRequest("", Method.Get);
+                EnsureToken();
+                var response = await _httpClient.GetAsync($"api/v1/menu/{user}/{company}");
 
-                // Ejecutar la solicitud de forma asíncrona
-                RestResponse response = await client.ExecuteAsync(request);
-
-                // Validar la errorMessage
-                if (response.StatusCode != HttpStatusCode.OK)
+                if (response.IsSuccessStatusCode)
                 {
-                    string errorMessage = response.ErrorException?.Message ?? "Error desconocido";
-                    Log.Error(errorMessage, "SecurityService - LoginAsync");
-                    throw new Exception(errorMessage);
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<ApiResponse<List<UserMenuDTO>>>(content, _jsonOptions);
+                    return result ?? new ApiResponse<List<UserMenuDTO>>();
                 }
                 else
                 {
-                    if (response.Content != null)
+                    return new ApiResponse<List<UserMenuDTO>>
                     {
-                        var menu = JsonConvert.DeserializeObject<ApiResponse<List<UserMenuDTO>>>(response.Content);
-                        return menu!.Data;
-                    }
+                        Success = false,
+                        StatusCode = (int)response.StatusCode,
+                        ErrorMessage = $"Error al obtener menu: {response.StatusCode}"
+                    };
                 }
-                return new List<UserMenuDTO>();
-                
             }
             catch (Exception ex)
             {
-                // Manejo de errores
-                Log.Error(ex.Message, "SecurityService - LoginAsync");
-                throw;
+                return new ApiResponse<List<UserMenuDTO>>
+                {
+                    Success = false,
+                    ErrorMessage = $"Error de conexión: {ex.Message}"
+                };
             }
         }
     }

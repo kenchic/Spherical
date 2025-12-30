@@ -1,58 +1,64 @@
 @using Microsoft.JSInterop
 @using Spherical.Client.DTO.Lineup
-@using Spherical.Client.Services
 @using System.Globalization
+@using System.Security.Claims
+@using System.IdentityModel.Tokens.Jwt
+
 @inject IElementoService ElementoService
+@inject IPermisoService PermisoService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthStateProvider
 
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
+@* Opción de pantalla = OInventario *@
+@* Opción de pantalla = OElemento *@
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4" Gutters="false">
     <MudCard Elevation="4">
         <MudCardHeader>
             <CardHeaderContent>
                 <div class="d-flex align-center">
                     <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-3" />
-                    <MudText Typo="Typo.h5">Gestión de Elementos</MudText>                    
+                    <MudText Typo="Typo.h5">Gestión de Elementos</MudText>
                 </div>
                 <MudText Typo="Typo.body2" Color="Color.Secondary">
-                    Administre los elementos de su empresa, incluyendo información básica y listas de precios
+                    Administra los elementos de tu empresa, incluyendo información básica y listas de precios
                 </MudText>
             </CardHeaderContent>
             <CardHeaderActions>
-                <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
-                    <MudIconButton 
-                               Color="Color.Primary"
-                               Title="Nuevo"
-                               Icon="@Icons.Material.Filled.Add"
-                               OnClick="AbrirModalCrear">
-                    </MudIconButton>
-                    <MudIconButton 
-                               Color="Color.Secondary"
-                               Title="Actualizar"
-                               Icon="@Icons.Material.Filled.Refresh"
-                               OnClick="CargarElementos"
-                               Class="ml-2">
-                    </MudIconButton>
-                    <MudIconButton 
-                               Color="Color.Info"
-                               Title="Exportar a Excel"
-                               Icon="@Icons.Material.Filled.Download"
-                               OnClick="ExportarExcel"
-                               Class="ml-2">
-                    </MudIconButton>
-                    <MudIconButton 
-                               Color="Color.Primary"
-                               Title="Cargue masivo"
-                               Icon="@Icons.Material.Filled.Upload"
-                               OnClick="AbrirCargueMasivo"
-                               Class="ml-2">
-                    </MudIconButton>
+                <MudButtonGroup Variant="Variant.Filled" Size="Size.Small" OverrideStyles="false">
+                    @if (Permisos.Crear)
+                    {
+                        <MudIconButton Color="Color.Primary"
+                                       Title="Nuevo"
+                                       Icon="@Icons.Material.Filled.Add"
+                                       OnClick="AbrirModalCrear">
+                        </MudIconButton>
+                        <MudIconButton Color="Color.Primary"
+                                       Title="Cargue masivo"
+                                       Icon="@Icons.Material.Filled.Upload"
+                                       OnClick="AbrirCargueMasivo">
+                        </MudIconButton>
+                    }
+                    @if (Permisos.Consultar)
+                    {
+                        <MudIconButton Color="Color.Secondary"
+                                       Title="Actualizar"
+                                       Icon="@Icons.Material.Filled.Refresh"
+                                       OnClick="CargarElementos">
+                        </MudIconButton>
+                        <MudIconButton Color="Color.Info"
+                                       Title="Exportar a Excel"
+                                       Icon="@Icons.Material.Filled.Download"
+                                       OnClick="ExportarExcel">
+                        </MudIconButton>
+                    }
                 </MudButtonGroup>
             </CardHeaderActions>
         </MudCardHeader>
         <MudCardContent>
-            @if (IsLoading)
+            @if (isLoading)
             {
                 <div class="d-flex justify-center align-center" style="height: 200px;">
                     <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
@@ -60,117 +66,135 @@
             }
             else
             {
-                <MudGrid Class="mb-4">
-                    <MudItem xs="12" sm="6" md="4">
-                        <MudTextField @bind-Value="searchString" 
-                                      Placeholder="Buscar por referencia, nombre o ID..." 
-                                      Adornment="Adornment.Start"
-                                      AdornmentIcon="@Icons.Material.Filled.Search"
-                                      Immediate="true"
-                                      DebounceInterval="300"
-                                      Clearable="true"
-                                      Margin="Margin.Dense" />
-                    </MudItem>
-                    <MudItem xs="12" sm="6" md="2">
-                        <MudSelect @bind-Value="filtroRotacion" 
-                                   Placeholder="Rotación"
-                                   Clearable="true"
-                                   Margin="Margin.Dense"
-                                   Adornment="Adornment.Start"
-                                   AdornmentIcon="@Icons.Material.Filled.Sync">
-                            <MudSelectItem Value="@((bool?)true)">Sí</MudSelectItem>
-                            <MudSelectItem Value="@((bool?)false)">No</MudSelectItem>
-                        </MudSelect>
-                    </MudItem>
-                    <MudItem xs="12" sm="6" md="2">
-                        <MudSelect @bind-Value="filtroActivo" 
-                                   Placeholder="Estado"
-                                   Clearable="true"
-                                   Margin="Margin.Dense"
-                                   Adornment="Adornment.Start"
-                                   AdornmentIcon="@Icons.Material.Filled.Flag">
-                            <MudSelectItem Value="@((bool?)true)">Activo</MudSelectItem>
-                            <MudSelectItem Value="@((bool?)false)">Inactivo</MudSelectItem>
-                        </MudSelect>
-                    </MudItem>
-                </MudGrid>
+                @if (!Permisos.Consultar)
+                {
+                    <MudAlert Severity="Severity.Warning" Elevation="0">
+                        No tiene permiso para consultar esta opción.
+                    </MudAlert>
+                }
+                else
+                {
+                    <MudGrid Class="mb-4">
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudTextField @bind-Value="searchString"
+                                          Placeholder="Buscar por referencia, nombre o ID..."
+                                          Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search"
+                                          Immediate="true"
+                                          DebounceInterval="300"
+                                          Clearable="true"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="2">
+                            <MudSelect @bind-Value="filtroRotacion"
+                                       Placeholder="Rotación"
+                                       Clearable="true"
+                                       Margin="Margin.Dense"
+                                       Adornment="Adornment.Start"
+                                       AdornmentIcon="@Icons.Material.Filled.Sync">
+                                <MudSelectItem Value="@((bool?)true)">Sí</MudSelectItem>
+                                <MudSelectItem Value="@((bool?)false)">No</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="2">
+                            <MudSelect @bind-Value="filtroActivo"
+                                       Placeholder="Estado"
+                                       Clearable="true"
+                                       Margin="Margin.Dense"
+                                       Adornment="Adornment.Start"
+                                       AdornmentIcon="@Icons.Material.Filled.Flag">
+                                <MudSelectItem Value="@((bool?)true)">Activo</MudSelectItem>
+                                <MudSelectItem Value="@((bool?)false)">Inactivo</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
 
-                <MudDataGrid T="ElementoDto"
-                             Items="@ElementosFiltrados"
-                             SortMode="SortMode.Multiple"
-                             Groupable="false"
-                             Pageable="true"
-                             PageSize="10"
-                             RowsPerPageString="Filas por página"
-                             InfoFormat="{first_item}-{last_item} de {all_items}"
-                             PaginationClass="my-custom-class"
-                             Hover="true"
-                             Dense="true"
-                             Striped="true">
-                    <Columns>
-                        <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" />
-                        <TemplateColumn Title="Grupo" Sortable="true" SortBy="@(x => GetNombreGrupo(x.IdGrupoElemento))">
-                            <CellTemplate>
-                                @GetNombreGrupo(context.Item.IdGrupoElemento)
-                            </CellTemplate>
-                        </TemplateColumn>
+                    <MudDataGrid T="ElementoDto"
+                                 Items="@ElementosFiltrados"
+                                 SortMode="SortMode.Multiple"
+                                 Groupable="false"
+                                 Pageable="true"
+                                 PageSize="10"
+                                 RowsPerPageString="Filas por página"
+                                 InfoFormat="{first_item}-{last_item} de {all_items}"
+                                 PaginationClass="my-custom-class"
+                                 Hover="true"
+                                 Dense="true"
+                                 Striped="true">
+                        <Columns>
+                            <TemplateColumn Sortable="false">
+                                <CellTemplate>
+                                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" AriaLabel="Acciones" Dense>
+                                        <MudMenuItem Label="Consultar"
+                                                     IconColor="Color.Info"
+                                                     Icon="@Icons.Material.Filled.Visibility"
+                                                     OnClick="(() => AbrirModalEditar(context.Item))" />
+                                        @if (Permisos.Editar)
+                                        {
+                                            <MudMenuItem Label="Editar"
+                                                         IconColor="Color.Primary"
+                                                         Icon="@Icons.Material.Filled.Edit"
+                                                         OnClick="@(() => AbrirModalEditar(context.Item))" />
+                                        }
+                                        @if (Permisos.Eliminar)
+                                        {
+                                            <MudMenuItem Label="Eliminar"
+                                                         IconColor="Color.Error"
+                                                         Icon="@Icons.Material.Filled.Delete"
+                                                         OnClick="@(() => EliminarElemento(context.Item))" />
+                                        }
+                                    </MudMenu>
+                                </CellTemplate>
+                            </TemplateColumn>
+                            <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" />
+                            <TemplateColumn Title="Grupo" Sortable="true" SortBy="@(x => GetNombreGrupo(x.IdGrupoElemento))">
+                                <CellTemplate>
+                                    @GetNombreGrupo(context.Item.IdGrupoElemento)
+                                </CellTemplate>
+                            </TemplateColumn>
 
-                        <TemplateColumn Title="Unidad" Sortable="true" SortBy="@(x => GetNombreUnidad(x.IdUnidadMedida))">
-                            <CellTemplate>
-                                @GetNombreUnidad(context.Item.IdUnidadMedida)
-                            </CellTemplate>
-                        </TemplateColumn>
-                        <PropertyColumn Property="x => x.Referencia" Title="Referencia" Sortable="true" />
-                        <PropertyColumn Property="x => x.Nombre" Title="Nombre" Sortable="true" />
-                        <PropertyColumn Property="x => x.Mt2" Title="M²" Sortable="true">
-                            <CellTemplate>
-                                @context.Item.Mt2.ToString("N2", CultureInfo.CurrentCulture)
-                            </CellTemplate>
-                        </PropertyColumn>
-                        <PropertyColumn Property="x => x.Peso" Title="Peso (Kg)" Sortable="true">
-                            <CellTemplate>
-                                @context.Item.Peso.ToString("N2", CultureInfo.CurrentCulture)
-                            </CellTemplate>
-                        </PropertyColumn>
-                        <PropertyColumn Property="x => x.Rotacion" Title="Rotación" Sortable="true">
-                            <CellTemplate>
-                                <MudChip T="string"
-                                         Color="@( @context.Item.Rotacion ? Color.Success : Color.Default)"
-                                         Size="Size.Small">
-                                    @( @context.Item.Rotacion ? "Si" : "No")
-                                </MudChip>
-                            </CellTemplate>
-                        </PropertyColumn>
-                        <PropertyColumn Property="x => x.Activo" Title="Estado" Sortable="true">
-                            <CellTemplate>
-                                <MudChip T="string" 
-                                         Color="@(context.Item.Activo ? Color.Success : Color.Default)" 
-                                         Size="Size.Small">
-                                    @(context.Item.Activo ? "Activo" : "Inactivo")
-                                </MudChip>
-                            </CellTemplate>
-                        </PropertyColumn>
-                        <TemplateColumn Title="Acciones" Sortable="false">
-                            <CellTemplate>
-                                <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                                   Color="Color.Primary"
-                                                   Size="Size.Small"
-                                                   OnClick="@(() => AbrirModalEditar(context.Item))"
-                                                   Title="Editar" />
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                   Color="Color.Error"
-                                                   Size="Size.Small"
-                                                   OnClick="@(() => EliminarElemento(context.Item))"
-                                                   Title="Desactivar" />
-                                </MudButtonGroup>
-                            </CellTemplate>
-                        </TemplateColumn>
-                    </Columns>
-                    <PagerContent>
-                        <MudDataGridPager T="ElementoDto" PageSizeOptions=@(new int[] { 5, 10, 15, 20 }) />
-                    </PagerContent>
-                </MudDataGrid>
+                            <TemplateColumn Title="Unidad" Sortable="true" SortBy="@(x => GetNombreUnidad(x.IdUnidadMedida))">
+                                <CellTemplate>
+                                    @GetNombreUnidad(context.Item.IdUnidadMedida)
+                                </CellTemplate>
+                            </TemplateColumn>
+                            <PropertyColumn Property="x => x.Referencia" Title="Referencia" Sortable="true" />
+                            <PropertyColumn Property="x => x.Nombre" Title="Nombre" Sortable="true" />
+                            <PropertyColumn Property="x => x.Mt2" Title="M²" Sortable="true">
+                                <CellTemplate>
+                                    @context.Item.Mt2.ToString("N2", CultureInfo.CurrentCulture)
+                                </CellTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="x => x.Peso" Title="Peso (Kg)" Sortable="true">
+                                <CellTemplate>
+                                    @context.Item.Peso.ToString("N2", CultureInfo.CurrentCulture)
+                                </CellTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="x => x.Rotacion" Title="Rotación" Sortable="true">
+                                <CellTemplate>
+                                    <MudChip T="string"
+                                             Color="@( @context.Item.Rotacion ? Color.Success : Color.Default)"
+                                             Size="Size.Small">
+                                        @( @context.Item.Rotacion ? "Si" : "No")
+                                    </MudChip>
+                                </CellTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Property="x => x.Activo" Title="Estado" Sortable="true">
+                                <CellTemplate>
+                                    <MudChip T="string"
+                                             Color="@(context.Item.Activo ? Color.Success : Color.Default)"
+                                             Size="Size.Small">
+                                        @(context.Item.Activo ? "Activo" : "Inactivo")
+                                    </MudChip>
+                                </CellTemplate>
+                            </PropertyColumn>
+
+                        </Columns>
+                        <PagerContent>
+                            <MudDataGridPager T="ElementoDto" PageSizeOptions=@(new int[] { 5, 10, 15, 20 }) />
+                        </PagerContent>
+                    </MudDataGrid>
+                }
             }
         </MudCardContent>
     </MudCard>
@@ -179,21 +203,90 @@
 @code {
     private List<ElementoDto> Elementos = new();
     private List<ElementoDto> ElementosFiltrados => FiltrarElementos();
-    private bool IsLoading = true;
+    private bool isLoading = true;
     private string searchString = string.Empty;
     private bool? filtroRotacion = null;
     private bool? filtroActivo = null;
+
+    private PermisoUsuarioDto Permisos = new();
 
     // NUEVO: mapas de catálogo para mostrar nombres
     private Dictionary<string, string> GrupoNombre = new();
     private Dictionary<string, string> UnidadNombre = new();
 
-    protected override async Task OnInitializedAsync()
+    private string tokenApp = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Primero cargamos catálogos para tener los nombres y luego los elementos
-        await CargarCatalogos();
-        await CargarElementos();
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            tokenApp = (AuthStateProvider as CustomAuthStateProvider)?.GetToken();
+            ElementoService.SetAuth(tokenApp);
+            PermisoService.SetAuth(tokenApp);
+
+            await CargarPermisos();
+            if (Permisos.Consultar)
+            {
+                await CargarCatalogos();
+                await CargarElementos();
+            }
+            else
+            {
+                isLoading = false;
+                StateHasChanged();
+            }
+        }
     }
+
+    private async Task CargarPermisos()
+    {
+        try
+        {
+            var usuario = await ObtenerUsuarioDesdeJwtAsync();
+            if (string.IsNullOrWhiteSpace(usuario))
+            {
+                Permisos = new PermisoUsuarioDto();
+                return;
+            }
+            var resp = await PermisoService.GetPermisosAsync("OMvtoInterno", usuario);
+            if (resp.Success && resp.Data != null)
+                Permisos = resp.Data;
+            else
+                Permisos = new PermisoUsuarioDto();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar permisos: {ex.Message}", Severity.Error);
+            Permisos = new PermisoUsuarioDto();
+        }
+    }
+
+    private async Task<string> ObtenerUsuarioDesdeJwtAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(tokenApp))
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(tokenApp);
+                var claim = jwt.Claims.FirstOrDefault(c => EsClaimUsuario(c.Type));
+                return claim?.Value ?? string.Empty;
+            }
+
+            var state = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = state.User;
+            var fromName = user?.Identity?.Name;
+            if (!string.IsNullOrWhiteSpace(fromName)) return fromName;
+            var alt = user?.Claims.FirstOrDefault(c => EsClaimUsuario(c.Type))?.Value;
+            return alt ?? string.Empty;
+        }
+        catch { return string.Empty; }
+    }
+
+    private bool EsClaimUsuario(string type)
+        => type == ClaimTypes.Name || type == "name" || type == "unique_name" || type == "preferred_username" || type == "email" || type == "sub" || type == "Usuario";
 
     private List<ElementoDto> FiltrarElementos()
     {
@@ -203,7 +296,7 @@
         if (!string.IsNullOrWhiteSpace(searchString))
         {
             var searchTerm = searchString.ToLowerInvariant();
-            elementosFiltrados = elementosFiltrados.Where(x => 
+            elementosFiltrados = elementosFiltrados.Where(x =>
                 x.Id.ToString().Contains(searchTerm) ||
                 x.Referencia?.ToLowerInvariant().Contains(searchTerm) == true ||
                 x.Nombre?.ToLowerInvariant().Contains(searchTerm) == true ||
@@ -264,7 +357,7 @@
 
     private async Task CargarElementos()
     {
-        IsLoading = true;
+        isLoading = true;
         filtroActivo = true;
         StateHasChanged();
 
@@ -286,7 +379,7 @@
         }
         finally
         {
-            IsLoading = false;
+            isLoading = false;
             StateHasChanged();
         }
     }
@@ -358,7 +451,7 @@
     private async Task EliminarElemento(ElementoDto elemento)
     {
         var parameters = new DialogParameters<ConfirmDeleteDialog>
-        {            
+        {
             { x => x.Message, $"¿Está seguro que desea desactivar el elemento '{elemento.Nombre}'? Esta acción no se puede deshacer." },
             { x => x.ConfirmText, "Desactivar" },
             { x => x.CancelText, "Cancelar" }
