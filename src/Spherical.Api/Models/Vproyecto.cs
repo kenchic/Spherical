@@ -3,17 +3,21 @@ using System.Collections.Generic;
 
 namespace Spherical.Api.Models;
 
-public partial class Proyecto
+public partial class Vproyecto
 {
     public int Id { get; set; }
 
     public int IdCliente { get; set; }
 
+    public string NombreCliente { get; set; } = null!;
+
     public string IdCiudad { get; set; } = null!;
+
+    public string NombreCiudad { get; set; } = null!;
 
     public string Empresa { get; set; } = null!;
 
-    public string Nombre { get; set; } = null!;
+    public string NombreProyecto { get; set; } = null!;
 
     public string Tipo { get; set; } = null!;
 
@@ -29,6 +33,8 @@ public partial class Proyecto
 
     public string? IdSistemaMedida { get; set; }
 
+    public string NombreSistemaMedida { get; set; } = null!;
+
     public string? IdentificacionResponsable { get; set; }
 
     public string? NombreResponsable { get; set; }
@@ -37,7 +43,7 @@ public partial class Proyecto
 
     public string IdEstado { get; set; } = null!;
 
-    public bool Activo { get; set; }
+    public string NombreEstado { get; set; } = null!;
 
-    public virtual Cliente IdClienteNavigation { get; set; } = null!;
+    public bool Activo { get; set; }
 }

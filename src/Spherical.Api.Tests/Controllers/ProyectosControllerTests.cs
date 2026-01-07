@@ -24,7 +24,7 @@ namespace Spherical.Api.Tests.Controllers
 
             var nuevoCliente = new ClienteModeloDto
             {
-                idCiudad = "CALI",
+                IdCiudad = "CALI",
                 Identificacion = "800123",
                 Nombre1 = "Cliente",
                 Apellido1 = "SAS",

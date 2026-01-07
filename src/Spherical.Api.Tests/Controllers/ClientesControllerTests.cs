@@ -23,7 +23,7 @@ namespace Spherical.Api.Tests.Controllers
             var client = _factory.CreateClient();
             var nuevo = new ClienteModeloDto
             {
-                idCiudad = "BOG",
+                IdCiudad = "BOG",
                 Identificacion = "900123",
                 Nombre1 = "Empresa",
                 Apellido1 = "SAS",
@@ -52,7 +52,7 @@ namespace Spherical.Api.Tests.Controllers
             var client = _factory.CreateClient();
             var c = new ClienteModeloDto
             {
-                idCiudad = "MED",
+                IdCiudad = "MED",
                 Identificacion = "123",
                 Nombre1 = "ACME",
                 Apellido1 = "LTDA",

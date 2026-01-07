@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -59,16 +59,15 @@ public partial class SphericalContext : DbContext
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
+    public virtual DbSet<Vcliente> Vclientes { get; set; }
+
+    public virtual DbSet<Vproyecto> Vproyectos { get; set; }
+
     public virtual DbSet<VusuarioPermiso> VusuarioPermisos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer("Server=localhost,1433; Database=Spherical; User=spherical; Password=Admin123*;TrustServerCertificate=True;");
-        }
-    }
+        => optionsBuilder.UseSqlServer("Server=localhost,1433; Database=Spherical; User=spherical; Password=Admin123*;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -170,8 +169,7 @@ public partial class SphericalContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.IdCiudad)
                 .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("idCiudad");
+                .IsUnicode(false);
             entity.Property(e => e.Identificacion)
                 .HasMaxLength(20)
                 .IsUnicode(false);
@@ -518,22 +516,24 @@ public partial class SphericalContext : DbContext
 
             entity.ToTable("Proyecto");
 
-            entity.Property(e => e.Ciudad)
-                .HasMaxLength(20)
-                .IsUnicode(false);
             entity.Property(e => e.Direccion)
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Empresa)
                 .HasMaxLength(20)
                 .IsUnicode(false);
-            entity.Property(e => e.Estado)
-                .HasMaxLength(20)
-                .IsUnicode(false);
             entity.Property(e => e.FormaContacto)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.IdCliente).HasColumnName("idCliente");
+            entity.Property(e => e.IdCiudad)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.IdEstado)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.IdSistemaMedida)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.IdentificacionResponsable)
                 .HasMaxLength(15)
                 .IsUnicode(false);
@@ -545,9 +545,6 @@ public partial class SphericalContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Observacion)
                 .HasMaxLength(500)
-                .IsUnicode(false);
-            entity.Property(e => e.SistemaMedida)
-                .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.TelResponsable)
                 .HasMaxLength(50)
@@ -698,6 +695,112 @@ public partial class SphericalContext : DbContext
                             .IsUnicode(false)
                             .HasColumnName("idRol");
                     });
+        });
+
+        modelBuilder.Entity<Vcliente>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VCliente");
+
+            entity.Property(e => e.Apellido1)
+                .HasMaxLength(25)
+                .IsUnicode(false);
+            entity.Property(e => e.Apellido2)
+                .HasMaxLength(25)
+                .IsUnicode(false);
+            entity.Property(e => e.Celular)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Correo)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Direccion)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.Empresa)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.IdCiudad)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Identificacion)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Nombre1)
+                .HasMaxLength(25)
+                .IsUnicode(false);
+            entity.Property(e => e.Nombre2)
+                .HasMaxLength(25)
+                .IsUnicode(false);
+            entity.Property(e => e.NombreCiudad)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.NombreCliente)
+                .HasMaxLength(103)
+                .IsUnicode(false);
+            entity.Property(e => e.Telefono)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Vproyecto>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VProyecto");
+
+            entity.Property(e => e.Direccion)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Empresa)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.FormaContacto)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.IdCiudad)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.IdEstado)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.IdSistemaMedida)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.IdentificacionResponsable)
+                .HasMaxLength(15)
+                .IsUnicode(false);
+            entity.Property(e => e.NombreCiudad)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.NombreCliente)
+                .HasMaxLength(103)
+                .IsUnicode(false);
+            entity.Property(e => e.NombreEstado)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.NombreProyecto)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.NombreResponsable)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.NombreSistemaMedida)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Observacion)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.TelResponsable)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Telefono)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Tipo)
+                .HasMaxLength(100)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<VusuarioPermiso>(entity =>

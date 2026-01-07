@@ -25,28 +25,28 @@ namespace Spherical.Api.Controllers.Lineup
         {
             try
             {
-                var proyectos = await _context.Proyectos
+                var proyectos = await _context.Vproyectos
                     .Select(p => new VProyectoModeloDto
                     {
                         Id = p.Id,
-                        idCiudad = p.Ciudad,
-                        CiudadNombre = p.Ciudad,
-                        idCliente = p.IdCliente,
-                        ClienteNombre = p.IdClienteNavigation.Nombre1 + " " + p.IdClienteNavigation.Apellido1,
+                        IdCiudad = p.IdCiudad,
+                        NombreCiudad = p.IdCiudad,
+                        IdCliente = p.IdCliente,
+                        NombreCliente = p.NombreCliente,
                         idContrato = 0,
-                        Nombre = p.Nombre,
+                        NombreProyecto = p.NombreProyecto,
                         Tipo = p.Tipo,
                         Direccion = p.Direccion ?? string.Empty,
                         Telefono = p.Telefono ?? string.Empty,
                         Observacion = p.Observacion ?? string.Empty,
                         Fecha = new DateTime(p.Fecha.Year, p.Fecha.Month, p.Fecha.Day),
                         FormaContacto = p.FormaContacto ?? string.Empty,
-                        SistemaMedida = p.SistemaMedida ?? string.Empty,
+                        NombreSistemaMedida = p.IdSistemaMedida ?? string.Empty,
                         IdentificacionResponsable = p.IdentificacionResponsable ?? string.Empty,
                         NombreResponsable = p.NombreResponsable ?? string.Empty,
                         TelResponsable = p.TelResponsable ?? string.Empty,
                         Activo = p.Activo,
-                        Estado = (byte)(p.Estado == "ACTIVO" ? 1 : 0)
+                        NombreEstado = p.NombreEstado
                     })
                     .ToListAsync();
 
@@ -69,7 +69,7 @@ namespace Spherical.Api.Controllers.Lineup
         {
             try
             {
-                var p = await _context.Proyectos.Include(x => x.IdClienteNavigation).FirstOrDefaultAsync(x => x.Id == id);
+                var p = await _context.Vproyectos.FirstOrDefaultAsync(x => x.Id == id);
                 if (p == null)
                 {
                     var notFound = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty, "Proyecto no encontrado");
@@ -80,24 +80,24 @@ namespace Spherical.Api.Controllers.Lineup
                     Data = new VProyectoModeloDto
                     {
                         Id = p.Id,
-                        idCiudad = p.Ciudad,
-                        CiudadNombre = p.Ciudad,
-                        idCliente = p.IdCliente,
-                        ClienteNombre = p.IdClienteNavigation.Nombre1 + " " + p.IdClienteNavigation.Apellido1,
+                        IdCiudad = p.IdCiudad,
+                        NombreCiudad = p.IdCiudad,
+                        IdCliente = p.IdCliente,
+                        NombreCliente = p.NombreCliente,
                         idContrato = 0,
-                        Nombre = p.Nombre,
+                        NombreProyecto = p.NombreProyecto,
                         Tipo = p.Tipo,
                         Direccion = p.Direccion ?? string.Empty,
                         Telefono = p.Telefono ?? string.Empty,
                         Observacion = p.Observacion ?? string.Empty,
                         Fecha = new DateTime(p.Fecha.Year, p.Fecha.Month, p.Fecha.Day),
                         FormaContacto = p.FormaContacto ?? string.Empty,
-                        SistemaMedida = p.SistemaMedida ?? string.Empty,
+                        NombreSistemaMedida = p.NombreSistemaMedida ?? string.Empty,
                         IdentificacionResponsable = p.IdentificacionResponsable ?? string.Empty,
                         NombreResponsable = p.NombreResponsable ?? string.Empty,
                         TelResponsable = p.TelResponsable ?? string.Empty,
                         Activo = p.Activo,
-                        Estado = (byte)(p.Estado == "ACTIVO" ? 1 : 0)
+                        NombreEstado =  p.NombreEstado
                     },
                     Success = true
                 };
@@ -131,7 +131,7 @@ namespace Spherical.Api.Controllers.Lineup
                 var entity = new Proyecto
                 {
                     IdCliente = dto.idCliente,
-                    Ciudad = dto.idCiudad,
+                    IdCiudad = dto.idCiudad,
                     Empresa = "Spherical",
                     Nombre = dto.Nombre,
                     Tipo = dto.Tipo,
@@ -140,11 +140,11 @@ namespace Spherical.Api.Controllers.Lineup
                     Observacion = dto.Observacion,
                     Fecha = new DateOnly(dto.Fecha.Year, dto.Fecha.Month, dto.Fecha.Day),
                     FormaContacto = dto.FormaContacto,
-                    SistemaMedida = dto.SistemaMedida,
+                    IdSistemaMedida = dto.SistemaMedida,
                     IdentificacionResponsable = dto.IdentificacionResponsable,
                     NombreResponsable = dto.NombreResponsable,
                     TelResponsable = dto.TelResponsable,
-                    Estado = "ACTIVO",
+                    IdEstado = "A",
                     Activo = dto.Activo
                 };
 

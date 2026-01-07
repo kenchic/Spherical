@@ -44,7 +44,7 @@ namespace Spherical.Client.Controllers
 
         public string? ValidarCliente(ClienteModeloDto c)
         {
-            if (string.IsNullOrWhiteSpace(c.Identificacion) || string.IsNullOrWhiteSpace(c.Nombre1) || string.IsNullOrWhiteSpace(c.Apellido1) || string.IsNullOrWhiteSpace(c.Direccion) || string.IsNullOrWhiteSpace(c.Telefono) || string.IsNullOrWhiteSpace(c.idCiudad))
+            if (string.IsNullOrWhiteSpace(c.Identificacion) || string.IsNullOrWhiteSpace(c.Nombre1) || string.IsNullOrWhiteSpace(c.Apellido1) || string.IsNullOrWhiteSpace(c.Direccion) || string.IsNullOrWhiteSpace(c.Telefono) || string.IsNullOrWhiteSpace(c.IdCiudad))
                 return "Campos obligatorios de cliente faltantes";
             return null;
         }

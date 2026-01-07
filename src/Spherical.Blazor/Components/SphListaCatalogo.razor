@@ -1,0 +1,79 @@
+@using MudBlazor
+@using Spherical.Client.Services
+@using Spherical.Client.DTO.Common
+@inject AuthenticationStateProvider AuthStateProvider
+
+<MudStack Row Spacing="1">
+    <MudSelect T="string" @bind-Value="SelectedId"
+               Label="@Etiqueta" 
+               Variant="Variant.Outlined"
+               Margin="Margin.Dense"               
+               Required="true"
+               RequiredError="Este campo es requerido"
+               HelperText="@(string.Concat("Seleccione el valor [", IdCatalogo, "]"))"
+               For="@(() => SelectedId)">
+                @if (Lista != null)
+                {
+                    foreach (var l in Lista)
+                    {
+                        <MudSelectItem Value="@l.Id">@l.Nombre</MudSelectItem>
+                    }
+                }
+    </MudSelect>
+    <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="OpenDialog" />
+</MudStack>
+
+<MudDialog @bind-IsVisible="DialogOpen">
+    <DialogContent>
+        <MudTextField @bind-Value="NuevoNombre" Label="Nombre" />
+        <MudTextField @bind-Value="NuevoId" Label="Código" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Crear" Disabled="Loading" Loading="Loading">Crear</MudButton>
+        <MudButton OnClick="CloseDialog">Cerrar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public string Etiqueta { get; set; } = "Nombre";
+    [Parameter] public string IdCatalogo { get; set; } = "Id";
+    [Parameter] public string? SelectedId { get; set; } = null;
+    [Parameter] public EventCallback<string> SelectedIdChanged { get; set; }
+    [Parameter] public EventCallback<CatalogoDetalleModelo> OnCreated { get; set; }
+
+    [Inject] public ICatalogService CatalogService { get; set; } = default!;
+
+    private IEnumerable<CatalogoDetalleModelo>? Lista;
+    private bool DialogOpen;
+    private string? NuevoNombre = null;
+    private string? NuevoId = null;
+    private bool Loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string tokenApp = (AuthStateProvider as CustomAuthStateProvider)?.GetToken();
+        CatalogService.SetAuth(tokenApp);
+
+        var resp = await CatalogService.GetDetallesAsync(IdCatalogo);
+        Lista = resp.Data ?? Enumerable.Empty<CatalogoDetalleModelo>();        
+    }
+
+    private void OpenDialog() => DialogOpen = true;
+    private void CloseDialog() => DialogOpen = false;
+
+    private async Task Crear()
+    {
+        Loading = true;
+        var nuevo = new CatalogoDetalleModelo { Id = NuevoId.Trim(), Nombre = NuevoNombre.Trim(), Activo = true };
+        var resp = await CatalogService.CreateDetalleAsync(IdCatalogo, nuevo);
+        Loading = false;
+        if (resp.Success && resp.Data != null)
+        {
+            await OnCreated.InvokeAsync(resp.Data);
+            Lista = (Lista ?? Enumerable.Empty<CatalogoDetalleModelo>()).Concat(new[] { resp.Data });
+            SelectedId = resp.Data.Id;
+            await SelectedIdChanged.InvokeAsync(SelectedId);
+            CloseDialog();
+        }
+    }
+}
