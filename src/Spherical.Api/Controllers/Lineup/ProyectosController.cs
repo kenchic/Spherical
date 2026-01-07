@@ -115,13 +115,13 @@ namespace Spherical.Api.Controllers.Lineup
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(dto.Nombre) || string.IsNullOrWhiteSpace(dto.Tipo) || dto.idCliente <= 0 || string.IsNullOrWhiteSpace(dto.idCiudad))
+                if (string.IsNullOrWhiteSpace(dto.Nombre) || string.IsNullOrWhiteSpace(dto.Tipo) || dto.IdCliente <= 0 || string.IsNullOrWhiteSpace(dto.IdCiudad))
                 {
                     var bad = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, "Campos obligatorios faltantes");
                     return BadRequest(bad);
                 }
 
-                var cliente = await _context.Clientes.FindAsync(dto.idCliente);
+                var cliente = await _context.Clientes.FindAsync(dto.IdCliente);
                 if (cliente == null)
                 {
                     var notFound = new ApiResponse<string>(HttpStatusCode.NotFound, string.Empty, "Cliente no existe");
@@ -130,8 +130,8 @@ namespace Spherical.Api.Controllers.Lineup
 
                 var entity = new Proyecto
                 {
-                    IdCliente = dto.idCliente,
-                    IdCiudad = dto.idCiudad,
+                    IdCliente = dto.IdCliente,
+                    IdCiudad = dto.IdCiudad,
                     Empresa = "Spherical",
                     Nombre = dto.Nombre,
                     Tipo = dto.Tipo,

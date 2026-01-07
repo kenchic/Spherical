@@ -3,13 +3,11 @@
 @using Spherical.Client.DTO.Common
 @inject AuthenticationStateProvider AuthStateProvider
 
-<MudStack Row Spacing="1">
+<MudStack Row Spacing="1" AlignItems="AlignItems.Center">
     <MudSelect T="string" @bind-Value="SelectedId"
-               Label="@Etiqueta" 
-               Variant="Variant.Outlined"
-               Margin="Margin.Dense"               
+               Label="@Etiqueta"           
                Required="true"
-               RequiredError="Este campo es requerido"
+               RequiredError="Requerido"
                HelperText="@(string.Concat("Seleccione el valor [", IdCatalogo, "]"))"
                For="@(() => SelectedId)">
                 @if (Lista != null)
@@ -20,10 +18,10 @@
                     }
                 }
     </MudSelect>
-    <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="OpenDialog" />
+    <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="OpenDialog" Size="Size.Small"  />
 </MudStack>
 
-<MudDialog @bind-IsVisible="DialogOpen">
+<MudDialog @bind-Visible="DialogOpen">
     <DialogContent>
         <MudTextField @bind-Value="NuevoNombre" Label="Nombre" />
         <MudTextField @bind-Value="NuevoId" Label="Código" />
@@ -35,6 +33,7 @@
 </MudDialog>
 
 @code {
+
     [Parameter] public string Etiqueta { get; set; } = "Nombre";
     [Parameter] public string IdCatalogo { get; set; } = "Id";
     [Parameter] public string? SelectedId { get; set; } = null;
@@ -58,7 +57,10 @@
         Lista = resp.Data ?? Enumerable.Empty<CatalogoDetalleModelo>();        
     }
 
-    private void OpenDialog() => DialogOpen = true;
+    private async Task OpenDialog()
+    {
+        DialogOpen = true;
+    }
     private void CloseDialog() => DialogOpen = false;
 
     private async Task Crear()

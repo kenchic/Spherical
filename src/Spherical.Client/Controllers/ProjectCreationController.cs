@@ -51,9 +51,9 @@ namespace Spherical.Client.Controllers
 
         public string? ValidarProyecto(ProyectoModeloDto p)
         {
-            if (string.IsNullOrWhiteSpace(p.Nombre) || string.IsNullOrWhiteSpace(p.Tipo) || p.idCliente <= 0 || string.IsNullOrWhiteSpace(p.idCiudad))
+            if (string.IsNullOrWhiteSpace(p.Nombre) || string.IsNullOrWhiteSpace(p.Tipo) || p.IdCliente <= 0 || string.IsNullOrWhiteSpace(p.IdCiudad))
                 return "Campos obligatorios de proyecto faltantes";
-            if (!string.IsNullOrWhiteSpace(p.idCiudad) && p.idCiudad.Length > 20) return "Código de ciudad inválido";
+            if (!string.IsNullOrWhiteSpace(p.IdCiudad) && p.IdCiudad.Length > 20) return "Código de ciudad inválido";
             return null;
         }
 

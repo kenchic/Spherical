@@ -6,71 +6,23 @@
 
 <MudPaper Class="pa-4">
     <MudForm @ref="_form" Model="Cliente" OnValidSubmit="@OnSubmitValid">
-        <MudGrid>
-            <MudItem xs="12" sm="6">
-                <MudTextField @bind-Value="Cliente.Identificacion" 
-                              Label="Nit/Cédula" 
-                              Required="true" 
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense" />
-            </MudItem>
-            <MudItem xs="12" sm="6">
-                <MudTextField @bind-Value="Cliente.Correo" 
-                              Label="Email" 
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense" />
-            </MudItem>
-
-            <MudItem xs="12" sm="6">
-                <MudTextField @bind-Value="Cliente.Nombre1" 
-                              Label="Nombre" 
-                              Required="true" 
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense" />
-            </MudItem>
-            <MudItem xs="12" sm="6">
-                <MudTextField @bind-Value="Cliente.Apellido1" 
-                              Label="Apellido" 
-                              Required="true" 
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense" />
-            </MudItem>
-
-            <MudItem xs="12" sm="8">
-                <MudTextField @bind-Value="Cliente.Direccion" 
-                              Label="Dirección" 
-                              Required="true" 
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense" />
-            </MudItem>
-            <MudItem xs="12" sm="4">
-                <SphListaCatalogo @bind-SelectedId="Cliente.IdCiudad"
-                                  Etiqueta="Ciudad" 
-                                  IdCatalogo="CIUDAD"  
-                                  OnCreated="OnCrear" />
-            </MudItem>
-
-            <MudItem xs="12" sm="6">
-                <MudTextField @bind-Value="Cliente.Telefono" 
-                              Label="Tel./Fax" 
-                              Required="true"
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense" />
-            </MudItem>
-            <MudItem xs="12" sm="6">
-                <MudTextField @bind-Value="Cliente.Celular" 
-                              Label="Celular" 
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense" />
-            </MudItem>
-        </MudGrid>
-
+        <MudTextField @bind-Value="Cliente.Identificacion" Label="Nit/Cédula" Required="true" RequiredError="Requerido" />
+        <MudTextField @bind-Value="Cliente.Nombre1" Label="1er Nombre" Required="true" RequiredError="Requerido" />
+        <MudTextField @bind-Value="Cliente.Nombre2" Label="2do Nombre" />
+        <MudTextField @bind-Value="Cliente.Apellido1" Label="1er Apellido" />
+        <MudTextField @bind-Value="Cliente.Apellido1" Label="2do Apellido" />
+        <MudTextField @bind-Value="Cliente.Direccion" Label="Dirección" Required="true" RequiredError="Requerido" />
+        <SphListaCatalogo @bind-SelectedId="Cliente.IdCiudad" Etiqueta="Ciudad" IdCatalogo="CIUDAD" OnCreated="OnCrearCiudad" />
+        <MudTextField @bind-Value="Cliente.Telefono" Label="Tel./Fax" Required="true" RequiredError="Requerido" />
+        <MudTextField @bind-Value="Cliente.Celular" Label="Celular" Required="true" RequiredError="Requerido" />
+        <MudTextField @bind-Value="Cliente.Correo" Required="true" Label="Email" RequiredError="Requerido" />
         <MudStack Row Class="mt-2" Spacing="2">
-            <MudSwitch @bind-Value="Cliente.Activo" 
-                       Color="Color.Primary" 
-                       Label="Activo" />
+            <MudSwitch @bind-Value="Cliente.Activo" Color="Color.Primary" Label="Activo" />
             <MudSpacer />
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" Type="Button" OnClick="Submit" Disabled="Loading" Loading="Loading">Guardar cliente</MudButton>
+            @if (MostrarBotonGuardar)
+            {
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" Disabled="Loading" Loading="Loading">Guardar cliente</MudButton>
+            }
         </MudStack>
         @if (!string.IsNullOrEmpty(Error))
         {
@@ -79,12 +31,13 @@
         @if (!string.IsNullOrEmpty(Success))
         {
             <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">@Success</MudAlert>
-        }        
+        }
     </MudForm>
 </MudPaper>
 
 @code {
     [Parameter] public ClienteModeloDto Cliente { get; set; } = new();
+    [Parameter] public bool MostrarBotonGuardar { get; set; } = false;
     [Parameter] public EventCallback<ClienteModeloDto> OnSaved { get; set; }
 
     [Inject] public IClientService ClientService { get; set; } = default!;
@@ -124,7 +77,7 @@
 
     private async Task Submit() => await OnSubmitValid();
 
-    private void OnCrear(CatalogoDetalleModelo detalle)
+    private void OnCrearCiudad(CatalogoDetalleModelo detalle)
     {
         Cliente.IdCiudad = detalle.Id;
     }

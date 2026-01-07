@@ -4,7 +4,7 @@
 @using Spherical.Client.DTO.Common
 @namespace Spherical.Blazor.Components
 
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">   
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
     <MudGrid>
         <MudItem xs="12" md="6">
             <MudPaper Class="pa-4">
@@ -31,7 +31,7 @@
                 <MudForm @ref="_projectForm" Model="Proyecto" OnValidSubmit="OnSubmitProyecto">
                     <MudTextField @bind-Value="Proyecto.Nombre" Label="Nombre del Proyecto" Required="true" />
                     <MudTextField @bind-Value="Proyecto.Tipo" Label="Tipo de Proyecto" Required="true" />
-                    <SphCiudad IdCatalogo="CIUDAD" @bind-SelectedId="Proyecto.idCiudad" />
+                    <SphListaCatalogo @bind-SelectedId="Proyecto.IdCiudad" Etiqueta="Ciudad" IdCatalogo="CIUDAD" OnCreated="OnCrearCiudad" />
                     <MudTextField @bind-Value="Proyecto.Direccion" Label="Dirección" />
                     <MudTextField @bind-Value="Proyecto.Telefono" Label="Teléfono" />
                     <MudSelect T="string" Label="Forma de Solicitud" @bind-Value="Proyecto.FormaContacto" For="@(() => Proyecto.FormaContacto)">
@@ -41,18 +41,21 @@
                         <MudSelectItem Value="@("WEB")">Web</MudSelectItem>
                         <MudSelectItem Value="@("PER")">Personal</MudSelectItem>
                     </MudSelect>
-                    <SphUnidadMedida IdCatalogo="UN_ELEMENTO" @bind-SelectedId="Proyecto.SistemaMedida" />
+                    <SphListaCatalogo @bind-SelectedId="Proyecto.SistemaMedida" Etiqueta="Unidad de Medida" IdCatalogo="UN_ELEMENTO" OnCreated="OnCrearCiudad" />
                     <MudTextField @bind-Value="Proyecto.Observacion" Label="Observaciones" Lines="3" />
                     <MudStack Row Class="mt-2" Spacing="2">
                         <MudSwitch @bind-Value="Proyecto.Activo" Color="Color.Primary" Label="Activo" />
                         <MudSpacer />
-                        <MudButton Color="Color.Primary" Variant="Variant.Filled" Type="Button" OnClick="SubmitProyecto" Disabled="LoadingProyecto" Loading="LoadingProyecto">Guardar Proyecto</MudButton>
+                        @if (MostrarBotonGuardar)
+                        {
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" Type="Button" OnClick="SubmitProyecto" Disabled="LoadingProyecto" Loading="LoadingProyecto">Guardar Proyecto</MudButton>
+                        }
                     </MudStack>
-                    @if(!string.IsNullOrEmpty(ProjectError))
+                    @if (!string.IsNullOrEmpty(ProjectError))
                     {
                         <MudAlert Severity="Severity.Error" Dense="true" Class="mt-2">@ProjectError</MudAlert>
                     }
-                    @if(!string.IsNullOrEmpty(ProjectSuccess))
+                    @if (!string.IsNullOrEmpty(ProjectSuccess))
                     {
                         <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">@ProjectSuccess</MudAlert>
                     }
@@ -63,6 +66,7 @@
 </MudContainer>
 
 @code {
+    [Parameter] public bool MostrarBotonGuardar { get; set; } = false;
     [Inject] public IClientService ClientService { get; set; } = default!;
     [Inject] public IProjectService ProjectService { get; set; } = default!;
 
@@ -121,7 +125,7 @@
             ProjectError = "Revise los campos del proyecto";
             return;
         }
-        Proyecto.idCliente = SelectedClienteId;
+        Proyecto.IdCliente = SelectedClienteId;
         var resp = await ProjectService.CreateProyectoAsync(Proyecto);
         LoadingProyecto = false;
         if (resp.Success && resp.Data != null)
@@ -135,4 +139,9 @@
     }
 
     private Task SubmitProyecto() => OnSubmitProyecto();
+
+    private void OnCrearCiudad(CatalogoDetalleModelo detalle)
+    {
+        Proyecto.IdCiudad = detalle.Id;
+    }
 }

@@ -38,8 +38,8 @@ namespace Spherical.Api.Tests.Controllers
 
             var proyecto = new ProyectoModeloDto
             {
-                idCliente = idCliente,
-                idCiudad = "CALI",
+                IdCliente = idCliente,
+                IdCiudad = "CALI",
                 Nombre = "Edificio Central",
                 Tipo = "Construcción",
                 Direccion = "Av 3",

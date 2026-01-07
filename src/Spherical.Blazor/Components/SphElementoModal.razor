@@ -26,10 +26,9 @@
                                         <!-- Lista dinámica desde BD: GRUPO_ELEMENTO -->
                                         <MudSelect T="string" @bind-Value="Elemento.IdGrupoElemento"
                                                    Label="Grupo de Elemento"
-                                                   Variant="Variant.Outlined"
-                                                   Margin="Margin.Dense"
                                                    For="@(() => Elemento.IdGrupoElemento)"
-                                                   HelperText="Seleccione el grupo al que pertenece [GRUPO_ELEMENTO]"
+                                                   RequiredError="Requerido"
+                                                   HelperText="Seleccione el valor [GRUPO_ELEMENTO]"
                                                    Required="true">
                                             @if (GrupoElementos?.Count > 0)
                                             {
@@ -43,10 +42,8 @@
                                     <MudItem xs="12" md="7">
                                         <MudTextField @bind-Value="Elemento.Referencia"
                                                       Label="Referencia"
-                                                      Variant="Variant.Outlined"
-                                                      Margin="Margin.Dense"
                                                       Required="true"
-                                                      RequiredError="Este campo es obligatorio"
+                                                      RequiredError="Requerido"
                                                       For="@(() => Elemento.Referencia)"
                                                       HelperText="Código único del elemento" />
                                     </MudItem>
@@ -54,12 +51,10 @@
                                         <!-- Lista dinámica desde BD: UN_ELEMENTO -->
                                         <MudSelect T="string" @bind-Value="Elemento.IdUnidadMedida"
                                                    Label="Unidad de Medida"
-                                                   Variant="Variant.Outlined"
-                                                   Margin="Margin.Dense"
                                                    For="@(() => Elemento.IdUnidadMedida)"
-                                                   HelperText="Seleccione la unidad de medida [UD_MEDIDA]"
+                                                   HelperText="Seleccione el valor [UD_MEDIDA]"
                                                    Required="true"
-                                                   RequiredError="Este campo es obligatorio">
+                                                   RequiredError="Requerido">
                                             @if (UnidadesMedida?.Count > 0)
                                             {
                                                 @foreach (var item in UnidadesMedida)
@@ -72,18 +67,14 @@
                                     <MudItem xs="12" md="7">
                                         <MudTextField @bind-Value="Elemento.Nombre"
                                                       Label="Nombre"
-                                                      Variant="Variant.Outlined"
-                                                      Margin="Margin.Dense"
                                                       Required="true"
-                                                      RequiredError="Este campo es obligatorio"
+                                                      RequiredError="Requerido"
                                                       For="@(() => Elemento.Nombre)"
                                                       HelperText="Nombre descriptivo del elemento" />
                                     </MudItem>
                                     <MudItem xs="12" md="3">
                                         <MudNumericField @bind-Value="Elemento.Mt2"
                                                          Label="Metros Cuadrados (M²)"
-                                                         Variant="Variant.Outlined"
-                                                         Margin="Margin.Dense"
                                                          Format="N2"
                                                          For="@(() => Elemento.Mt2)"
                                                          HelperText="Área en metros cuadrados" />
@@ -91,8 +82,6 @@
                                     <MudItem xs="12" md="3">
                                         <MudNumericField @bind-Value="Elemento.Peso"
                                                          Label="Peso (Kg)"
-                                                         Variant="Variant.Outlined"
-                                                         Margin="Margin.Dense"
                                                          Format="N2"
                                                          For="@(() => Elemento.Peso)"
                                                          HelperText="Peso en kilogramos" />
