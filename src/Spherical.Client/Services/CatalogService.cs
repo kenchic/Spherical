@@ -40,6 +40,7 @@ namespace Spherical.Client.Services
         {
             try
             {
+                EnsureToken();
                 var response = await _httpClient.PostAsJsonAsync($"api/v1/catalogos/{idCatalogo}/detalles", detalle, _jsonOptions);
                 if (response.IsSuccessStatusCode)
                 {

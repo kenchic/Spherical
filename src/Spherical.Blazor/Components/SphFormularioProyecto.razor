@@ -10,17 +10,21 @@
             <MudPaper Class="pa-4">
                 <MudText Typo="Typo.h6">Datos del Cliente</MudText>
                 <MudDivider Class="mb-3" />
-                <MudSelect T="int" Label="Cliente" @bind-Value="SelectedClienteId">
-                    @if (Clientes != null)
-                    {
-                        foreach (var c in Clientes)
+                <MudSelect T="int"
+                    Label="Cliente" 
+                    @bind-Value="SelectedClienteId"
+                    For="@(() => SelectedClienteId)"
+                    Clearable>
+                        @if (Clientes != null)
                         {
-                            <MudSelectItem Value="@c.Id">@c.Nombre (@c.Identificacion)</MudSelectItem>
+                            foreach (var c in Clientes)
+                            {
+                                <MudSelectItem Value="@c.Id">@c.Nombre (@c.Identificacion)</MudSelectItem>
+                            }
                         }
-                    }
                 </MudSelect>
                 <MudAlert Severity="Severity.Info" Dense="true" Class="mt-2">O cree un nuevo cliente:</MudAlert>
-                <SphFormularioCliente Cliente="NuevoCliente" OnSaved="OnClienteCreado" />
+                <SphFormularioCliente @ref="_clienteForm" Cliente="NuevoCliente" OnSaved="OnClienteCreado" />
             </MudPaper>
         </MudItem>
 
@@ -48,8 +52,10 @@
                         <MudSpacer />
                         @if (MostrarBotonGuardar)
                         {
-                            <MudButton Color="Color.Primary" Variant="Variant.Filled" Type="Button" OnClick="SubmitProyecto" Disabled="LoadingProyecto" Loading="LoadingProyecto">Guardar Proyecto</MudButton>
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" Type="Button" OnClick="SubmitProyecto" Disabled="LoadingProyecto || SavingAll" Loading="LoadingProyecto || SavingAll">Guardar Proyecto</MudButton>
+                            
                         }
+                        <MudButton Class="ml-2" Color="Color.Secondary" Variant="Variant.Filled" Type="Button" OnClick="GuardarTodo" Disabled="SavingAll" Loading="SavingAll">Guardar Cliente + Proyecto</MudButton>
                     </MudStack>
                     @if (!string.IsNullOrEmpty(ProjectError))
                     {
@@ -59,6 +65,14 @@
                     {
                         <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">@ProjectSuccess</MudAlert>
                     }
+                    @if (!string.IsNullOrEmpty(AllError))
+                    {
+                        <MudAlert Severity="Severity.Error" Dense="true" Class="mt-2">@AllError</MudAlert>
+                    }
+                    @if (!string.IsNullOrEmpty(AllSuccess))
+                    {
+                        <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">@AllSuccess</MudAlert>
+                    }
                 </MudForm>
             </MudPaper>
         </MudItem>
@@ -66,9 +80,11 @@
 </MudContainer>
 
 @code {
+
     [Parameter] public bool MostrarBotonGuardar { get; set; } = false;
     [Inject] public IClientService ClientService { get; set; } = default!;
     [Inject] public IProjectService ProjectService { get; set; } = default!;
+    [Inject] public AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
 
     private IEnumerable<VClienteModeloDto>? Clientes;
     private int SelectedClienteId;
@@ -77,19 +93,27 @@
     private ProyectoModeloDto Proyecto = new()
     {
         Activo = true,
-        Fecha = DateTime.Today
+        Fecha = DateTime.Today,
+        Estado = "D"
     };
 
     private MudForm _projectForm = default!;
+    private SphFormularioCliente _clienteForm = default!;
     private bool LoadingProyecto;
+    private bool SavingAll;
     private string ProjectError = string.Empty;
     private string ProjectSuccess = string.Empty;
+    private string AllError = string.Empty;
+    private string AllSuccess = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        string tokenApp = (AuthStateProvider as CustomAuthStateProvider)?.GetToken();
+        ProjectService.SetAuth(tokenApp);
+        ClientService.SetAuth(tokenApp);
+
         var resp = await ClientService.GetClientesAsync();
         Clientes = resp.Data ?? Enumerable.Empty<VClienteModeloDto>();
-        if (Clientes.Any()) SelectedClienteId = Clientes.First().Id;
     }
 
     private async Task OnClienteCreado(ClienteModeloDto cliente)
@@ -113,7 +137,7 @@
         SelectedClienteId = cliente.Id;
     }
 
-    private async Task OnSubmitProyecto()
+    private async Task<bool> SaveProyectoAsync()
     {
         LoadingProyecto = true;
         ProjectError = string.Empty;
@@ -123,22 +147,78 @@
         {
             LoadingProyecto = false;
             ProjectError = "Revise los campos del proyecto";
-            return;
+            return false;
         }
+
         Proyecto.IdCliente = SelectedClienteId;
         var resp = await ProjectService.CreateProyectoAsync(Proyecto);
         LoadingProyecto = false;
         if (resp.Success && resp.Data != null)
         {
             ProjectSuccess = $"Proyecto #{resp.Data.Id} creado";
+            return true;
         }
         else
         {
             ProjectError = resp.ErrorMessage ?? "Error al crear proyecto";
+            return false;
         }
     }
 
+    private async Task OnSubmitProyecto()
+    {
+        await SaveProyectoAsync();
+    }
+
     private Task SubmitProyecto() => OnSubmitProyecto();
+
+    private async Task GuardarTodo()
+    {
+        AllError = string.Empty;
+        AllSuccess = string.Empty;
+        SavingAll = true;
+
+        await _projectForm.Validate();
+        if (!_projectForm.IsValid)
+        {
+            SavingAll = false;
+            ProjectError = "Revise los campos del proyecto";
+            return;
+        }
+
+        if (_clienteForm == null)
+        {
+            SavingAll = false;
+            AllError = "Formulario de cliente no disponible";
+            return;
+        }
+
+        var clienteValido = await _clienteForm.ValidateAndSaveAsync();
+        if (!clienteValido)
+        {
+            SavingAll = false;
+            return;
+        }
+
+        var proyectoGuardado = await SaveProyectoAsync();
+        if (!proyectoGuardado)
+        {
+            SavingAll = false;
+            AllError = "Error al guardar el proyecto";
+            return;
+        }
+
+        var clienteGuardado = await _clienteForm.ValidateAndSaveAsync();
+        if (!clienteGuardado)
+        {
+            SavingAll = false;
+            AllError = "Error al guardar el cliente";
+            return;
+        }
+
+        SavingAll = false;
+        AllSuccess = "Proyecto y cliente guardados";
+    }
 
     private void OnCrearCiudad(CatalogoDetalleModelo detalle)
     {

@@ -5,6 +5,7 @@
 
 <MudStack Row Spacing="1" AlignItems="AlignItems.Center">
     <MudSelect T="string" @bind-Value="SelectedId"
+               SelectedValuesChanged="async (val) => await SelectedIdChanged.InvokeAsync(SelectedId)"
                Label="@Etiqueta"           
                Required="true"
                RequiredError="Requerido"

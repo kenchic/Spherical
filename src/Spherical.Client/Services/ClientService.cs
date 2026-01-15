@@ -41,6 +41,7 @@ namespace Spherical.Client.Services
         {
             try
             {
+                EnsureToken();
                 var response = await _httpClient.GetAsync($"api/v1/clientes/{id}");
                 if (response.IsSuccessStatusCode)
                 {
@@ -60,6 +61,7 @@ namespace Spherical.Client.Services
         {
             try
             {
+                EnsureToken();
                 var response = await _httpClient.PostAsJsonAsync("api/v1/clientes", cliente, _jsonOptions);
                 if (response.IsSuccessStatusCode)
                 {
