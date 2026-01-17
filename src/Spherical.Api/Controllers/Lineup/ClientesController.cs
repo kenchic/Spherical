@@ -106,7 +106,7 @@ namespace Spherical.Api.Controllers.Lineup
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(dto.Identificacion) || string.IsNullOrWhiteSpace(dto.Nombre1) || string.IsNullOrWhiteSpace(dto.Apellido1) || string.IsNullOrWhiteSpace(dto.Direccion) || string.IsNullOrWhiteSpace(dto.Telefono) || string.IsNullOrWhiteSpace(dto.IdCiudad))
+                if (string.IsNullOrWhiteSpace(dto.Identificacion) || string.IsNullOrWhiteSpace(dto.Nombre1) || string.IsNullOrWhiteSpace(dto.Direccion) || string.IsNullOrWhiteSpace(dto.Telefono) || string.IsNullOrWhiteSpace(dto.IdCiudad))
                 {
                     var bad = new ApiResponse<string>(HttpStatusCode.BadRequest, string.Empty, "Campos obligatorios faltantes");
                     return BadRequest(bad);
@@ -122,7 +122,7 @@ namespace Spherical.Api.Controllers.Lineup
                 var entity = new Cliente
                 {
                     IdCiudad = dto.IdCiudad,
-                    Empresa = "Spherical",
+                    Empresa = dto.Empresa,
                     Identificacion = dto.Identificacion,
                     Nombre1 = dto.Nombre1,
                     Nombre2 = dto.Nombre2,

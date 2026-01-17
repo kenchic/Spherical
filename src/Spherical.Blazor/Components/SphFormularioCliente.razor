@@ -6,11 +6,15 @@
 
 <MudPaper Class="pa-4">
     <MudForm @ref="_form" Model="Cliente" OnValidSubmit="@OnSubmitValid">
-        <MudTextField @bind-Value="Cliente.Identificacion" Label="Nit/Cédula" Required="true" RequiredError="Requerido" />
-        <MudTextField @bind-Value="Cliente.Nombre1" Label="1er Nombre" Required="true" RequiredError="Requerido" />
-        <MudTextField @bind-Value="Cliente.Nombre2" Label="2do Nombre" />
-        <MudTextField @bind-Value="Cliente.Apellido1" Label="1er Apellido" />
-        <MudTextField @bind-Value="Cliente.Apellido2" Label="2do Apellido" />
+        <MudGrid Class="cliente-row" Spacing="2" AlignItems="AlignItems.FlexStart">
+            <MudItem xs="12" sm="8">
+                <MudTextField @bind-Value="Cliente.Identificacion" Label="Nit/Cédula" Required="true" RequiredError="Requerido" />
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <MudTextField @bind-Value="Cliente.Codigo" Label="Código" />
+            </MudItem>
+        </MudGrid>
+        <MudTextField @bind-Value="Cliente.Nombre1" Label="1er Nombre" Required="true" RequiredError="Requerido" />        
         <MudTextField @bind-Value="Cliente.Direccion" Label="Dirección" Required="true" RequiredError="Requerido" />
         <SphListaCatalogo @bind-SelectedId="Cliente.IdCiudad" Etiqueta="Ciudad" IdCatalogo="CIUDAD" OnCreated="OnCrearCiudad" />
         <MudTextField @bind-Value="Cliente.Telefono" Label="Tel./Fax" Required="true" RequiredError="Requerido" />
