@@ -2,6 +2,7 @@
 @using Creative.Modelos.Lineup
 @using Spherical.Client.Services
 @using Spherical.Client.DTO.Common
+@using System.Security.Claims
 @namespace Spherical.Blazor.Components
 
 <MudPaper Class="pa-4">
@@ -51,11 +52,19 @@
     private bool Loading;
     private string Error = string.Empty;
     private string Success = string.Empty;
+    private string Empresa = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         string tokenApp = (AuthStateProvider as CustomAuthStateProvider)?.GetToken();
         ClientService.SetAuth(tokenApp);
+
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Extraer name y locale desde los claims (con fallback)
+        Empresa = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "AYZCORP";
     }
 
     private async Task OnSubmitValid() => await Save();
@@ -116,19 +125,37 @@
             Error = "Revise los campos obligatorios";
             return false;
         }
-        var resp = await ClientService.CreateClienteAsync(Cliente);
-        Loading = false;
-        if (resp.Success && resp.Data != null)
+
+        if (Cliente.Id == 0)
         {
-            Cliente.Id = resp.Data.Id;
-            Success = "Cliente creado";
-            await OnSaved.InvokeAsync(Cliente);
-            return true;
+            var resp = await ClientService.CreateClienteAsync(Cliente);
+
+            Loading = false;
+            if (resp.Success && resp.Data != null)
+            {
+                Cliente.Id = resp.Data.Id;
+                Success = "Cliente creado";
+                await OnSaved.InvokeAsync(Cliente);
+                return true;
+            }
+            else
+            {
+                Error = resp.ErrorMessage ?? "Error al crear cliente";
+                return false;
+            }
         }
-        else
+
+        return true;
+    }
+
+    private string? GetClaim(ClaimsPrincipal user, params string[] types)
+    {
+        foreach (var type in types)
         {
-            Error = resp.ErrorMessage ?? "Error al crear cliente";
-            return false;
+            var claim = user.FindFirst(type);
+            if (claim != null && !string.IsNullOrEmpty(claim.Value))
+                return claim.Value;
         }
+        return null;
     }
 }
