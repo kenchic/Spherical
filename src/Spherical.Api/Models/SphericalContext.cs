@@ -161,6 +161,11 @@ public partial class SphericalContext : DbContext
             entity.Property(e => e.Correo)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.Cv)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .HasDefaultValue("0")
+                .HasColumnName("CV");
             entity.Property(e => e.Direccion)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -173,11 +178,17 @@ public partial class SphericalContext : DbContext
             entity.Property(e => e.Identificacion)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+            entity.Property(e => e.IdentificacionRepresentante)
+                .HasMaxLength(20)
+                .IsUnicode(false);
             entity.Property(e => e.Nombre1)
                 .HasMaxLength(25)
                 .IsUnicode(false);
             entity.Property(e => e.Nombre2)
                 .HasMaxLength(25)
+                .IsUnicode(false);
+            entity.Property(e => e.NombreRepresentante)
+                .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Telefono)
                 .HasMaxLength(50)

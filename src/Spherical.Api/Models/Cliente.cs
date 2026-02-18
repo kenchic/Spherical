@@ -17,7 +17,7 @@ public partial class Cliente
 
     public string? Nombre2 { get; set; }
 
-    public string Apellido1 { get; set; } = null!;
+    public string? Apellido1 { get; set; }
 
     public string? Apellido2 { get; set; }
 
@@ -30,6 +30,12 @@ public partial class Cliente
     public string? Correo { get; set; }
 
     public bool Activo { get; set; }
+
+    public string? Cv { get; set; }
+
+    public string? IdentificacionRepresentante { get; set; }
+
+    public string? NombreRepresentante { get; set; }
 
     public virtual ICollection<Proyecto> Proyectos { get; set; } = new List<Proyecto>();
 }
