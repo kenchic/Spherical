@@ -2,6 +2,7 @@
 @using Creative.Modelos.Lineup
 @using Spherical.Client.Services
 @using Spherical.Client.DTO.Common
+@using System.Security.Claims
 @namespace Spherical.Blazor.Components
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
@@ -12,7 +13,8 @@
                 <MudDivider Class="mb-3" />
                 <MudSelect T="int"
                     Label="Cliente" 
-                    @bind-Value="SelectedClienteId"
+                    Value="SelectedClienteId"
+                    ValueChanged="OnClienteSeleccionado"
                     For="@(() => SelectedClienteId)"
                     Clearable>
                         @if (Clientes != null)
@@ -23,8 +25,11 @@
                             }
                         }
                 </MudSelect>
-                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-2">O cree un nuevo cliente:</MudAlert>
-                <SphFormularioCliente @ref="_clienteForm" Cliente="NuevoCliente" OnSaved="OnClienteCreado" />
+                @if (SelectedClienteId == 0)
+                {
+                    <MudAlert Severity="Severity.Info" Dense="true" Class="mt-2">O cree un nuevo cliente:</MudAlert>
+                }
+                <SphFormularioCliente @ref="_clienteForm" Cliente="NuevoCliente" OnSaved="OnClienteCreado" MostrarBotonGuardar="(SelectedClienteId == 0)" />
             </MudPaper>
         </MudItem>
 
@@ -105,6 +110,7 @@
     private string ProjectSuccess = string.Empty;
     private string AllError = string.Empty;
     private string AllSuccess = string.Empty;
+    private string Empresa = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,6 +120,12 @@
 
         var resp = await ClientService.GetClientesAsync();
         Clientes = resp.Data ?? Enumerable.Empty<VClienteModeloDto>();
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Extraer name y locale desde los claims (con fallback)
+        Empresa = GetClaim(user, "locale", ClaimTypes.Locality, "ui_locale") ?? "AYZCORP";
     }
 
     private async Task OnClienteCreado(ClienteModeloDto cliente)
@@ -137,6 +149,39 @@
         SelectedClienteId = cliente.Id;
     }
 
+    private void OnClienteSeleccionado(int clienteId)
+    {
+        SelectedClienteId = clienteId;
+
+        if (clienteId == 0)
+        {
+            // Deseleccionado: limpiar formulario para nuevo cliente
+            NuevoCliente = new ClienteModeloDto { Activo = true };
+            _clienteForm?.CargarCliente(NuevoCliente);
+            return;
+        }
+
+        var clienteVista = Clientes?.FirstOrDefault(c => c.Id == clienteId);
+        if (clienteVista == null) return;
+
+        var clienteDto = new ClienteModeloDto
+        {
+            Id = clienteVista.Id,
+            IdCiudad = clienteVista.idCiudad ?? string.Empty,
+            Identificacion = clienteVista.Identificacion ?? string.Empty,
+            Nombre1 = clienteVista.Nombre1 ?? string.Empty,
+            Apellido1 = clienteVista.Apellido1 ?? string.Empty,
+            Direccion = clienteVista.Direccion ?? string.Empty,
+            Telefono = clienteVista.Telefono ?? string.Empty,
+            Celular = clienteVista.Celular ?? string.Empty,
+            Correo = clienteVista.Correo ?? string.Empty,
+            Activo = clienteVista.Activo
+        };
+
+        NuevoCliente = clienteDto;
+        _clienteForm?.CargarCliente(clienteDto);
+    }
+
     private async Task<bool> SaveProyectoAsync()
     {
         LoadingProyecto = true;
@@ -151,6 +196,7 @@
         }
 
         Proyecto.IdCliente = SelectedClienteId;
+        Proyecto.Empresa = Empresa;
         var resp = await ProjectService.CreateProyectoAsync(Proyecto);
         LoadingProyecto = false;
         if (resp.Success && resp.Data != null)
@@ -223,5 +269,16 @@
     private void OnCrearCiudad(CatalogoDetalleModelo detalle)
     {
         Proyecto.IdCiudad = detalle.Id;
+    }
+
+    private string? GetClaim(ClaimsPrincipal user, params string[] types)
+    {
+        foreach (var type in types)
+        {
+            var claim = user.FindFirst(type);
+            if (claim != null && !string.IsNullOrEmpty(claim.Value))
+                return claim.Value;
+        }
+        return null;
     }
 }

@@ -132,7 +132,7 @@ namespace Spherical.Api.Controllers.Lineup
                 {
                     IdCliente = dto.IdCliente,
                     IdCiudad = dto.IdCiudad,
-                    Empresa = "Spherical",
+                    Empresa = dto.Empresa,
                     Nombre = dto.Nombre,
                     Tipo = dto.Tipo,
                     Direccion = dto.Direccion,

@@ -6,6 +6,12 @@
 @namespace Spherical.Blazor.Components
 
 <MudPaper Class="pa-4">
+    @if (Cliente.Id > 0)
+    {
+        <MudAlert Severity="Severity.Success" Dense="true" Class="mb-3" Icon="@Icons.Material.Filled.CheckCircle">
+            Cliente existente seleccionado: <strong>@Cliente.Nombre1 @Cliente.Apellido1</strong>
+        </MudAlert>
+    }
     <MudForm @ref="_form" Model="Cliente" OnValidSubmit="@OnSubmitValid">
         <MudGrid Class="cliente-row" Spacing="2" AlignItems="AlignItems.FlexStart">
             <MudItem xs="12" sm="8">
@@ -146,6 +152,17 @@
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Carga los datos de un cliente en el formulario (llamado desde el componente padre).
+    /// </summary>
+    public void CargarCliente(ClienteModeloDto nuevoCliente)
+    {
+        Cliente = nuevoCliente;
+        Error = string.Empty;
+        Success = string.Empty;
+        StateHasChanged();
     }
 
     private string? GetClaim(ClaimsPrincipal user, params string[] types)

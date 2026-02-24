@@ -1,4 +1,6 @@
-﻿<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4" Gutters="false">
+﻿@using Creative.Modelos.Lineup
+@using Spherical.Client.DTO.Spherical
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4" Gutters="false">
     <MudCard Elevation="4">
         <MudCardHeader>
             <CardHeaderContent>
@@ -28,7 +30,8 @@
                     {
                         <MudIconButton Color="Color.Secondary"
                                        Title="Actualizar"
-                                       Icon="@Icons.Material.Filled.Refresh">
+                                       Icon="@Icons.Material.Filled.Refresh"
+                                       OnClick="CargarProyectos">
                         </MudIconButton>
                         <MudIconButton Color="Color.Info"
                                        Title="Exportar a Excel"
@@ -55,7 +58,46 @@
                 }
                 else
                 {
-                   
+                    @if (_errorMessage is not null)
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mb-3">@_errorMessage</MudAlert>
+                    }
+
+                    <MudDataGrid T="VProyectoModeloDto" Items="_proyectos"
+                                 Filterable="true" FilterMode="DataGridFilterMode.Simple"
+                                 Sortable="true" Pageable="true" PageSize="15"
+                                 Dense="true" Hover="true" Striped="true" Bordered="false"
+                                 SortMode="SortMode.Multiple"
+                                 QuickFilter="@_quickFilter">
+                        <ToolBarContent>
+                            <MudTextField @bind-Value="_searchString"
+                                          Placeholder="Buscar..."
+                                          Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search"
+                                          IconSize="Size.Small"
+                                          Immediate="true"
+                                          Class="mt-0" />
+                        </ToolBarContent>
+                        <Columns>
+                            <PropertyColumn Property="x => x.Id"          Title="ID"        Sortable="true" Filterable="false" />
+                            <PropertyColumn Property="x => x.NombreProyecto" Title="Proyecto"  Sortable="true" />
+                            <PropertyColumn Property="x => x.NombreCliente"  Title="Cliente"   Sortable="true" />
+                            <PropertyColumn Property="x => x.NombreCiudad"   Title="Ciudad"    Sortable="true" />
+                            <PropertyColumn Property="x => x.Tipo"           Title="Tipo"      Sortable="true" />
+                            <PropertyColumn Property="x => x.NombreEstado"   Title="Estado"    Sortable="true" />
+                            <PropertyColumn Property="x => x.Fecha"          Title="Fecha"     Sortable="true" Format="dd/MM/yyyy" />
+                            <TemplateColumn Title="Activo" Sortable="false" Filterable="false">
+                                <CellTemplate>
+                                    <MudIcon Icon="@(context.Item.Activo == true ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Cancel)"
+                                             Color="@(context.Item.Activo == true ? Color.Success : Color.Error)"
+                                             Size="Size.Small" />
+                                </CellTemplate>
+                            </TemplateColumn>
+                        </Columns>
+                        <PagerContent>
+                            <MudDataGridPager T="VProyectoModeloDto" />
+                        </PagerContent>
+                    </MudDataGrid>
                 }
             }
         </MudCardContent>
@@ -74,14 +116,50 @@
 </MudDialog>
 
 
+@inject IProjectService ProjectService
+
 @code {
     private PermisoUsuarioDto Permisos = new() { Activar = true, Consultar = true, Crear = true, Eliminar = true, Editar = true };
     private bool _isLoading = false;
     private bool _visible = false;
     private readonly DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = true };
 
+    private IEnumerable<VProyectoModeloDto> _proyectos = [];
+    private string? _errorMessage;
+    private string _searchString = string.Empty;
+    private Func<VProyectoModeloDto, bool> _quickFilter => p =>
+        string.IsNullOrWhiteSpace(_searchString)
+        || p.NombreProyecto?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true
+        || p.NombreCliente?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true
+        || p.NombreCiudad?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true
+        || p.Tipo?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true
+        || p.NombreEstado?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarProyectos();
+    }
+
+    private async Task CargarProyectos()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        try
+        {
+            var result = await ProjectService.GetProyectosAsync();
+            if (result.Success)
+                _proyectos = result.Data ?? [];
+            else
+                _errorMessage = result.ErrorMessage;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
     private async Task AbrirModalCrear()
     {
-        _visible = true; 
+        _visible = true;
     }
 }
