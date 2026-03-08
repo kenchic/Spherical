@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Authentication\**" />
-    <Compile Remove="Components\**" />
     <Compile Remove="Data\**" />
     <Compile Remove="Pages\Control\**" />
     <Compile Remove="Pages\Defender\**" />
@@ -16,8 +14,6 @@
     <Compile Remove="Pages\Lineup\**" />
     <Compile Remove="Pages\Tactic\**" />
     <Compile Remove="Services\**" />
-    <Content Remove="Authentication\**" />
-    <Content Remove="Components\**" />
     <Content Remove="Data\**" />
     <Content Remove="Pages\Control\**" />
     <Content Remove="Pages\Defender\**" />
@@ -25,8 +21,6 @@
     <Content Remove="Pages\Lineup\**" />
     <Content Remove="Pages\Tactic\**" />
     <Content Remove="Services\**" />
-    <EmbeddedResource Remove="Authentication\**" />
-    <EmbeddedResource Remove="Components\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="Pages\Control\**" />
     <EmbeddedResource Remove="Pages\Defender\**" />
@@ -34,8 +28,6 @@
     <EmbeddedResource Remove="Pages\Lineup\**" />
     <EmbeddedResource Remove="Pages\Tactic\**" />
     <EmbeddedResource Remove="Services\**" />
-    <None Remove="Authentication\**" />
-    <None Remove="Components\**" />
     <None Remove="Data\**" />
     <None Remove="Pages\Control\**" />
     <None Remove="Pages\Defender\**" />
@@ -46,12 +38,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Spherical.Blazor\Spherical.Blazor.csproj" />
-    <ProjectReference Include="..\Spherical.Client\Spherical.Client.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MudBlazor" Version="8.15.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="NLog" Version="6.1.1" />
+    <PackageReference Include="RestSharp" Version="114.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,6 +65,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Application\DTO\Inventory\" />
     <Folder Include="wwwroot\css\" />
     <Folder Include="wwwroot\plantillas\" />
   </ItemGroup>
